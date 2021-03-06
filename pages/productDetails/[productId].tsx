@@ -28,6 +28,11 @@ import {
 	formatNumberWithCommas,
 	roundToTwoPlaces,
 } from "./../../src/utils";
+import {
+	AddItemToOrderCart,
+	AddItemToOrderCartVariables,
+} from "../../src/graphql/generated/AddItemToOrderCart";
+import { ADD_ITEM_TO_ORDER_CART } from "../../src/graphql/mutations/order-cart.graphql";
 
 const useStyles = makeStyles((theme: Theme) =>
 	createStyles({
@@ -107,6 +112,13 @@ const OrderDetailsTopicDetailDiv = ({ title, detail }) => (
 	</div>
 );
 
+enum MutationRequestState {
+	loading,
+	error,
+	done,
+	notInitiated,
+}
+
 const Page: React.FC = () => {
 	const classes = useStyles();
 	const router = useRouter();
@@ -117,7 +129,9 @@ const Page: React.FC = () => {
 		productId = productId[0];
 	}
 
-	// declaring local states
+	// DECLARING LOCAL STATES
+
+	// state for storing all queried available product categories
 	const [allProductCategories, setAllProductCategories] = useState<
 		GetProductCategories_getProductCategories[]
 	>([]);
@@ -125,9 +139,13 @@ const Page: React.FC = () => {
 		selectedPricingTableMapKey,
 		setSelectedPricingTableMapKey,
 	] = useState<number>(-1);
+
+	// state for pricing table map
 	const [pricingTableMap, setPricingTableMap] = useState<
 		Map<number, GetProductDetails_getProductDetails_variations[]>
 	>(new Map<number, GetProductDetails_getProductDetails_variations[]>());
+
+	// state for maintaining selected product variation
 	const [
 		selectedProductVariation,
 		setSelectedProductVariation,
@@ -135,13 +153,32 @@ const Page: React.FC = () => {
 	const [selectedProductQuantity, setSelectedProductQuantity] = useState<
 		number | null
 	>(null);
-	const [
-		didUserEditOrderQuantity,
-		setDidUserEditOrderQuantity,
-	] = useState<boolean>(false);
-	// local states end
 
-	// functions
+	// state for keeping a track of user input error for order quantity
+	const [
+		orderQuantityInputError,
+		setOrderQuantityInputError,
+	] = useState<boolean>(false);
+
+	// loading state of addItemToOrderCart mutation request
+	const [
+		addItemToOrderCartLoading,
+		setAddItemToOrderCartLoading,
+	] = useState<boolean>(false);
+
+	// state for indicating whether order has been added to cart (true) or not (false)
+	const [itemAddedToCart, setItemAddedToCart] = useState<boolean>(false);
+
+	// state for tracking addItemToOrderCart mutation request
+	const [
+		addItemToOrderCartRequestState,
+		setAddItemToOrderCartRequestState,
+	] = useState<MutationRequestState>(MutationRequestState.notInitiated);
+	// DECLARING LOCAL STATES END
+
+	// DECLARING FUNCTIONS
+
+	// sets pricing table map from product variations array
 	function generatePricingTableMap(
 		variations: Array<GetProductDetails_getProductDetails_variations>
 	) {
@@ -176,9 +213,13 @@ const Page: React.FC = () => {
 		}
 	}
 
+	// returns totalPrice (i.e. selectedOrderQuantity * pricePerUnit)
 	function getTotalPrice(): FormattedPriceInterface | null {
 		// if selected quantity is zero them return null
-		if (selectedProductQuantity === null) {
+		if (
+			selectedProductQuantity === null ||
+			selectedProductVariation === null
+		) {
 			return null;
 		}
 		return formatPriceValue(
@@ -186,36 +227,67 @@ const Page: React.FC = () => {
 		);
 	}
 
+	// returns true if order details are right
 	function checkOrderDetails(): boolean {
+		// check for selected product variation
+		if (!selectedProductVariation) {
+			return false;
+		}
+
+		// check for selected product quantity
+		if (!selectedProductQuantity) {
+			return false;
+		}
+
 		// check if order quantity size is smaller than MOQ.
 		// If yes, then display MOQ error
 		if (selectedProductQuantity < productDetails.minOrderSize) {
-			setDidUserEditOrderQuantity(true);
+			setOrderQuantityInputError(true);
+			return false;
+		}
+
+		// check if product details are present
+		if (!productDetails) {
 			return false;
 		}
 
 		return true;
 	}
 
+	// changes pricing key for pricing table & resets currently selected variation
 	function setSelectedPricingTableMapKeyLocal(key: number) {
 		// change selected pricing table key
 		setSelectedPricingTableMapKey(key);
 
 		// empty selected variation if any from last key && reset order input field touched value
 		setSelectedProductVariation(null);
-		setDidUserEditOrderQuantity(false);
+		setOrderQuantityInputError(false);
 	}
 
-	function addToCart() {
-		checkOrderDetails();
+	// initiates processing request of adding item to order cart
+	function addItemToOrderCartLocal() {
+		if (
+			!checkOrderDetails() ||
+			addItemToOrderCartRequestState !== MutationRequestState.notInitiated
+		) {
+			return;
+		}
+
+		// set mutation request state to loading
+		setAddItemToOrderCartRequestState(MutationRequestState.loading);
+
+		addItemToOrderCart({
+			variables: {
+				productId: productDetails.id,
+				productVariationId: selectedProductVariation.id,
+				orderQuantitySize: selectedProductQuantity,
+			},
+		});
 	}
 
-	function buyNow() {
-		checkOrderDetails();
-	}
-	// functions end
+	// DECLARING FUNCTIONS END
 
-	// apollo hooks
+	// DECLARING APOLLO HOOKS
 	const {
 		data: getProductDetailsData,
 		loading: getProductDetailsLoading,
@@ -243,7 +315,19 @@ const Page: React.FC = () => {
 			console.log(error);
 		},
 	});
-	// apollo hooks end
+
+	const [addItemToOrderCart] = useMutation<
+		AddItemToOrderCart,
+		AddItemToOrderCartVariables
+	>(ADD_ITEM_TO_ORDER_CART, {
+		onCompleted({ addItemToOrderCart }) {
+			setAddItemToOrderCartRequestState(MutationRequestState.done);
+		},
+		onError(error) {
+			setAddItemToOrderCartRequestState(MutationRequestState.error);
+		},
+	});
+	// DECLARING APOLLO HOOKS END
 
 	if (getProductDetailsLoading && !getProductDetailsData) {
 		return <div>Loading!!!</div>;
@@ -450,117 +534,124 @@ const Page: React.FC = () => {
 						<div>No product available</div>
 					)}
 
-					{selectedProductVariation !== null ? (
-						<div
-							style={{
-								width: 250,
-								marginLeft: 20,
-								// display: "flex",
-								// justifyContent: "center",
-								// alignItems: "center",
+					<div
+						style={{
+							width: 250,
+							marginLeft: 20,
+							// display: "flex",
+							// justifyContent: "center",
+							// alignItems: "center",
+						}}
+					>
+						<Typography variant="h6">Order Details</Typography>
+						<TextField
+							id="standard-number"
+							label="Order Quantity Size"
+							type="number"
+							value={selectedProductQuantity}
+							onChange={(e) => {
+								setOrderQuantityInputError(false);
+
+								if (!e.target.value) {
+									setSelectedProductQuantity(null);
+									return;
+								}
+
+								const value = roundToTwoPlaces(
+									Number(e.target.value)
+								);
+								if (value > -1) {
+									setSelectedProductQuantity(value);
+								} else {
+									setSelectedProductQuantity(0);
+								}
 							}}
-						>
-							<Typography variant="h6">Order Details</Typography>
-							<TextField
-								id="standard-number"
-								label="Order Quantity Size"
-								type="number"
-								value={selectedProductQuantity}
-								onChange={(e) => {
-									setDidUserEditOrderQuantity(false);
-
-									if (!e.target.value) {
-										setSelectedProductQuantity(null);
-										return;
+							InputProps={{ inputProps: { min: 0 } }}
+							InputLabelProps={{
+								shrink: true,
+							}}
+							helperText={
+								selectedProductQuantity <
+									productDetails.minOrderSize &&
+								orderQuantityInputError
+									? `Quantity size should be more than ${productDetails.maxOrderSize} Meters`
+									: ""
+							}
+							error={
+								selectedProductQuantity <
+									productDetails.minOrderSize &&
+								orderQuantityInputError
+							}
+						/>
+						<div>
+							<OrderDetailsTopicDetailDiv
+								title={"Order quantity size"}
+								detail={(() => {
+									if (
+										selectedProductQuantity === null ||
+										selectedProductVariation === null
+									) {
+										return "N/A";
 									}
-
-									const value = roundToTwoPlaces(
-										Number(e.target.value)
-									);
-									if (value > -1) {
-										setSelectedProductQuantity(value);
-									} else {
-										setSelectedProductQuantity(0);
-									}
-								}}
-								InputProps={{ inputProps: { min: 0 } }}
-								InputLabelProps={{
-									shrink: true,
-								}}
-								helperText={
-									selectedProductQuantity <
-										productDetails.minOrderSize &&
-									didUserEditOrderQuantity
-										? `Quantity size should be more than ${productDetails.maxOrderSize} Meters`
-										: ""
-								}
-								error={
-									selectedProductQuantity <
-										productDetails.minOrderSize &&
-									didUserEditOrderQuantity
-								}
+									return `${formatNumberWithCommas(
+										selectedProductQuantity
+									)} meters`;
+								})()}
 							/>
-							<div>
-								<OrderDetailsTopicDetailDiv
-									title={"Order quantity size"}
-									detail={(() => {
-										if (selectedProductQuantity === null) {
-											return "N/A";
-										}
-										return `${formatNumberWithCommas(
-											selectedProductQuantity
-										)} meters`;
-									})()}
-								/>
-								<OrderDetailsTopicDetailDiv
-									title={"Price per unit"}
-									detail={(() => {
-										if (selectedProductQuantity === null) {
-											return "N/A";
-										}
-										return formatPriceValue(
-											selectedProductVariation.finalPrice
-										).formattedPriceCurrency;
-									})()}
-								/>
-								<OrderDetailsTopicDetailDiv
-									title={"Total Price"}
-									detail={(() => {
-										const totalPrice = getTotalPrice();
-										if (totalPrice === null) {
-											return "N/A";
-										}
+							<OrderDetailsTopicDetailDiv
+								title={"Price per unit"}
+								detail={(() => {
+									if (selectedProductVariation === null) {
+										return "N/A";
+									}
+									return formatPriceValue(
+										selectedProductVariation.finalPrice
+									).formattedPriceCurrency;
+								})()}
+							/>
+							<OrderDetailsTopicDetailDiv
+								title={"Total Price"}
+								detail={(() => {
+									const totalPrice = getTotalPrice();
+									if (totalPrice === null) {
+										return "N/A";
+									}
 
-										return totalPrice.formattedPriceCurrency;
-									})()}
-								/>
-								<div
-									style={{
-										marginTop: 15,
-										display: "flex",
-										flexDirection: "row",
-									}}
-								>
+									return totalPrice.formattedPriceCurrency;
+								})()}
+							/>
+							<div
+								style={{
+									marginTop: 15,
+									display: "flex",
+									flexDirection: "row",
+								}}
+							>
+								{addItemToOrderCartRequestState ===
+								MutationRequestState.done ? (
 									<Button
 										onClick={() => {
-											addToCart();
+											// addItemToOrderCartLocal();
+										}}
+										variant="contained"
+										color="primary"
+									>
+										Go To Cart
+									</Button>
+								) : (
+									<Button
+										onClick={() => {
+											addItemToOrderCartLocal();
 										}}
 										variant="contained"
 										color="primary"
 									>
 										Add To Cart
 									</Button>
-									<Button
-										style={{ marginLeft: 10 }}
-										variant="contained"
-										color="primary"
-									>
-										Buy Now
-									</Button>
-								</div>
+								)}
 							</div>
 						</div>
-					) : undefined}
+					</div>
 				</div>
 			</div>
 		</div>
