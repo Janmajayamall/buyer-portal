@@ -7,6 +7,13 @@
 // START Enums and Input Objects
 //==============================================================
 
+export interface BuyerAddressInput {
+  city: string;
+  line1: string;
+  pincode: string;
+  state: string;
+}
+
 export interface ProductInput {
   clothComposition: string;
   description: string;

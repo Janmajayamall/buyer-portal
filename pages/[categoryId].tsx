@@ -144,6 +144,9 @@ const Page: React.FC = () => {
 								alignItems: "center",
 								margin: 10,
 							}}
+							onClick={() => {
+								router.push(`/productDetails/${val.id}`);
+							}}
 						>
 							<Image
 								width="150"

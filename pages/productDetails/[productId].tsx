@@ -27,6 +27,7 @@ import {
 	formatPriceValue,
 	formatNumberWithCommas,
 	roundToTwoPlaces,
+	handleNumberInputOnKeyPress,
 } from "./../../src/utils";
 import {
 	AddItemToOrderCart,
@@ -150,24 +151,16 @@ const Page: React.FC = () => {
 		selectedProductVariation,
 		setSelectedProductVariation,
 	] = useState<GetProductDetails_getProductDetails_variations | null>(null);
-	const [selectedProductQuantity, setSelectedProductQuantity] = useState<
-		number | null
-	>(null);
+	const [
+		selectedProductQuantity,
+		setSelectedProductQuantity,
+	] = useState<string>("");
 
 	// state for keeping a track of user input error for order quantity
 	const [
 		orderQuantityInputError,
 		setOrderQuantityInputError,
 	] = useState<boolean>(false);
-
-	// loading state of addItemToOrderCart mutation request
-	const [
-		addItemToOrderCartLoading,
-		setAddItemToOrderCartLoading,
-	] = useState<boolean>(false);
-
-	// state for indicating whether order has been added to cart (true) or not (false)
-	const [itemAddedToCart, setItemAddedToCart] = useState<boolean>(false);
 
 	// state for tracking addItemToOrderCart mutation request
 	const [
@@ -217,13 +210,14 @@ const Page: React.FC = () => {
 	function getTotalPrice(): FormattedPriceInterface | null {
 		// if selected quantity is zero them return null
 		if (
-			selectedProductQuantity === null ||
+			selectedProductQuantity === "" ||
 			selectedProductVariation === null
 		) {
 			return null;
 		}
 		return formatPriceValue(
-			selectedProductVariation.finalPrice * selectedProductQuantity
+			selectedProductVariation.finalPrice *
+				Number(selectedProductQuantity)
 		);
 	}
 
@@ -235,13 +229,13 @@ const Page: React.FC = () => {
 		}
 
 		// check for selected product quantity
-		if (!selectedProductQuantity) {
+		if (selectedProductQuantity === "") {
 			return false;
 		}
 
 		// check if order quantity size is smaller than MOQ.
 		// If yes, then display MOQ error
-		if (selectedProductQuantity < productDetails.minOrderSize) {
+		if (Number(selectedProductQuantity) < productDetails.minOrderSize) {
 			setOrderQuantityInputError(true);
 			return false;
 		}
@@ -280,7 +274,7 @@ const Page: React.FC = () => {
 			variables: {
 				productId: productDetails.id,
 				productVariationId: selectedProductVariation.id,
-				orderQuantitySize: selectedProductQuantity,
+				orderQuantitySize: Number(selectedProductQuantity),
 			},
 		});
 	}
@@ -325,6 +319,7 @@ const Page: React.FC = () => {
 		},
 		onError(error) {
 			setAddItemToOrderCartRequestState(MutationRequestState.error);
+			console.log(error);
 		},
 	});
 	// DECLARING APOLLO HOOKS END
@@ -538,47 +533,33 @@ const Page: React.FC = () => {
 						style={{
 							width: 250,
 							marginLeft: 20,
-							// display: "flex",
-							// justifyContent: "center",
-							// alignItems: "center",
 						}}
 					>
 						<Typography variant="h6">Order Details</Typography>
 						<TextField
-							id="standard-number"
+							id="order-quantity-size"
 							label="Order Quantity Size"
-							type="number"
 							value={selectedProductQuantity}
-							onChange={(e) => {
-								setOrderQuantityInputError(false);
-
-								if (!e.target.value) {
-									setSelectedProductQuantity(null);
-									return;
-								}
-
-								const value = roundToTwoPlaces(
-									Number(e.target.value)
+							onKeyDown={(e) => {
+								e.preventDefault();
+								handleNumberInputOnKeyPress(
+									String(selectedProductQuantity),
+									e.key,
+									(value: string) => {
+										setSelectedProductQuantity(value);
+									},
+									false
 								);
-								if (value > -1) {
-									setSelectedProductQuantity(value);
-								} else {
-									setSelectedProductQuantity(0);
-								}
-							}}
-							InputProps={{ inputProps: { min: 0 } }}
-							InputLabelProps={{
-								shrink: true,
 							}}
 							helperText={
-								selectedProductQuantity <
+								Number(selectedProductQuantity) <
 									productDetails.minOrderSize &&
 								orderQuantityInputError
 									? `Quantity size should be more than ${productDetails.maxOrderSize} Meters`
 									: ""
 							}
 							error={
-								selectedProductQuantity <
+								Number(selectedProductQuantity) <
 									productDetails.minOrderSize &&
 								orderQuantityInputError
 							}
@@ -587,14 +568,11 @@ const Page: React.FC = () => {
 							<OrderDetailsTopicDetailDiv
 								title={"Order quantity size"}
 								detail={(() => {
-									if (
-										selectedProductQuantity === null ||
-										selectedProductVariation === null
-									) {
+									if (selectedProductQuantity === "") {
 										return "N/A";
 									}
 									return `${formatNumberWithCommas(
-										selectedProductQuantity
+										Number(selectedProductQuantity)
 									)} meters`;
 								})()}
 							/>
@@ -631,7 +609,7 @@ const Page: React.FC = () => {
 								MutationRequestState.done ? (
 									<Button
 										onClick={() => {
-											// addItemToOrderCartLocal();
+											router.push("/cart");
 										}}
 										variant="contained"
 										color="primary"

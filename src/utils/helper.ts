@@ -42,6 +42,53 @@ export function roundToTwoPlaces(value: number): number {
 	return +value.toFixed(2);
 }
 
+export function handleNumberInputOnKeyPress(
+	currentValue: string,
+	key: string,
+	callback: (value: string) => void,
+	decimalAllowed: boolean = true
+) {
+	// check if is not single digit value
+	if (key.length !== 1) {
+		// if backspace, then remove last element of current value
+		if (key === "Backspace") {
+			callback(currentValue.slice(0, -1));
+			return;
+		}
+		callback(currentValue);
+	}
+
+	// formatted key
+	const formattedKey = decimalAllowed
+		? key.replace(/[^\d.]/g, "")
+		: key.replace(/[^\d]/g, "");
+	if (formattedKey === "") {
+		callback(currentValue);
+		return;
+	}
+
+	// check for decimals
+	if (key === ".") {
+		// if decimal is already present then no need to change current value
+		if (currentValue.includes(".")) {
+			callback(currentValue);
+			return;
+		}
+
+		callback(currentValue + ".");
+		return;
+	}
+
+	// check if there are already two digits after decimal, if yes then return current value
+	if (currentValue.includes(".") && currentValue.split(".")[1].length === 2) {
+		callback(currentValue);
+		return;
+	}
+
+	callback(currentValue + key);
+	return;
+}
+
 export function formatPriceValue(price: number): FormattedPriceInterface {
 	const roundedPrice = roundToTwoPlaces(price);
 	const formattedPrice = formatNumberWithCommas(roundedPrice);
