@@ -13,3 +13,9 @@ export const GET_BUYER_ADDRESSES = gql`
 		}
 	}
 `;
+
+export const IS_BUYER_AUTHENTICATED = gql`
+	query IsBuyerAuthenticated {
+		isBuyerAuthenticated
+	}
+`;

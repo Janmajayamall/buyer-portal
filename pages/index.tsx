@@ -2,6 +2,11 @@ import React from "react";
 import { useRouter } from "next/router";
 import { makeStyles, Theme, createStyles } from "@material-ui/core/styles";
 import CircularProgress from "@material-ui/core/CircularProgress";
+import Typography from "@material-ui/core/Typography";
+import Paper from "@material-ui/core/Paper";
+import { Image } from "cloudinary-react";
+import { useMutation, useQuery, useLazyQuery } from "@apollo/react-hooks";
+import { getLowestVariantCost } from "../src/utils";
 
 const useStyles = makeStyles((theme: Theme) =>
 	createStyles({
@@ -18,50 +23,62 @@ const Page: React.FC = () => {
 	const classes = useStyles();
 	const router = useRouter();
 
+	// DECLARING APOLLO HOOKS
+
+	// const {} = useQuery
+
+	// DECLARING APOLLO HOOKS END
+
 	return (
-		<div className={classes.root}>
-			<CircularProgress />
+		<div style={{ flexDirection: "row", display: "flex" }}>
+			<div style={{ width: window.screen.availWidth * 0.7 }}>
+				{[].map((val) => {
+					if (val.variations.length === 0) {
+						return undefined;
+					}
+					return (
+						<Paper
+							elevation={3}
+							style={{
+								padding: 10,
+								display: "inline-block",
+								maxWidth: 200,
+								justifyContent: "center",
+								alignItems: "center",
+								margin: 10,
+							}}
+							onClick={() => {
+								router.push(`/productDetails/${val.id}`);
+							}}
+						>
+							<Image
+								width="150"
+								height="200"
+								cloudName={"jayeet"}
+								publicId={
+									"https://res.cloudinary.com/jayeet/image/upload/v1614622206/PIM-1583496423927-afea11e0-1270-41e3-8f6b-389a83687b45_v1-small_rfx3ca.jpg"
+								}
+							/>
+							<Typography variant="subtitle2" gutterBottom>
+								{val.description}
+							</Typography>
+							<Typography variant="subtitle2" gutterBottom>
+								{getLowestVariantCost(val.variations)}
+								<span>&#x20B9;</span>
+								<span>{" /M"}</span>
+							</Typography>
+							<Typography variant="subtitle2" gutterBottom>
+								{val.clothComposition}
+							</Typography>
+							<Typography variant="subtitle2" gutterBottom>
+								{`Available in ${val.variations.length} colours`}
+							</Typography>
+						</Paper>
+					);
+				})}
+			</div>
 		</div>
 	);
 };
 
 export default Page;
-
-// <React.Fragment>
-// 	<TableContainer component={Paper}>
-// 		<Table className={classes.table} aria-label="simple table">
-// 			<TableHead>
-// 				<TableRow>
-// 					<TableCell>Dessert (100g serving)</TableCell>
-// 					<TableCell align="right">Calories</TableCell>
-// 					<TableCell align="right">Fat&nbsp;(g)</TableCell>
-// 					<TableCell align="right">Carbs&nbsp;(g)</TableCell>
-// 					<TableCell align="right">Protein&nbsp;(g)</TableCell>
-// 				</TableRow>
-// 			</TableHead>
-// 			<TableBody>
-// 				{rows.map((row) => (
-// 					<TableRow key={row.name}>
-// 						<TableCell component="th" scope="row">
-// 							{row.name}
-// 						</TableCell>
-// 						<TableCell align="right">{row.calories}</TableCell>
-// 						<TableCell align="right">{row.fat}</TableCell>
-// 						<TableCell align="right">{row.carbs}</TableCell>
-// 						<TableCell align="right">{row.protein}</TableCell>
-// 					</TableRow>
-// 				))}
-// 			</TableBody>
-// 		</Table>
-// 	</TableContainer>
-// 	<Button
-// 		style={{ marginTop: 10 }}
-// 		variant="contained"
-// 		color="primary"
-// 		onClick={() => {
-// 			router.push("/products/addNewProduct");
-// 		}}
-// 	>
-// 		New Product
-// 	</Button>
-// </React.Fragment>;

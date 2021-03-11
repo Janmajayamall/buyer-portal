@@ -13,9 +13,7 @@ export const GET_BUYER_ORDER_CART_ITEMS = gql`
 			productVariationPrice
 			productVariationFinalPrice
 			productVariationInStock
-			productVariationColourId
-			productVariationColourHex
-			productVariationColourName
+			productVariationColourHexCode
 			productVariationId
 
 			productName

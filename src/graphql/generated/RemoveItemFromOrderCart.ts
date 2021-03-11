@@ -4,10 +4,10 @@
 // This file was automatically generated and should not be edited.
 
 // ====================================================
-// GraphQL query operation: GetBuyerOrderCartItems
+// GraphQL mutation operation: RemoveItemFromOrderCart
 // ====================================================
 
-export interface GetBuyerOrderCartItems_getBuyerOrderCartItems {
+export interface RemoveItemFromOrderCart_removeItemFromOrderCart {
   __typename: "OrderCartType";
   id: string;
   orderQuantitySize: number;
@@ -33,6 +33,10 @@ export interface GetBuyerOrderCartItems_getBuyerOrderCartItems {
   timestamp: string;
 }
 
-export interface GetBuyerOrderCartItems {
-  getBuyerOrderCartItems: GetBuyerOrderCartItems_getBuyerOrderCartItems[];
+export interface RemoveItemFromOrderCart {
+  removeItemFromOrderCart: RemoveItemFromOrderCart_removeItemFromOrderCart[];
+}
+
+export interface RemoveItemFromOrderCartVariables {
+  orderCartItemId: string;
 }

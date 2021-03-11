@@ -14,14 +14,9 @@ export const GET_CATEGORY_PRODUCTS_FOR_BUYERS = gql`
 			minOrderSize
 			variations {
 				id
-				colourId
 				price
 				inStock
-				colour {
-					id
-					name
-					hexValue
-				}
+				colourHexCode
 				finalPrice
 			}
 			productImages {
@@ -59,12 +54,7 @@ export const GET_PRODUCT_DETAILS = gql`
 				id
 				price
 				inStock
-				colourId
-				colour {
-					id
-					name
-					hexValue
-				}
+				colourHexCode
 				finalPrice
 			}
 			productCategoryRelations {

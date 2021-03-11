@@ -19,6 +19,7 @@ import {
 	GetProductCategories,
 	GetProductCategories_getProductCategories,
 } from "../src/graphql/generated/GetProductCategories";
+import { getLowestVariantCost } from "../src/utils";
 
 const useStyles = makeStyles((theme: Theme) =>
 	createStyles({
@@ -33,22 +34,6 @@ const useStyles = makeStyles((theme: Theme) =>
 		},
 	})
 );
-
-function getLowestVariantCost(
-	variants: GetCategoryProductsForBuyers_getCategoryProductsForBuyers_variations[]
-): number | null {
-	if (variants.length === 0) {
-		return null;
-	}
-
-	let lowestPricePoint = variants[0].finalPrice;
-	variants.forEach((variant) => {
-		if (lowestPricePoint > variant.finalPrice) {
-			lowestPricePoint = variant.finalPrice;
-		}
-	});
-	return lowestPricePoint;
-}
 
 const Page: React.FC = () => {
 	const classes = useStyles();

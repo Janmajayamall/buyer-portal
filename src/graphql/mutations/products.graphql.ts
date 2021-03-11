@@ -24,12 +24,7 @@ export const ADD_PRODUCT_VARIATIONS = gql`
 			id
 			inStock
 			price
-			colourId
-			colour {
-				id
-				name
-				hexValue
-			}
+			colourHexCode
 		}
 	}
 `;

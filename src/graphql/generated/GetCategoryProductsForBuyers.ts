@@ -7,20 +7,12 @@
 // GraphQL query operation: GetCategoryProductsForBuyers
 // ====================================================
 
-export interface GetCategoryProductsForBuyers_getCategoryProductsForBuyers_variations_colour {
-  __typename: "ColourType";
-  id: number;
-  name: string;
-  hexValue: string;
-}
-
 export interface GetCategoryProductsForBuyers_getCategoryProductsForBuyers_variations {
   __typename: "ProductVariationType";
   id: string;
-  colourId: number;
   price: number;
   inStock: boolean;
-  colour: GetCategoryProductsForBuyers_getCategoryProductsForBuyers_variations_colour;
+  colourHexCode: string;
   finalPrice: number;
 }
 

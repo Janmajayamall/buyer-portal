@@ -14,13 +14,25 @@ import {
 	GetBuyerOrderCartItems_getBuyerOrderCartItems,
 } from "../../src/graphql/generated/GetBuyerOrderCartItems";
 import { GET_BUYER_ORDER_CART_ITEMS } from "../../src/graphql/queries/order-cart.graphql";
-import { formatNumberWithCommas, formatPriceValue } from "../../src/utils";
-import { constants } from "buffer";
+import {
+	constants,
+	formatNumberWithCommas,
+	formatPriceValue,
+} from "../../src/utils";
 import { GetBuyerAddresses } from "../../src/graphql/generated/GetBuyerAddresses";
-import { GET_BUYER_ADDRESSES } from "../../src/graphql/queries/buyer.graphql";
+import {
+	GET_BUYER_ADDRESSES,
+	IS_BUYER_AUTHENTICATED,
+} from "../../src/graphql/queries/buyer.graphql";
 import { UpdateBuyerAddress } from "../../src/graphql/generated/UpdateBuyerAddress";
 import { UPDATE_BUYER_ADDRESS } from "../../src/graphql/mutations/buyer.graphql";
 import Modal from "@material-ui/core/Modal";
+import {
+	RemoveItemFromOrderCart,
+	RemoveItemFromOrderCartVariables,
+} from "../../src/graphql/generated/RemoveItemFromOrderCart";
+import { REMOVE_ITEM_FROM_ORDER_CART } from "../../src/graphql/mutations/order-cart.graphql";
+import { IsBuyerAuthenticated } from "../../src/graphql/generated/IsBuyerAuthenticated";
 
 const useStyles = makeStyles((theme: Theme) =>
 	createStyles({
@@ -99,7 +111,14 @@ const TopicDetailsDivRow = ({ title, detail }) => (
 	</div>
 );
 
-const Page: React.FC = () => {
+interface BuyerAddressInterface {
+	line1: string;
+	pincode: string;
+	state: string;
+	city: string;
+}
+
+const Page: React.FC = (props) => {
 	const router = useRouter();
 	const classes = useStyles();
 
@@ -110,6 +129,9 @@ const Page: React.FC = () => {
 		loading: getBuyerOrderCartItemsLoading,
 		error: getBuyerOrderCartItemsError,
 	} = useQuery<GetBuyerOrderCartItems>(GET_BUYER_ORDER_CART_ITEMS, {
+		onCompleted({ getBuyerOrderCartItems }) {
+			setOrderCartItems(getBuyerOrderCartItems);
+		},
 		onError(error) {
 			console.log(error);
 		},
@@ -120,6 +142,17 @@ const Page: React.FC = () => {
 		loading: getBuyerAddressesLoading,
 		error: getBuyerAddressesError,
 	} = useQuery<GetBuyerAddresses>(GET_BUYER_ADDRESSES, {
+		onCompleted({ getBuyerAddresses }) {
+			if (getBuyerAddresses[0]) {
+				const currentAdd = getBuyerAddresses[0];
+				setAddressMutationFormikInitialValues({
+					line1: currentAdd.line1,
+					pincode: currentAdd.pincode,
+					city: currentAdd.city,
+					state: currentAdd.state,
+				});
+			}
+		},
 		onError(error) {
 			console.log(error);
 		},
@@ -134,45 +167,120 @@ const Page: React.FC = () => {
 		}
 	);
 
+	const [removeItemFromOrderCart] = useMutation<
+		RemoveItemFromOrderCart,
+		RemoveItemFromOrderCartVariables
+	>(REMOVE_ITEM_FROM_ORDER_CART, {
+		onCompleted({ removeItemFromOrderCart }) {
+			const orderCartItems: GetBuyerOrderCartItems_getBuyerOrderCartItems[] = removeItemFromOrderCart.map(
+				(item) => {
+					return {
+						...item,
+					};
+				}
+			);
+			setOrderCartItems(orderCartItems);
+		},
+		onError(error) {
+			console.log(error);
+		},
+	});
+
+	const {} = useQuery<IsBuyerAuthenticated>(IS_BUYER_AUTHENTICATED, {
+		onCompleted() {
+			props.onAuthStatusChange(true);
+		},
+		onError(error) {
+			props.onAuthStatusChange(false);
+		},
+	});
+
 	// DECLARING APOLLO HOOKS END
 
 	// DECLARING LOCAL STATES
 
+	// state for keeping track of edit address modal
 	const [addressModalVisible, setAddressModalVisible] = useState<boolean>(
 		false
 	);
 
+	// state for order cart items
+	const [orderCartItems, setOrderCartItems] = useState<
+		GetBuyerOrderCartItems_getBuyerOrderCartItems[]
+	>([]);
+
+	// state for pre-existing address provided by user, if any
+	const [
+		addressMutationFormikInitialValues,
+		setAddressMutationFormikInitialValues,
+	] = useState<BuyerAddressInterface>({
+		line1: "",
+		pincode: "",
+		city: "",
+		state: "",
+	});
+
 	// DECLARING LOCAL STATES END
 
-	// if (getBuyerOrderCartItemsLoading) {
-	// 	return <div>Loading!!!</div>;
-	// }
+	// DECLARING FUNCTIONS
 
-	// if (getBuyerOrderCartItemsError) {
-	// 	return <div>Error!!!</div>;
-	// }
+	function removeItemFromOrderCartLocal(orderCartItemId: string) {
+		// handling optimistic ui
+		const updatedOrderCart = orderCartItems.filter((item) => {
+			return item.id !== orderCartItemId;
+		});
+		setOrderCartItems(updatedOrderCart);
+
+		// initiating mutation request for removing item from order cart DB
+		removeItemFromOrderCart({
+			variables: {
+				orderCartItemId: orderCartItemId,
+			},
+		});
+	}
+
+	// DECLARING FUNCTIONS END
 
 	// STUFF RELATED TO ADDRESS MODAL
 
 	const addressMutationValidationSchema = yup.object({
-		line1: yup.string().required("Address line is required"),
+		line1: yup
+			.string()
+			.required("Address line is required")
+			.test("length", "Enter a shorter address", (val) =>
+				val
+					? val.toString().length <=
+					  constants.ADDRESS_LINE_1_MAX_LENGTH
+					: false
+			),
 		pincode: yup
 			.number()
 			.required("Pincode is required")
-			.test("length", "Should be valid pincode", (val) =>
-				val ? val.toString().length === 6 : false
+			.test("length", "Enter a valid pincode", (val) =>
+				val
+					? val.toString().length === constants.PINCODE_MAX_LENGTH
+					: false
 			),
-		city: yup.string().required("City is required"),
-		state: yup.string().required("State is required"),
+		city: yup
+			.string()
+			.required("City is required")
+			.test("length", "Enter a valid city", (val) =>
+				val
+					? val.toString().length <= constants.CITY_NAME_MAX_LENGTH
+					: false
+			),
+		state: yup
+			.string()
+			.required("State is required")
+			.test("length", "Enter a valid state ", (val) =>
+				val
+					? val.toString().length <= constants.STATE_NAME_MAX_LENGTH
+					: false
+			),
 	});
 
 	const addressMutationFormik = useFormik({
-		initialValues: {
-			line1: "",
-			pincode: "",
-			city: "",
-			state: "",
-		},
+		initialValues: addressMutationFormikInitialValues,
 		validationSchema: addressMutationValidationSchema,
 		onSubmit: (values) => {
 			updateBuyerAddress({
@@ -184,6 +292,7 @@ const Page: React.FC = () => {
 				},
 			});
 		},
+		enableReinitialize: true,
 	});
 
 	const addressModalBody = (
@@ -192,6 +301,8 @@ const Page: React.FC = () => {
 				alignItems: "center",
 				justifyContent: "center",
 				backgroundColor: "#FFFFFF",
+				width: 1000,
+				padding: 20,
 			}}
 		>
 			<form onSubmit={addressMutationFormik.handleSubmit}>
@@ -259,14 +370,35 @@ const Page: React.FC = () => {
 						addressMutationFormik.errors.state
 					}
 				/>
-				<Button
-					color="primary"
-					variant="contained"
-					fullWidth
-					type="submit"
-				>
-					Change Address
-				</Button>
+				<div>
+					<Button
+						color="primary"
+						variant="contained"
+						type="submit"
+						style={{
+							marginTop: 20,
+							justifySelf: "center",
+							alignSelf: "center",
+						}}
+					>
+						Change Address
+					</Button>
+					<Button
+						color="secondary"
+						variant="contained"
+						style={{
+							marginTop: 20,
+							justifySelf: "center",
+							alignSelf: "center",
+							marginLeft: 10,
+						}}
+						onClick={() => {
+							setAddressModalVisible(false);
+						}}
+					>
+						Cancel
+					</Button>
+				</div>
 			</form>
 		</div>
 	);
@@ -395,7 +527,14 @@ const Page: React.FC = () => {
 									</div>
 								</div>
 							</div>
-							<div style={{ width: "5%" }}>Remove</div>
+							<div
+								style={{ width: "5%" }}
+								onClick={() => {
+									removeItemFromOrderCartLocal(item.id);
+								}}
+							>
+								Remove
+							</div>
 						</Paper>
 					);
 				})}
@@ -405,12 +544,19 @@ const Page: React.FC = () => {
 					style={{
 						width: "100%",
 						margin: 20,
-						display: "inline-block",
+						display: "flex",
+						flexDirection: "column",
 						padding: 20,
 					}}
 					elevation={3}
 				>
-					<Typography variant="subtitle1">Order Summary</Typography>
+					<Typography variant="h6" style={{ marginBottom: 10 }}>
+						Order Summary
+					</Typography>
+					<TopicDetailsDivRow
+						title={"dwadawdadadaw"}
+						detail={"dwadawda"}
+					/>
 					<TopicDetailsDivRow
 						title={"dwadawdadadaw"}
 						detail={"dwadawda"}
@@ -418,16 +564,22 @@ const Page: React.FC = () => {
 				</Paper>
 				<Paper
 					elevation={3}
-					style={{ width: "100%", marginTop: 20, padding: 20 }}
+					style={{
+						width: "100%",
+						margin: 20,
+						padding: 20,
+						display: "flex",
+						flexDirection: "column",
+					}}
 				>
 					{getBuyerAddressesData &&
 					getBuyerAddressesData.getBuyerAddresses[0] ? (
-						<div>
+						<React.Fragment>
 							<Typography
-								variant="body1"
-								style={{ fontWeight: "bold" }}
+								variant="h6"
+								style={{ marginBottom: 10 }}
 							>
-								Your address
+								Your shipping address
 							</Typography>
 							<Typography variant="body1">
 								{
@@ -435,25 +587,27 @@ const Page: React.FC = () => {
 										.line1
 								}
 							</Typography>
-							<Typography variant="body1">
-								{
+							<TopicDetailsDivRow
+								title={"City"}
+								detail={
 									getBuyerAddressesData.getBuyerAddresses[0]
 										.city
 								}
-							</Typography>
-							<Typography variant="body1">
-								{
-									getBuyerAddressesData.getBuyerAddresses[0]
-										.state
-								}
-							</Typography>
-							<Typography variant="body1">
-								{
+							/>
+							<TopicDetailsDivRow
+								title={"Pincode"}
+								detail={
 									getBuyerAddressesData.getBuyerAddresses[0]
 										.pincode
 								}
-							</Typography>
-						</div>
+							/>
+							<TopicDetailsDivRow
+								title={"State"}
+								detail={
+									addressMutationFormikInitialValues.state
+								}
+							/>
+						</React.Fragment>
 					) : (
 						<div>No address</div>
 					)}
@@ -469,11 +623,14 @@ const Page: React.FC = () => {
 						>
 							{getBuyerAddressesData &&
 							getBuyerAddressesData.getBuyerAddresses[0]
-								? "Change Address"
+								? "Edit Address"
 								: "Add Address"}
 						</Button>
 					</div>
 				</Paper>
+			</div>
+			<div>
+				{addressMutationFormikInitialValues ? <div /> : undefined}
 			</div>
 			<Modal
 				open={addressModalVisible}
@@ -482,6 +639,11 @@ const Page: React.FC = () => {
 				}}
 				aria-labelledby="simple-modal-title"
 				aria-describedby="simple-modal-description"
+				style={{
+					justifyContent: "center",
+					alignItems: "center",
+					display: "flex",
+				}}
 			>
 				{addressModalBody}
 			</Modal>

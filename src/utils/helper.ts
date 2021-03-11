@@ -4,6 +4,13 @@ export interface FormattedPriceInterface {
 	formattedPriceString: string;
 }
 
+export interface LoginProcessInterface {
+	stage: number;
+	phoneNumber: string;
+	verificationCode: string;
+	authenticationFailed: boolean;
+}
+
 export function formatNumberWithCommas(value: number): string {
 	let amount = String(value);
 	let delimiter = ","; // replace comma if desired
@@ -97,4 +104,18 @@ export function formatPriceValue(price: number): FormattedPriceInterface {
 		formattedPriceString: formattedPrice,
 		formattedPriceCurrency: `\u20B9 ${formattedPrice}`,
 	};
+}
+
+export function getLowestVariantCost(variants: any[]): number | null {
+	if (variants.length === 0) {
+		return null;
+	}
+
+	let lowestPricePoint = variants[0].finalPrice;
+	variants.forEach((variant) => {
+		if (lowestPricePoint > variant.finalPrice) {
+			lowestPricePoint = variant.finalPrice;
+		}
+	});
+	return lowestPricePoint;
 }

@@ -29,7 +29,7 @@ export interface ProductInput {
 }
 
 export interface ProductVariationInput {
-  colourId: number;
+  colourHexCode: string;
   inStock: boolean;
   price: number;
 }
