@@ -1,8 +1,8 @@
 import { gql } from "@apollo/client";
 
 export const GET_CATEGORY_PRODUCTS_FOR_BUYERS = gql`
-	query GetCategoryProductsForBuyers($categoryId: Int!) {
-		getCategoryProductsForBuyers(categoryId: $categoryId) {
+	query GetCategoryProductsForBuyers($categoryName: String!) {
+		getCategoryProductsForBuyers(categoryName: $categoryName) {
 			id
 			name
 			description
@@ -10,20 +10,34 @@ export const GET_CATEGORY_PRODUCTS_FOR_BUYERS = gql`
 			width
 			gsm
 			pattern
-			maxOrderSize
 			minOrderSize
+			referenceId
+			hsnCode
+			taxPercentage
 			variations {
 				id
 				price
 				inStock
 				colourHexCode
-				finalPrice
+				rChannel
+				gChannel
+				bChannel
+				timestamp
 			}
-			productImages {
+			categories {
+				category {
+					id
+					name
+					timestamp
+				}
+			}
+			images {
 				id
 				productId
 				publicId
+				timestamp
 			}
+			timestamp
 		}
 	}
 `;
@@ -38,7 +52,7 @@ export const GET_PRODUCT_CATEGORIES = gql`
 `;
 
 export const GET_PRODUCT_DETAILS = gql`
-	query GetProductDetails($productId: String!) {
+	query GetProductDetails($productId: Int!) {
 		getProductDetails(productId: $productId) {
 			id
 			name
@@ -47,29 +61,34 @@ export const GET_PRODUCT_DETAILS = gql`
 			width
 			gsm
 			pattern
-			maxOrderSize
 			minOrderSize
 			referenceId
+			hsnCode
+			taxPercentage
 			variations {
 				id
 				price
 				inStock
 				colourHexCode
-				finalPrice
+				rChannel
+				gChannel
+				bChannel
+				timestamp
 			}
-			productCategoryRelations {
-				productId
-				productCategoryId
-				productCategory {
-					name
+			categories {
+				category {
 					id
+					name
+					timestamp
 				}
 			}
-			productImages {
+			images {
 				id
 				productId
 				publicId
+				timestamp
 			}
+			timestamp
 		}
 	}
 `;

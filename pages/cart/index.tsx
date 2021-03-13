@@ -188,9 +188,11 @@ const Page: React.FC = (props) => {
 
 	const {} = useQuery<IsBuyerAuthenticated>(IS_BUYER_AUTHENTICATED, {
 		onCompleted() {
+			// @ts-ignore
 			props.onAuthStatusChange(true);
 		},
 		onError(error) {
+			// @ts-ignore
 			props.onAuthStatusChange(false);
 		},
 	});

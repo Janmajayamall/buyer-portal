@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import "../styles/globals.css";
 import { ApolloProvider, useMutation, useQuery } from "@apollo/react-hooks";
 import { client } from "../src/graphql/apollo-client";
-import { useRouter } from "next/router";
+import Router, { useRouter } from "next/router";
 import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
 import AppBar from "@material-ui/core/AppBar";
 import Toolbar from "@material-ui/core/Toolbar";
@@ -172,6 +172,9 @@ function MyApp({ Component, pageProps }: AppProps) {
 
 			// reset login progress state
 			resetLoginProcessState();
+
+			// reload current path page
+			Router.reload();
 		} catch (e) {
 			console.log(e);
 			// authorization failed

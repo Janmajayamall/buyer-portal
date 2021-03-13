@@ -9,33 +9,53 @@
 
 export interface GetCategoryProductsForBuyers_getCategoryProductsForBuyers_variations {
   __typename: "ProductVariationType";
-  id: string;
+  id: number;
   price: number;
   inStock: boolean;
   colourHexCode: string;
-  finalPrice: number;
+  rChannel: number;
+  gChannel: number;
+  bChannel: number;
+  timestamp: string;
 }
 
-export interface GetCategoryProductsForBuyers_getCategoryProductsForBuyers_productImages {
+export interface GetCategoryProductsForBuyers_getCategoryProductsForBuyers_categories_category {
+  __typename: "ProductCategoryType";
+  id: number;
+  name: string;
+  timestamp: string;
+}
+
+export interface GetCategoryProductsForBuyers_getCategoryProductsForBuyers_categories {
+  __typename: "ProductCategorySpecifierFixType";
+  category: GetCategoryProductsForBuyers_getCategoryProductsForBuyers_categories_category;
+}
+
+export interface GetCategoryProductsForBuyers_getCategoryProductsForBuyers_images {
   __typename: "ProductImageType";
-  id: string;
-  productId: string;
+  id: number;
+  productId: number;
   publicId: string;
+  timestamp: string;
 }
 
 export interface GetCategoryProductsForBuyers_getCategoryProductsForBuyers {
   __typename: "ProductType";
-  id: string;
+  id: number;
   name: string;
   description: string;
   clothComposition: string;
   width: number;
   gsm: number;
   pattern: string;
-  maxOrderSize: number;
   minOrderSize: number;
+  referenceId: string | null;
+  hsnCode: string;
+  taxPercentage: number;
   variations: GetCategoryProductsForBuyers_getCategoryProductsForBuyers_variations[];
-  productImages: GetCategoryProductsForBuyers_getCategoryProductsForBuyers_productImages[];
+  categories: GetCategoryProductsForBuyers_getCategoryProductsForBuyers_categories[];
+  images: GetCategoryProductsForBuyers_getCategoryProductsForBuyers_images[];
+  timestamp: string;
 }
 
 export interface GetCategoryProductsForBuyers {
@@ -43,5 +63,5 @@ export interface GetCategoryProductsForBuyers {
 }
 
 export interface GetCategoryProductsForBuyersVariables {
-  categoryId: number;
+  categoryName: string;
 }

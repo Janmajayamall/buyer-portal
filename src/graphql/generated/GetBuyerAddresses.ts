@@ -9,12 +9,12 @@
 
 export interface GetBuyerAddresses_getBuyerAddresses {
   __typename: "BuyerAddressType";
-  id: string;
+  id: number;
   line1: string;
   pincode: string;
   city: string;
   state: string;
-  buyerId: string;
+  buyerId: number;
   timestamp: string;
 }
 

@@ -7,7 +7,6 @@ import { GetProductCategories_getProductCategories } from "../graphql/generated/
 import { useRouter } from "next/router";
 
 type FeatureSideBarProps = {
-	windowSize: number;
 	categories: Array<GetProductCategories_getProductCategories> | null;
 	chosenCategoryId: number;
 };
@@ -19,8 +18,8 @@ export const FeatureSideBar: FunctionComponent<FeatureSideBarProps> = (
 	return (
 		<div
 			style={{
-				width: props.windowSize * 0.25,
-				maxWidth: props.windowSize * 0.25,
+				width: 200,
+				maxWidth: 200,
 				flexGrow: 1,
 				borderRightWidth: 1,
 				borderRightColor: "#DCDCDC",

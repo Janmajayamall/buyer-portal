@@ -111,11 +111,29 @@ export function getLowestVariantCost(variants: any[]): number | null {
 		return null;
 	}
 
-	let lowestPricePoint = variants[0].finalPrice;
+	let lowestPricePoint = variants[0].price;
 	variants.forEach((variant) => {
-		if (lowestPricePoint > variant.finalPrice) {
-			lowestPricePoint = variant.finalPrice;
+		if (lowestPricePoint > variant.price) {
+			lowestPricePoint = variant.price;
 		}
 	});
 	return lowestPricePoint;
+}
+
+export function getHighestVariantCost(variants: any[]): number | null {
+	if (variants.length === 0) {
+		return null;
+	}
+
+	let highPricePoint = variants[0].price;
+	variants.forEach((variant) => {
+		if (highPricePoint < variant.price) {
+			highPricePoint = variant.price;
+		}
+	});
+	return highPricePoint;
+}
+
+export function convertToInt(value: number): number {
+	return Math.round(value);
 }

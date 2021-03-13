@@ -9,48 +9,53 @@
 
 export interface GetProductDetails_getProductDetails_variations {
   __typename: "ProductVariationType";
-  id: string;
+  id: number;
   price: number;
   inStock: boolean;
   colourHexCode: string;
-  finalPrice: number;
+  rChannel: number;
+  gChannel: number;
+  bChannel: number;
+  timestamp: string;
 }
 
-export interface GetProductDetails_getProductDetails_productCategoryRelations_productCategory {
+export interface GetProductDetails_getProductDetails_categories_category {
   __typename: "ProductCategoryType";
-  name: string;
   id: number;
+  name: string;
+  timestamp: string;
 }
 
-export interface GetProductDetails_getProductDetails_productCategoryRelations {
-  __typename: "ProductProductCategoryRelationType";
-  productId: string;
-  productCategoryId: number;
-  productCategory: GetProductDetails_getProductDetails_productCategoryRelations_productCategory | null;
+export interface GetProductDetails_getProductDetails_categories {
+  __typename: "ProductCategorySpecifierFixType";
+  category: GetProductDetails_getProductDetails_categories_category;
 }
 
-export interface GetProductDetails_getProductDetails_productImages {
+export interface GetProductDetails_getProductDetails_images {
   __typename: "ProductImageType";
-  id: string;
-  productId: string;
+  id: number;
+  productId: number;
   publicId: string;
+  timestamp: string;
 }
 
 export interface GetProductDetails_getProductDetails {
   __typename: "ProductType";
-  id: string;
+  id: number;
   name: string;
   description: string;
   clothComposition: string;
   width: number;
   gsm: number;
   pattern: string;
-  maxOrderSize: number;
   minOrderSize: number;
   referenceId: string | null;
+  hsnCode: string;
+  taxPercentage: number;
   variations: GetProductDetails_getProductDetails_variations[];
-  productCategoryRelations: GetProductDetails_getProductDetails_productCategoryRelations[] | null;
-  productImages: GetProductDetails_getProductDetails_productImages[];
+  categories: GetProductDetails_getProductDetails_categories[];
+  images: GetProductDetails_getProductDetails_images[];
+  timestamp: string;
 }
 
 export interface GetProductDetails {
@@ -58,5 +63,5 @@ export interface GetProductDetails {
 }
 
 export interface GetProductDetailsVariables {
-  productId: string;
+  productId: number;
 }

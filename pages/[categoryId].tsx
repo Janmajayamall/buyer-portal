@@ -20,6 +20,8 @@ import {
 	GetProductCategories_getProductCategories,
 } from "../src/graphql/generated/GetProductCategories";
 import { getLowestVariantCost } from "../src/utils";
+import { IsBuyerAuthenticated } from "../src/graphql/generated/IsBuyerAuthenticated";
+import { IS_BUYER_AUTHENTICATED } from "../src/graphql/queries/buyer.graphql";
 
 const useStyles = makeStyles((theme: Theme) =>
 	createStyles({
@@ -35,10 +37,14 @@ const useStyles = makeStyles((theme: Theme) =>
 	})
 );
 
-const Page: React.FC = () => {
+const Page: React.FC = (props) => {
 	const classes = useStyles();
 	const router = useRouter();
-	const chosenCategoryId: string = router.query.categoryId;
+
+	let categoryName = router.query.categoryName;
+	if (categoryName && typeof categoryName !== "string") {
+		categoryName = categoryName[0];
+	}
 
 	// declaring local states
 	const [allProductCategories, setAllProductCategories] = useState<
@@ -56,7 +62,7 @@ const Page: React.FC = () => {
 		GetCategoryProductsForBuyersVariables
 	>(GET_CATEGORY_PRODUCTS_FOR_BUYERS, {
 		variables: {
-			categoryId: Number(chosenCategoryId),
+			categoryName: categoryName as string,
 		},
 		onCompleted({ getCategoryProductsForBuyers }) {
 			console.log(getCategoryProductsForBuyers);
@@ -72,6 +78,17 @@ const Page: React.FC = () => {
 		},
 		onError(error) {
 			console.log(error);
+		},
+	});
+
+	const {} = useQuery<IsBuyerAuthenticated>(IS_BUYER_AUTHENTICATED, {
+		onCompleted() {
+			// @ts-ignore
+			props.onAuthStatusChange(true);
+		},
+		onError(error) {
+			// @ts-ignore
+			props.onAuthStatusChange(false);
 		},
 	});
 	// apollo hooks end
@@ -99,14 +116,14 @@ const Page: React.FC = () => {
 	return (
 		<div style={{ flexDirection: "row", display: "flex" }}>
 			<FeatureSideBar
-				windowSize={window.screen.availWidth}
+				// windowSize={window.screen.availWidth}
 				categories={allProductCategories}
 				chosenCategoryId={Number(chosenCategoryId)}
 			/>
-			<div style={{ width: window.screen.availWidth * 0.7 }}>
+			<div>
 				<Typography variant="h4" gutterBottom>
 					{allProductCategories.map((val) => {
-						if (val.id === Number(chosenCategoryId)) {
+						if (val.id === Number(a)) {
 							return `${val.name} products`;
 						}
 						return undefined;

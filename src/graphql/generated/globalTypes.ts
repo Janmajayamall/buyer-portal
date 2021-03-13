@@ -14,26 +14,6 @@ export interface BuyerAddressInput {
   state: string;
 }
 
-export interface ProductInput {
-  clothComposition: string;
-  description: string;
-  gsm: number;
-  maxOrderSize: number;
-  minOrderSize: number;
-  name: string;
-  pattern: string;
-  productCategoryIds: number[];
-  referenceId?: string | null;
-  referenceImageURL: string;
-  width: number;
-}
-
-export interface ProductVariationInput {
-  colourHexCode: string;
-  inStock: boolean;
-  price: number;
-}
-
 //==============================================================
 // END Enums and Input Objects
 //==============================================================

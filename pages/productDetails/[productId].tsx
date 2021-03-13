@@ -28,12 +28,17 @@ import {
 	formatNumberWithCommas,
 	roundToTwoPlaces,
 	handleNumberInputOnKeyPress,
+	getLowestVariantCost,
+	getHighestVariantCost,
+	convertToInt,
 } from "./../../src/utils";
 import {
-	AddItemToOrderCart,
-	AddItemToOrderCartVariables,
-} from "../../src/graphql/generated/AddItemToOrderCart";
-import { ADD_ITEM_TO_ORDER_CART } from "../../src/graphql/mutations/order-cart.graphql";
+	PlaceNewOrder,
+	PlaceNewOrderVariables,
+} from "../../src/graphql/generated/PlaceNewOrder";
+import { PLACE_NEW_ORDER } from "../../src/graphql/mutations/order.graphl";
+import { IsBuyerAuthenticated } from "../../src/graphql/generated/IsBuyerAuthenticated";
+import { IS_BUYER_AUTHENTICATED } from "../../src/graphql/queries/buyer.graphql";
 
 const useStyles = makeStyles((theme: Theme) =>
 	createStyles({
@@ -48,38 +53,6 @@ const useStyles = makeStyles((theme: Theme) =>
 		},
 	})
 );
-
-function getLowestVariantCost(
-	variants: GetProductDetails_getProductDetails_variations[]
-): number | null {
-	if (variants.length === 0) {
-		return null;
-	}
-
-	let lowestPricePoint = variants[0].finalPrice;
-	variants.forEach((variant) => {
-		if (lowestPricePoint > variant.finalPrice) {
-			lowestPricePoint = variant.finalPrice;
-		}
-	});
-	return lowestPricePoint;
-}
-
-function getHighestVariantCost(
-	variants: GetProductDetails_getProductDetails_variations[]
-): number | null {
-	if (variants.length === 0) {
-		return null;
-	}
-
-	let highPricePoint = variants[0].finalPrice;
-	variants.forEach((variant) => {
-		if (highPricePoint < variant.finalPrice) {
-			highPricePoint = variant.finalPrice;
-		}
-	});
-	return highPricePoint;
-}
 
 const ProductDetailsTopicDetailDiv = ({ title, detail }) => (
 	<div style={{ display: "flex", flexDirection: "row" }}>
@@ -120,15 +93,15 @@ enum MutationRequestState {
 	notInitiated,
 }
 
-const Page: React.FC = () => {
+const Page: React.FC = (props) => {
 	const classes = useStyles();
 	const router = useRouter();
-	let productId: string | string[] = router.query.productId;
 
-	// correcting the type
-	if (productId && typeof productId !== "string") {
-		productId = productId[0];
+	let routerQuery: string | string[] = router.query.productId;
+	if (routerQuery && typeof routerQuery !== "string") {
+		routerQuery = routerQuery[0];
 	}
+	const productId = Number(routerQuery);
 
 	// DECLARING LOCAL STATES
 
@@ -162,11 +135,9 @@ const Page: React.FC = () => {
 		setOrderQuantityInputError,
 	] = useState<boolean>(false);
 
-	// state for tracking addItemToOrderCart mutation request
-	const [
-		addItemToOrderCartRequestState,
-		setAddItemToOrderCartRequestState,
-	] = useState<MutationRequestState>(MutationRequestState.notInitiated);
+	// state for tracking auth state
+	const [authState, setAuthState] = useState<Boolean>(false);
+
 	// DECLARING LOCAL STATES END
 
 	// DECLARING FUNCTIONS
@@ -184,13 +155,13 @@ const Page: React.FC = () => {
 				return;
 			}
 
-			if (pricingTableMapLocal.has(variation.finalPrice)) {
-				const temp = pricingTableMapLocal.get(variation.finalPrice);
+			if (pricingTableMapLocal.has(variation.price)) {
+				const temp = pricingTableMapLocal.get(variation.price);
 				temp.push(variation);
-				pricingTableMapLocal.set(variation.finalPrice, temp);
+				pricingTableMapLocal.set(variation.price, temp);
 			} else {
 				const temp = [variation];
-				pricingTableMapLocal.set(variation.finalPrice, temp);
+				pricingTableMapLocal.set(variation.price, temp);
 			}
 		});
 
@@ -208,7 +179,7 @@ const Page: React.FC = () => {
 
 	// returns totalPrice (i.e. selectedOrderQuantity * pricePerUnit)
 	function getTotalPrice(): FormattedPriceInterface | null {
-		// if selected quantity is zero them return null
+		// if no product variation is selected or selected product quantity is zero then return null
 		if (
 			selectedProductQuantity === "" ||
 			selectedProductVariation === null
@@ -216,8 +187,27 @@ const Page: React.FC = () => {
 			return null;
 		}
 		return formatPriceValue(
-			selectedProductVariation.finalPrice *
-				Number(selectedProductQuantity)
+			selectedProductVariation.price *
+				convertToInt(Number(selectedProductQuantity))
+		);
+	}
+
+	// returns tax on product orders (i.e. tax % * getTotalPrice())
+	function getTotalTax(): FormattedPriceInterface | null {
+		// if no product variation is selected or selected product quantity is zero then return null
+		if (
+			selectedProductQuantity === "" ||
+			selectedProductVariation === null
+		) {
+			return null;
+		}
+
+		const totalPrice = roundToTwoPlaces(
+			selectedProductVariation.price *
+				convertToInt(Number(selectedProductQuantity))
+		);
+		return formatPriceValue(
+			convertToInt(totalPrice * (productDetails.taxPercentage / 100))
 		);
 	}
 
@@ -248,6 +238,23 @@ const Page: React.FC = () => {
 		return true;
 	}
 
+	// place new order location function
+	function placeNewOrderLocal() {
+		// check order details validity
+		if (!checkOrderDetails()) {
+			return;
+		}
+
+		// mutation request for placing the order
+		placeNewOrder({
+			variables: {
+				productId: productDetails.id,
+				productVariationId: selectedProductVariation.id,
+				orderQuantity: convertToInt(Number(selectedProductQuantity)),
+			},
+		});
+	}
+
 	// changes pricing key for pricing table & resets currently selected variation
 	function setSelectedPricingTableMapKeyLocal(key: number) {
 		// change selected pricing table key
@@ -256,27 +263,6 @@ const Page: React.FC = () => {
 		// empty selected variation if any from last key && reset order input field touched value
 		setSelectedProductVariation(null);
 		setOrderQuantityInputError(false);
-	}
-
-	// initiates processing request of adding item to order cart
-	function addItemToOrderCartLocal() {
-		if (
-			!checkOrderDetails() ||
-			addItemToOrderCartRequestState !== MutationRequestState.notInitiated
-		) {
-			return;
-		}
-
-		// set mutation request state to loading
-		setAddItemToOrderCartRequestState(MutationRequestState.loading);
-
-		addItemToOrderCart({
-			variables: {
-				productId: productDetails.id,
-				productVariationId: selectedProductVariation.id,
-				orderQuantitySize: Number(selectedProductQuantity),
-			},
-		});
 	}
 
 	// DECLARING FUNCTIONS END
@@ -291,7 +277,7 @@ const Page: React.FC = () => {
 
 		{
 			variables: {
-				productId: productId as string,
+				productId: productId,
 			},
 			onCompleted({ getProductDetails }) {
 				generatePricingTableMap(getProductDetails.variations);
@@ -301,6 +287,7 @@ const Page: React.FC = () => {
 			},
 		}
 	);
+
 	const {} = useQuery<GetProductCategories>(GET_PRODUCT_CATEGORIES, {
 		onCompleted({ getProductCategories }) {
 			setAllProductCategories(getProductCategories);
@@ -310,18 +297,29 @@ const Page: React.FC = () => {
 		},
 	});
 
-	const [addItemToOrderCart] = useMutation<
-		AddItemToOrderCart,
-		AddItemToOrderCartVariables
-	>(ADD_ITEM_TO_ORDER_CART, {
-		onCompleted({ addItemToOrderCart }) {
-			setAddItemToOrderCartRequestState(MutationRequestState.done);
+	const [placeNewOrder] = useMutation<PlaceNewOrder, PlaceNewOrderVariables>(
+		PLACE_NEW_ORDER,
+		{
+			onCompleted({ placeNewOrder }) {},
+			onError(error) {
+				console.log(error);
+			},
+		}
+	);
+
+	const {} = useQuery<IsBuyerAuthenticated>(IS_BUYER_AUTHENTICATED, {
+		onCompleted() {
+			setAuthState(true);
+			// @ts-ignore
+			props.onAuthStatusChange(true);
 		},
 		onError(error) {
-			setAddItemToOrderCartRequestState(MutationRequestState.error);
-			console.log(error);
+			setAuthState(false);
+			// @ts-ignore
+			props.onAuthStatusChange(false);
 		},
 	});
+
 	// DECLARING APOLLO HOOKS END
 
 	if (getProductDetailsLoading && !getProductDetailsData) {
@@ -336,13 +334,11 @@ const Page: React.FC = () => {
 	return (
 		<div style={{ flexDirection: "row", display: "flex" }}>
 			<FeatureSideBar
-				windowSize={window.screen.availWidth}
 				categories={allProductCategories}
 				chosenCategoryId={null}
 			/>
 			<div
 				style={{
-					width: window.screen.availWidth * 0.7,
 					padding: 20,
 					margin: 5,
 				}}
@@ -427,7 +423,7 @@ const Page: React.FC = () => {
 								}}
 							>
 								{Array.from(pricingTableMap.keys())
-									.sort()
+									.sort((a, b) => a - b)
 									.map((key) => {
 										return (
 											<div
@@ -507,18 +503,9 @@ const Page: React.FC = () => {
 															width: 15,
 															height: 15,
 															backgroundColor:
-																variation.colour
-																	.hexValue,
+																variation.colourHexCode,
 														}}
 													/>
-													<Typography
-														variant="body2"
-														style={{
-															marginLeft: 5,
-														}}
-													>
-														{`#${variation.colour.id}`}
-													</Typography>
 												</div>
 											</Paper>
 										))}
@@ -555,7 +542,7 @@ const Page: React.FC = () => {
 								Number(selectedProductQuantity) <
 									productDetails.minOrderSize &&
 								orderQuantityInputError
-									? `Quantity size should be more than ${productDetails.maxOrderSize} Meters`
+									? `Quantity size should be more than ${productDetails.minOrderSize} Meters`
 									: ""
 							}
 							error={
@@ -583,7 +570,7 @@ const Page: React.FC = () => {
 										return "N/A";
 									}
 									return formatPriceValue(
-										selectedProductVariation.finalPrice
+										selectedProductVariation.price
 									).formattedPriceCurrency;
 								})()}
 							/>
@@ -598,6 +585,17 @@ const Page: React.FC = () => {
 									return totalPrice.formattedPriceCurrency;
 								})()}
 							/>
+							<OrderDetailsTopicDetailDiv
+								title={`Tax (GST - ${productDetails.taxPercentage})`}
+								detail={(() => {
+									const tax = getTotalTax();
+									if (tax === null) {
+										return "N/A";
+									}
+
+									return tax.formattedPriceCurrency;
+								})()}
+							/>
 							<div
 								style={{
 									marginTop: 15,
@@ -605,7 +603,7 @@ const Page: React.FC = () => {
 									flexDirection: "row",
 								}}
 							>
-								{addItemToOrderCartRequestState ===
+								{/* {addItemToOrderCartRequestState ===
 								MutationRequestState.done ? (
 									<Button
 										onClick={() => {
@@ -625,8 +623,17 @@ const Page: React.FC = () => {
 										color="primary"
 									>
 										Add To Cart
+									</Button> */}
+								{/* )} */}
+								{authState === true ? (
+									<Button
+										onClick={placeNewOrderLocal}
+										variant="contained"
+										color="primary"
+									>
+										Place Order
 									</Button>
-								)}
+								) : undefined}
 							</div>
 						</div>
 					</div>
