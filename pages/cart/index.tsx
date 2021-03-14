@@ -538,6 +538,7 @@ const Page: React.FC = (props) => {
 								Remove
 							</div>
 						</Paper>
+					
 					);
 				})}
 			</div>

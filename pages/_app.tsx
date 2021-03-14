@@ -34,6 +34,8 @@ import {
 	BuyerVerifyLoginCodeVariables,
 } from "../src/graphql/generated/BuyerVerifyLoginCode";
 import { GET_CATEGORY_PRODUCTS_FOR_BUYERS } from "../src/graphql/queries/products.graphql";
+import Menu from "@material-ui/core/Menu";
+import MenuItem from "@material-ui/core/MenuItem";
 
 const useStyles = makeStyles((theme: Theme) =>
 	createStyles({
@@ -77,6 +79,9 @@ function MyApp({ Component, pageProps }: AppProps) {
 		setLoginProcessState,
 	] = useState<LoginProcessInterface>(loginProcessDefaultState);
 
+	// state for menu anchor element
+	const [menuAnchorEl, setMenuAnchorEl] = useState<HTMLElement | null>(null);
+
 	// DECLARING LOCAL STATES END
 
 	// DECLARING FUNCTIONS
@@ -87,6 +92,16 @@ function MyApp({ Component, pageProps }: AppProps) {
 		}
 
 		setLoginModalVisible(true);
+	}
+
+	function handleMenuElementClick(
+		event: React.MouseEvent<HTMLButtonElement>
+	) {
+		setMenuAnchorEl(event);
+	}
+
+	function handleMenuClose() {
+		setMenuAnchorEl(null);
 	}
 
 	// DECLARING FUNCTIONS END
@@ -362,15 +377,46 @@ function MyApp({ Component, pageProps }: AppProps) {
 		<ApolloProvider client={client}>
 			<AppBar position="static">
 				<Toolbar>
-					<Button
-						style={{ position: "absolute", right: 10 }}
-						color="inherit"
-						onClick={() => {
-							requestLogin();
-						}}
-					>
-						{authState ? "WELCOME" : "LOGIN"}
-					</Button>
+					<div style={{ position: "absolute", right: 50 }}>
+						{authState ? (
+							<div>
+								<Button
+									aria-controls="simple-menu"
+									aria-haspopup="true"
+									onClick={handleMenuElementClick}
+								>
+									Welcome
+								</Button>
+								<Menu
+									id="simple-menu"
+									anchorEl={menuAnchorEl}
+									keepMounted
+									open={Boolean(menuAnchorEl)}
+									onClose={handleMenuClose}
+								>
+									<MenuItem onClick={handleMenuClose}>
+										Profile
+									</MenuItem>
+									<MenuItem onClick={handleMenuClose}>
+										My account
+									</MenuItem>
+									<MenuItem onClick={handleMenuClose}>
+										Logout
+									</MenuItem>
+								</Menu>
+							</div>
+						) : (
+							<Button
+								style={{ position: "absolute", right: 10 }}
+								color="inherit"
+								onClick={() => {
+									requestLogin();
+								}}
+							>
+								{"LOGIN"}
+							</Button>
+						)}
+					</div>
 				</Toolbar>
 			</AppBar>
 			<Component
@@ -378,6 +424,7 @@ function MyApp({ Component, pageProps }: AppProps) {
 				onAuthStatusChange={(authState: boolean) => {
 					setAuthState(authState);
 				}}
+				requestLogin={requestLogin}
 			/>
 			<Modal
 				open={loginModalVisible}

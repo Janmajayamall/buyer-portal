@@ -633,7 +633,16 @@ const Page: React.FC = (props) => {
 									>
 										Place Order
 									</Button>
-								) : undefined}
+								) : (
+									<Button
+										// @ts-ignore
+										onClick={props.requestLogin}
+										variant="contained"
+										color="primary"
+									>
+										Login to place order
+									</Button>
+								)}
 							</div>
 						</div>
 					</div>
