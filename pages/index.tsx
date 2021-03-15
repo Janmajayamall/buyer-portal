@@ -13,6 +13,8 @@ import {
 	GetCategoryProductsForBuyers_getCategoryProductsForBuyers,
 } from "../src/graphql/generated/GetCategoryProductsForBuyers";
 import { GET_CATEGORY_PRODUCTS_FOR_BUYERS } from "../src/graphql/queries/products.graphql";
+import { ProductGridListing } from "../src/components/productGridListing";
+import Divider from "@material-ui/core/Divider";
 
 const useStyles = makeStyles((theme: Theme) =>
 	createStyles({
@@ -60,55 +62,34 @@ const Page: React.FC = () => {
 
 	// DECLARING APOLLO HOOKS END
 
-	const testData = [...products, ...products, ...products, ...products];
-
 	return (
-		<div style={{ display: "inline-block" }}>
-			<Typography>Trending Products</Typography>
-			{testData.map((val) => {
-				// if (val.variations.length === 0) {
-				// 	return undefined;
-				// }
-				return (
-					<Paper
-						elevation={3}
-						style={{
-							padding: 10,
-							display: "inline-block",
-							maxWidth: 200,
-							justifyContent: "center",
-							alignItems: "center",
-							margin: 10,
-						}}
-						onClick={() => {
-							router.push(`/productDetails/${val.id}`);
-						}}
-					>
-						<Image
-							width="150"
-							height="200"
-							cloudName={"jayeet"}
-							publicId={
-								"https://res.cloudinary.com/jayeet/image/upload/v1614622206/PIM-1583496423927-afea11e0-1270-41e3-8f6b-389a83687b45_v1-small_rfx3ca.jpg"
-							}
-						/>
-						<Typography variant="subtitle2" gutterBottom>
-							{val.description}
-						</Typography>
-						<Typography variant="subtitle2" gutterBottom>
-							{getLowestVariantCost(val.variations)}
-							<span>&#x20B9;</span>
-							<span>{" /M"}</span>
-						</Typography>
-						<Typography variant="subtitle2" gutterBottom>
-							{val.clothComposition}
-						</Typography>
-						<Typography variant="subtitle2" gutterBottom>
-							{`Available in ${val.variations.length} colours`}
-						</Typography>
-					</Paper>
-				);
-			})}
+		<div
+			style={{
+				display: "inline-block",
+				paddingLeft: 50,
+				paddingRight: 50,
+			}}
+		>
+			<Typography
+				variant="h5"
+				style={{
+					fontWeight: "initial",
+					marginLeft: 20,
+				}}
+			>
+				Now Trending
+			</Typography>
+			{products.map((product) => (
+				<ProductGridListing
+					productDetails={product}
+					onClick={() => {
+						window.open(
+							`http://localhost:5000/productDetails/${product.id}`
+						);
+						// router.push(`/productDetails/${product.id}`);
+					}}
+				/>
+			))}
 		</div>
 	);
 };

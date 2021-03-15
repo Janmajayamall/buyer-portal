@@ -1,0 +1,61 @@
+import React, { useState, FunctionComponent } from "react";
+import Typography from "@material-ui/core/Typography";
+import { Image } from "cloudinary-react";
+import { GetCategoryProductsForBuyers_getCategoryProductsForBuyers } from "./../graphql/generated/GetCategoryProductsForBuyers";
+import { getLowestVariantCost } from "../utils";
+
+interface ProductGridListingProps {
+	productDetails: GetCategoryProductsForBuyers_getCategoryProductsForBuyers;
+	onClick: () => void;
+}
+
+export const ProductGridListing: FunctionComponent<ProductGridListingProps> = (
+	props
+) => (
+	<div
+		style={{
+			display: "inline-block",
+			justifyContent: "center",
+			alignItems: "center",
+			textOverflow: "ellipsis",
+			width: 200,
+			margin: 20,
+		}}
+		onClick={props.onClick}
+	>
+		<Image
+			width="200"
+			height="200"
+			cloudName={"jayeet"}
+			publicId={
+				"https://res.cloudinary.com/jayeet/image/upload/v1614622206/PIM-1583496423927-afea11e0-1270-41e3-8f6b-389a83687b45_v1-small_rfx3ca.jpg"
+			}
+		/>
+		<Typography
+			noWrap
+			variant="subtitle2"
+			style={{
+				textOverflow: "ellipsis",
+				width: 200,
+				fontWeight: "initial",
+			}}
+		>
+			{props.productDetails.name}
+		</Typography>
+		<Typography
+			variant="subtitle2"
+			style={{
+				textOverflow: "ellipsis",
+				width: 200,
+				fontWeight: "bold",
+			}}
+		>
+			<span>&#x20B9;</span>
+			{getLowestVariantCost(props.productDetails.variations)}
+			<span>{" / metre"}</span>
+		</Typography>
+		<Typography variant="subtitle2" gutterBottom>
+			{props.productDetails.variations.length}
+		</Typography>
+	</div>
+);
