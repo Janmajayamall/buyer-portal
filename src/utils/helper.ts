@@ -11,6 +11,13 @@ export interface LoginProcessInterface {
 	authenticationFailed: boolean;
 }
 
+export enum OrderStatusSelectFilter {
+	processing,
+	all,
+	delivered,
+	cancelled,
+}
+
 export function formatNumberWithCommas(value: number): string {
 	let amount = String(value);
 	let delimiter = ","; // replace comma if desired

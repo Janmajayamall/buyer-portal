@@ -526,7 +526,14 @@ function MyApp({ Component, pageProps }: AppProps) {
 						}}
 					>
 						<Paper>
-							<ClickAwayListener onClickAway={handleMenuClose}>
+							<ClickAwayListener
+								onClickAway={(event) => {
+									handleMenuClose(
+										event,
+										MenuNavOptions.profile
+									);
+								}}
+							>
 								<MenuList
 									autoFocusItem={isMenuOpen}
 									id="menu-list-grow"
@@ -542,12 +549,32 @@ function MyApp({ Component, pageProps }: AppProps) {
 									>
 										Profile
 									</MenuItem>
-									<MenuItem onClick={handleMenuClose}>
+									<MenuItem
+										onClick={(event) => {
+											handleMenuClose(
+												event,
+												MenuNavOptions.profile
+											);
+										}}
+									>
+										Profile
+									</MenuItem>
+									<MenuItem
+										onClick={(event) => {
+											handleMenuClose(
+												event,
+												MenuNavOptions.profile
+											);
+										}}
+									>
+										Profile
+									</MenuItem>
+									{/* <MenuItem onClick={handleMenuClose}>
 										My account
 									</MenuItem>
 									<MenuItem onClick={handleMenuClose}>
 										Logout
-									</MenuItem>
+									</MenuItem> */}
 								</MenuList>
 							</ClickAwayListener>
 						</Paper>
@@ -569,7 +596,7 @@ function MyApp({ Component, pageProps }: AppProps) {
 					<Toolbar>
 						<div style={{ position: "absolute", right: 50 }}>
 							{authState ? (
-								{ menu }
+								<div>{menu}</div>
 							) : (
 								<Button onClick={requestLogin} variant="text">
 									Login
