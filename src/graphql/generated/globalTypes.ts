@@ -7,9 +7,12 @@
 // START Enums and Input Objects
 //==============================================================
 
-export interface BuyerAddressInput {
+export interface BuyerProfileInput {
+  address: string;
   city: string;
-  line1: string;
+  firstNamePOC: string;
+  gstin: string;
+  lastNamePOC: string;
   pincode: string;
   state: string;
 }

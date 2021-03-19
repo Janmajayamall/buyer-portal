@@ -1,21 +1,25 @@
 import { gql } from "@apollo/client";
 
-export const GET_BUYER_ADDRESSES = gql`
-	query GetBuyerAddresses {
-		getBuyerAddresses {
-			id
-			line1
-			pincode
-			city
-			state
-			buyerId
-			timestamp
-		}
-	}
-`;
-
 export const IS_BUYER_AUTHENTICATED = gql`
 	query IsBuyerAuthenticated {
 		isBuyerAuthenticated
+	}
+`;
+
+export const GET_BUYER_PROFILE = gql`
+	query GetBuyerProfile {
+		getBuyerProfile {
+			buyerId
+			firstNamePOC
+			lastNamePOC
+			address
+			city
+			state
+			pincode
+			gstin
+			gstVerified
+			timestamp
+			lastModifiedTimestamp
+		}
 	}
 `;

@@ -1,12 +1,6 @@
 import { gql } from "@apollo/client";
 import { GRAPHQL_WS } from "subscriptions-transport-ws";
 
-export const UPDATE_BUYER_ADDRESS = gql`
-	mutation UpdateBuyerAddress($buyerAddressInput: BuyerAddressInput!) {
-		updateBuyerAddress(buyerAddressInput: $buyerAddressInput)
-	}
-`;
-
 export const BUYER_REQUEST_LOGIN_VERIFICATION_CODE = gql`
 	mutation BuyerRequestLoginVerificationCode($phoneNumber: String!) {
 		buyerRequestLoginVerificationCode(phoneNumber: $phoneNumber)
@@ -23,6 +17,24 @@ export const BUYER_VERIFY_LOGIN_CODE = gql`
 			verificationCode: $verificationCode
 		) {
 			token
+		}
+	}
+`;
+
+export const UPDATE_BUYER_PROFILE = gql`
+	mutation UpdateBuyerProfile($buyerProfileInput: BuyerProfileInput!) {
+		updateBuyerProfile(buyerProfileInput: $buyerProfileInput) {
+			buyerId
+			firstNamePOC
+			lastNamePOC
+			address
+			city
+			state
+			pincode
+			gstin
+			gstVerified
+			timestamp
+			lastModifiedTimestamp
 		}
 	}
 `;
