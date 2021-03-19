@@ -13,14 +13,7 @@ import {
 	GetProductDetailsVariables,
 	GetProductDetails_getProductDetails_variations,
 } from "../../src/graphql/generated/GetProductDetails";
-import {
-	GET_PRODUCT_CATEGORIES,
-	GET_PRODUCT_DETAILS,
-} from "../../src/graphql/queries/products.graphql";
-import {
-	GetProductCategories,
-	GetProductCategories_getProductCategories,
-} from "../../src/graphql/generated/GetProductCategories";
+import { GET_PRODUCT_DETAILS } from "../../src/graphql/queries/products.graphql";
 import { Divider } from "@material-ui/core";
 import {
 	FormattedPriceInterface,
@@ -106,9 +99,6 @@ const Page: React.FC = (props) => {
 	// DECLARING LOCAL STATES
 
 	// state for storing all queried available product categories
-	const [allProductCategories, setAllProductCategories] = useState<
-		GetProductCategories_getProductCategories[]
-	>([]);
 	const [
 		selectedPricingTableMapKey,
 		setSelectedPricingTableMapKey,
@@ -288,15 +278,6 @@ const Page: React.FC = (props) => {
 		}
 	);
 
-	const {} = useQuery<GetProductCategories>(GET_PRODUCT_CATEGORIES, {
-		onCompleted({ getProductCategories }) {
-			setAllProductCategories(getProductCategories);
-		},
-		onError(error) {
-			console.log(error);
-		},
-	});
-
 	const [placeNewOrder] = useMutation<PlaceNewOrder, PlaceNewOrderVariables>(
 		PLACE_NEW_ORDER,
 		{
@@ -333,10 +314,7 @@ const Page: React.FC = (props) => {
 	const productDetails = getProductDetailsData.getProductDetails;
 	return (
 		<div style={{ flexDirection: "row", display: "flex" }}>
-			<FeatureSideBar
-				categories={allProductCategories}
-				chosenCategoryId={null}
-			/>
+			<FeatureSideBar />
 			<div
 				style={{
 					padding: 20,

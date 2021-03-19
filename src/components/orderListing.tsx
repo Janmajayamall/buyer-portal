@@ -5,6 +5,7 @@ import Paper from "@material-ui/core/Paper";
 import Divider from "@material-ui/core/Divider";
 import { GetOrderListForBuyer_getOrderListForBuyer } from "../graphql/generated/GetOrderListForBuyer";
 import { formatNumberWithCommas, formatPriceValue } from "../utils";
+import Button from "@material-ui/core/Button";
 
 interface OrderListingProps {
 	orderDetails: GetOrderListForBuyer_getOrderListForBuyer;
@@ -36,6 +37,7 @@ export const OrderListing: FunctionComponent<OrderListingProps> = (props) => (
 			flexDirection: "row",
 			padding: 10,
 			margin: 20,
+			justifyContent: "space-between",
 		}}
 	>
 		<div
@@ -84,8 +86,9 @@ export const OrderListing: FunctionComponent<OrderListingProps> = (props) => (
 					detail={props.orderDetails.productPattern}
 				/>
 			</div>
+			{/* <Divider orientation="vertical" flexItem /> */}
 		</div>
-		<Divider orientation="vertical" flexItem />
+
 		<div style={{ display: "flex", flexDirection: "column" }}>
 			<div style={{ display: "flex", flexDirection: "row" }}>
 				<TopicDetailDiv
@@ -117,14 +120,6 @@ export const OrderListing: FunctionComponent<OrderListingProps> = (props) => (
 					}`}
 				/>
 				<TopicDetailDiv
-					title={"GST (8%)"}
-					detail={`${
-						formatPriceValue(props.orderDetails.totalTax)
-							.formattedPriceCurrency
-					}`}
-				/>
-				<TopicDetailDiv title={"Delivery Charge"} detail={"100"} />
-				<TopicDetailDiv
 					title={"Grand Total"}
 					detail={`${
 						formatPriceValue(
@@ -133,18 +128,50 @@ export const OrderListing: FunctionComponent<OrderListingProps> = (props) => (
 						).formattedPriceCurrency
 					}`}
 				/>
+				<TopicDetailDiv
+					title={"GST (8%)"}
+					detail={`${
+						formatPriceValue(props.orderDetails.totalTax)
+							.formattedPriceCurrency
+					}`}
+				/>
+				<TopicDetailDiv title={"Delivery Charges"} detail={"100"} />
 			</div>
 		</div>
-		<Divider orientation="vertical" flexItem />
+		{/* <Divider orientation="vertical" flexItem /> */}
 		<div
 			style={{
 				justifyContent: "center",
 				display: "flex",
 				flexDirection: "column",
+				width: 150,
 			}}
 		>
-			<Typography>Order status</Typography>
-			<Typography>Under Processing</Typography>
+			<div
+				style={{
+					display: "flex",
+					flexDirection: "column",
+					justifyContent: "center",
+					alignItems: "center",
+				}}
+			>
+				<TopicDetailDiv
+					title={"Order Status"}
+					detail={String(
+						props.orderDetails.filterStatus
+					).toUpperCase()}
+				/>
+				<Button
+					onClick={() => {
+						window.open(
+							`http://localhost:5000/productDetails/${props.orderDetails.productId}`
+						);
+					}}
+					variant="outlined"
+				>
+					View Product
+				</Button>
+			</div>
 		</div>
 	</Paper>
 );

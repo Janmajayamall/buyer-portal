@@ -7,14 +7,13 @@ import Paper from "@material-ui/core/Paper";
 import { Image } from "cloudinary-react";
 import { useMutation, useQuery, useLazyQuery } from "@apollo/react-hooks";
 import { getLowestVariantCost } from "../src/utils";
-import {
-	GetCategoryProductsForBuyers,
-	GetCategoryProductsForBuyersVariables,
-	GetCategoryProductsForBuyers_getCategoryProductsForBuyers,
-} from "../src/graphql/generated/GetCategoryProductsForBuyers";
-import { GET_CATEGORY_PRODUCTS_FOR_BUYERS } from "../src/graphql/queries/products.graphql";
+import { GET_PRODUCTS_BY_SEARCH_PHRASE_FOR_BUYERS } from "../src/graphql/queries/products.graphql";
 import { ProductGridListing } from "../src/components/productGridListing";
-import Divider from "@material-ui/core/Divider";
+import {
+	GetProductsBySearchPhraseForBuyers,
+	GetProductsBySearchPhraseForBuyersVariables,
+	GetProductsBySearchPhraseForBuyers_getProductsBySearchPhraseForBuyers,
+} from "../src/graphql/generated/GetProductsBySearchPhraseForBuyers";
 
 const useStyles = makeStyles((theme: Theme) =>
 	createStyles({
@@ -34,26 +33,23 @@ const Page: React.FC = () => {
 	// DECLARING LOCAL STATE
 
 	const [products, setProducts] = useState<
-		GetCategoryProductsForBuyers_getCategoryProductsForBuyers[]
+		GetProductsBySearchPhraseForBuyers_getProductsBySearchPhraseForBuyers[]
 	>([]);
 
 	// DECLARING LOCAL STATE ENDS
 
 	// DECLARING APOLLO HOOKS
 
-	const {
-		error: getCategoryProductsForBuyersError,
-		loading: getCategoryProductsForBuyersLoading,
-	} = useQuery<
-		GetCategoryProductsForBuyers,
-		GetCategoryProductsForBuyersVariables
-	>(GET_CATEGORY_PRODUCTS_FOR_BUYERS, {
+	const {} = useQuery<
+		GetProductsBySearchPhraseForBuyers,
+		GetProductsBySearchPhraseForBuyersVariables
+	>(GET_PRODUCTS_BY_SEARCH_PHRASE_FOR_BUYERS, {
 		variables: {
-			categoryName: "",
+			searchPhrase: "",
 		},
-		onCompleted({ getCategoryProductsForBuyers }) {
-			console.log(getCategoryProductsForBuyers);
-			setProducts(getCategoryProductsForBuyers);
+		onCompleted({ getProductsBySearchPhraseForBuyers }) {
+			console.log(getProductsBySearchPhraseForBuyers);
+			setProducts(getProductsBySearchPhraseForBuyers);
 		},
 		onError(error) {
 			console.log(error);
@@ -79,17 +75,23 @@ const Page: React.FC = () => {
 			>
 				Now Trending
 			</Typography>
-			{products.map((product) => (
-				<ProductGridListing
-					productDetails={product}
-					onClick={() => {
-						window.open(
-							`http://localhost:5000/productDetails/${product.id}`
-						);
-						// router.push(`/productDetails/${product.id}`);
-					}}
-				/>
-			))}
+			{products.map((product) => {
+				if (product.variations.length === 0) {
+					return undefined;
+				}
+
+				return (
+					<ProductGridListing
+						productDetails={product}
+						onClick={() => {
+							window.open(
+								`http://localhost:5000/productDetails/${product.id}`
+							);
+							// router.push(`/productDetails/${product.id}`);
+						}}
+					/>
+				);
+			})}
 		</div>
 	);
 };

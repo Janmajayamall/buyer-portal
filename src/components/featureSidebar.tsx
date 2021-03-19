@@ -3,17 +3,9 @@ import Typography from "@material-ui/core/Typography";
 import { Image } from "cloudinary-react";
 import Divider from "@material-ui/core/Divider";
 import Paper from "@material-ui/core/Paper";
-import { GetProductCategories_getProductCategories } from "../graphql/generated/GetProductCategories";
 import { useRouter } from "next/router";
 
-type FeatureSideBarProps = {
-	categories: Array<GetProductCategories_getProductCategories> | null;
-	chosenCategoryId: number;
-};
-
-export const FeatureSideBar: FunctionComponent<FeatureSideBarProps> = (
-	props
-) => {
+export const FeatureSideBar: FunctionComponent = () => {
 	const router = useRouter();
 	return (
 		<div
@@ -29,14 +21,7 @@ export const FeatureSideBar: FunctionComponent<FeatureSideBarProps> = (
 		>
 			<Typography variant="h6">Other categories</Typography>
 			<div style={{ display: "inline-block" }}>
-				{props.categories.map((val) => {
-					if (
-						props.chosenCategoryId &&
-						val.id === props.chosenCategoryId
-					) {
-						return undefined;
-					}
-
+				{["cotton", "silk", "polyester"].map((val) => {
 					return (
 						<div style={{ display: "inline-block" }}>
 							<Paper
@@ -52,7 +37,7 @@ export const FeatureSideBar: FunctionComponent<FeatureSideBarProps> = (
 									borderRadius: 30,
 								}}
 								elevation={3}
-								onClick={() => router.push(`/${val.id}`)}
+								onClick={() => router.push(`/${val}`)}
 							>
 								<Image
 									width="20"
@@ -63,7 +48,7 @@ export const FeatureSideBar: FunctionComponent<FeatureSideBarProps> = (
 									}
 								/>
 								<Typography variant="caption" display="block">
-									{val.name}
+									{val}
 								</Typography>
 							</Paper>
 						</div>
@@ -71,21 +56,6 @@ export const FeatureSideBar: FunctionComponent<FeatureSideBarProps> = (
 				})}
 			</div>
 			<Divider />
-			<Typography variant="h6">Filters</Typography>
-			{[1, 1, 1, 1, 1, 1, 1, 1, 1].map((val) => {
-				return (
-					<div style={{ padding: 10, display: "inline-block" }}>
-						<Image
-							width="10"
-							height="10"
-							cloudName={"jayeet"}
-							publicId={
-								"https://res.cloudinary.com/jayeet/image/upload/v1614622206/PIM-1583496423927-afea11e0-1270-41e3-8f6b-389a83687b45_v1-small_rfx3ca.jpg"
-							}
-						/>
-					</div>
-				);
-			})}
 		</div>
 	);
 };

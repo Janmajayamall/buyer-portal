@@ -14,13 +14,17 @@ import {
 } from "../../src/graphql/generated/GetOrderListForBuyer";
 import { GET_ORDER_LIST_FOR_BUYER } from "../../src/graphql/queries/order.graphql";
 import {
+	DatabaseOrderStage,
 	formatNumberWithCommas,
 	formatPriceValue,
+	handleNumberInputOnKeyPress,
+	OrderFilterTypes,
 	OrderStatusSelectFilter,
 } from "../../src/utils";
 import { OrderListing } from "../../src/components/orderListing";
 import MenuItem from "@material-ui/core/MenuItem";
 import Select from "@material-ui/core/Select";
+import TextField from "@material-ui/core/TextField";
 
 const useStyles = makeStyles((theme: Theme) =>
 	createStyles({
@@ -52,27 +56,49 @@ const Page: React.FC = (props) => {
 		GetOrderListForBuyer_getOrderListForBuyer[]
 	>([]);
 
-	// state for tracking filter of order status
-	const [
-		orderStatusFilter,
-		setOrderStatusFilter,
-	] = useState<OrderStatusSelectFilter>(OrderStatusSelectFilter.processing);
-
 	// state for filtered order list
 	const [filteredOrderList, setFilteredOrderedList] = useState<
 		GetOrderListForBuyer_getOrderListForBuyer[]
 	>([]);
 
+	// state for tracking active filter type
+	const [activeFilterType, setActiveFilterType] = useState<OrderFilterTypes>(
+		OrderFilterTypes.STATUS
+	);
+
+	// state for tracking filter of order status
+	const [
+		orderStatusFilter,
+		setOrderStatusFilter,
+	] = useState<OrderStatusSelectFilter>(OrderStatusSelectFilter.PROCESSING);
+
+	// state for tracking search order by id
+	const [orderIdSearchPhrase, setOrderIdSearchPhrase] = useState<string>("");
+
 	// DECLARING LOCAL STATE END
 
 	// DECLARING LOCAL EFFECTS
+
+	// effect for filtering orders on the basis of filters
 	useEffect(() => {
-		const filteredOrders = orderList.filter(() => {
-			return true;
+		const filteredOrders = orderList.filter((order) => {
+			if (activeFilterType === OrderFilterTypes.STATUS) {
+				return (
+					orderStatusFilter === OrderStatusSelectFilter.ALL ||
+					//@ts-ignore
+					order.filterStatus === orderStatusFilter
+				);
+			} else if (activeFilterType === OrderFilterTypes.ID) {
+				return orderIdSearchPhrase !== ""
+					? order.id === Number(orderIdSearchPhrase)
+					: true;
+			}
+			return false;
 		});
+
 		setFilteredOrderedList(filteredOrders);
 		return;
-	}, [orderStatusFilter, orderList]);
+	}, [orderStatusFilter, orderList, orderIdSearchPhrase]);
 
 	// DECLARING LOCAL EFFECTS END
 
@@ -93,8 +119,9 @@ const Page: React.FC = (props) => {
 
 	const {} = useQuery<GetOrderListForBuyer>(GET_ORDER_LIST_FOR_BUYER, {
 		onCompleted({ getOrderListForBuyer }) {
-			console.log(getOrderListForBuyer);
-			addOrderStatusToOrders(getOrderListForBuyer);
+			const modOrders = addOrderStatusToOrders(getOrderListForBuyer);
+			setOrderList(modOrders);
+			setOrderStatusFilter(OrderStatusSelectFilter.PROCESSING);
 		},
 		onError(error) {
 			console.log(error);
@@ -107,19 +134,38 @@ const Page: React.FC = (props) => {
 
 	function addOrderStatusToOrders(
 		orders: GetOrderListForBuyer_getOrderListForBuyer[]
-	) {
+	): GetOrderListForBuyer_getOrderListForBuyer[] {
 		const modOrders: GetOrderListForBuyer_getOrderListForBuyer[] = orders.map(
 			(order) => {
+				if (order.orderStage === DatabaseOrderStage.CANCELLED) {
+					return {
+						...order,
+						filterStatus: OrderStatusSelectFilter.CANCELLED,
+					};
+				} else if (order.orderStage === DatabaseOrderStage.DELIVERED) {
+					return {
+						...order,
+						filterStatus: OrderStatusSelectFilter.DELIVERED,
+					};
+				}
 				return {
 					...order,
-					status: OrderStatusSelectFilter.processing,
+					filterStatus: OrderStatusSelectFilter.PROCESSING,
 				};
 			}
 		);
-		setOrderList(modOrders);
-		setOrderStatusFilter(OrderStatusSelectFilter.processing);
+		return modOrders;
 	}
 
+	function resetFilterOfType(type: OrderFilterTypes) {
+		if (type === OrderFilterTypes.ID) {
+			setOrderIdSearchPhrase("");
+			setActiveFilterType(OrderFilterTypes.STATUS);
+		} else if (type === OrderFilterTypes.STATUS) {
+			setOrderStatusFilter(OrderStatusSelectFilter.ALL);
+			setActiveFilterType(OrderFilterTypes.ID);
+		}
+	}
 	// DECLARING FUNCTIONS END
 
 	if (authState === false) {
@@ -128,25 +174,88 @@ const Page: React.FC = (props) => {
 
 	return (
 		<div style={{ paddingLeft: 50, paddingRight: 50, marginTop: 30 }}>
-			<div>
+			<div
+				style={{
+					display: "flex",
+					justifyContent: "space-between",
+					flexDirection: "row",
+				}}
+			>
 				<Typography variant="h4" style={{ marginLeft: 10 }}>
 					Your Orders
 				</Typography>
-				<Select
-					labelId="demo-simple-select-label"
-					id="demo-simple-select"
-					value={"age"}
-					// onChange={() => {}}
+				<div
+					style={{
+						display: "flex",
+						flexDirection: "row",
+					}}
 				>
-					<MenuItem value={10}>Processing</MenuItem>
-					<MenuItem value={20}>All</MenuItem>
-					<MenuItem value={30}>Delivered</MenuItem>
-					<MenuItem value={30}>Cancelled</MenuItem>
-				</Select>
+					<div style={{ marginRight: 30 }}>
+						<Typography
+							variant="subtitle1"
+							style={{ fontWeight: "700" }}
+						>
+							Search by Order Number
+						</Typography>
+						<TextField
+							value={orderIdSearchPhrase}
+							onKeyDown={(e) => {
+								e.preventDefault();
+								handleNumberInputOnKeyPress(
+									orderIdSearchPhrase,
+									e.key,
+									(value: string) => {
+										resetFilterOfType(
+											OrderFilterTypes.STATUS
+										);
+										setOrderIdSearchPhrase(value), false;
+									}
+								);
+							}}
+						/>
+					</div>
+					<div>
+						<Typography
+							variant="subtitle1"
+							style={{ fontWeight: "700" }}
+						>
+							Filter by Order status
+						</Typography>
+						<Select
+							labelId="demo-simple-select-label"
+							id="demo-simple-select"
+							value={orderStatusFilter}
+							style={{ width: 200 }}
+							onChange={(e) => {
+								resetFilterOfType(OrderFilterTypes.ID);
+								setOrderStatusFilter(String(e.target.value));
+							}}
+						>
+							<MenuItem
+								value={OrderStatusSelectFilter.PROCESSING}
+							>
+								Processing
+							</MenuItem>
+							<MenuItem value={OrderStatusSelectFilter.ALL}>
+								All
+							</MenuItem>
+							<MenuItem value={OrderStatusSelectFilter.DELIVERED}>
+								Delivered
+							</MenuItem>
+							<MenuItem value={OrderStatusSelectFilter.CANCELLED}>
+								Cancelled
+							</MenuItem>
+						</Select>
+					</div>
+				</div>
 			</div>
-			{filteredOrderList.map((order) => (
-				<OrderListing orderDetails={order} />
-			))}
+			<div style={{}}>
+				{filteredOrderList.map((order) => (
+					<OrderListing orderDetails={order} />
+					
+
+				))}
+			</div>
 		</div>
 	);
 };

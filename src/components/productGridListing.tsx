@@ -1,11 +1,11 @@
 import React, { useState, FunctionComponent } from "react";
 import Typography from "@material-ui/core/Typography";
 import { Image } from "cloudinary-react";
-import { GetCategoryProductsForBuyers_getCategoryProductsForBuyers } from "./../graphql/generated/GetCategoryProductsForBuyers";
 import { getLowestVariantCost } from "../utils";
+import { GetProductsBySearchPhraseForBuyers_getProductsBySearchPhraseForBuyers } from "../graphql/generated/GetProductsBySearchPhraseForBuyers";
 
 interface ProductGridListingProps {
-	productDetails: GetCategoryProductsForBuyers_getCategoryProductsForBuyers;
+	productDetails: GetProductsBySearchPhraseForBuyers_getProductsBySearchPhraseForBuyers;
 	onClick: () => void;
 }
 

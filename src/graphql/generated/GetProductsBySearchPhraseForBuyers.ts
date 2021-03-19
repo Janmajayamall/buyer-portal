@@ -4,10 +4,10 @@
 // This file was automatically generated and should not be edited.
 
 // ====================================================
-// GraphQL query operation: GetProductDetails
+// GraphQL query operation: GetProductsBySearchPhraseForBuyers
 // ====================================================
 
-export interface GetProductDetails_getProductDetails_variations {
+export interface GetProductsBySearchPhraseForBuyers_getProductsBySearchPhraseForBuyers_variations {
   __typename: "ProductVariationType";
   id: number;
   price: number;
@@ -19,7 +19,7 @@ export interface GetProductDetails_getProductDetails_variations {
   timestamp: string;
 }
 
-export interface GetProductDetails_getProductDetails_images {
+export interface GetProductsBySearchPhraseForBuyers_getProductsBySearchPhraseForBuyers_images {
   __typename: "ProductImageType";
   id: number;
   productId: number;
@@ -27,7 +27,7 @@ export interface GetProductDetails_getProductDetails_images {
   timestamp: string;
 }
 
-export interface GetProductDetails_getProductDetails {
+export interface GetProductsBySearchPhraseForBuyers_getProductsBySearchPhraseForBuyers {
   __typename: "ProductType";
   id: number;
   name: string;
@@ -40,16 +40,16 @@ export interface GetProductDetails_getProductDetails {
   referenceId: string | null;
   hsnCode: string;
   taxPercentage: number;
-  variations: GetProductDetails_getProductDetails_variations[];
-  images: GetProductDetails_getProductDetails_images[];
+  variations: GetProductsBySearchPhraseForBuyers_getProductsBySearchPhraseForBuyers_variations[];
+  images: GetProductsBySearchPhraseForBuyers_getProductsBySearchPhraseForBuyers_images[];
   tags: string[];
   timestamp: string;
 }
 
-export interface GetProductDetails {
-  getProductDetails: GetProductDetails_getProductDetails;
+export interface GetProductsBySearchPhraseForBuyers {
+  getProductsBySearchPhraseForBuyers: GetProductsBySearchPhraseForBuyers_getProductsBySearchPhraseForBuyers[];
 }
 
-export interface GetProductDetailsVariables {
-  productId: number;
+export interface GetProductsBySearchPhraseForBuyersVariables {
+  searchPhrase: string;
 }

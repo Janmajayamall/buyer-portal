@@ -11,11 +11,27 @@ export interface LoginProcessInterface {
 	authenticationFailed: boolean;
 }
 
+export enum OrderFilterTypes {
+	ID = "id",
+	STATUS = "status",
+}
+
 export enum OrderStatusSelectFilter {
-	processing,
-	all,
-	delivered,
-	cancelled,
+	PROCESSING = "processing",
+	ALL = "all",
+	DELIVERED = "delivered",
+	CANCELLED = "cancelled",
+}
+
+// keep it in sync with OrderStage enum in order.entity.ts on the backend
+export enum DatabaseOrderStage {
+	NEW = "new",
+	CANCELLED = "cancelled",
+	UNDER_PROCESS_MANUFACTURER = "under_process_manufacturer",
+	PROCESSED_MANUFACTURER = "processed_manufacturer",
+	UNDER_DELIVERY = "under_delivery",
+	DELIVERED = "delivered",
+	RETURNED = "returned",
 }
 
 export function formatNumberWithCommas(value: number): string {

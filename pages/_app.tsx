@@ -38,7 +38,7 @@ import {
 	BuyerVerifyLoginCode,
 	BuyerVerifyLoginCodeVariables,
 } from "../src/graphql/generated/BuyerVerifyLoginCode";
-import { GET_CATEGORY_PRODUCTS_FOR_BUYERS } from "../src/graphql/queries/products.graphql";
+
 import MenuItem from "@material-ui/core/MenuItem";
 import MenuList from "@material-ui/core/MenuList";
 import ClickAwayListener from "@material-ui/core/ClickAwayListener";
@@ -132,7 +132,7 @@ function MyApp({ Component, pageProps }: AppProps) {
 				router.push("/profile");
 				break;
 			case MenuNavOptions.yourOrders:
-				router.push("/orders");
+				router.push("/order");
 				break;
 			case MenuNavOptions.invoices:
 				router.push("/invoices");
@@ -553,21 +553,21 @@ function MyApp({ Component, pageProps }: AppProps) {
 										onClick={(event) => {
 											handleMenuClose(
 												event,
-												MenuNavOptions.profile
+												MenuNavOptions.yourOrders
 											);
 										}}
 									>
-										Profile
+										Your Orders
 									</MenuItem>
 									<MenuItem
 										onClick={(event) => {
 											handleMenuClose(
 												event,
-												MenuNavOptions.profile
+												MenuNavOptions.logout
 											);
 										}}
 									>
-										Profile
+										Logout
 									</MenuItem>
 									{/* <MenuItem onClick={handleMenuClose}>
 										My account

@@ -1,8 +1,8 @@
 import { gql } from "@apollo/client";
 
-export const GET_CATEGORY_PRODUCTS_FOR_BUYERS = gql`
-	query GetCategoryProductsForBuyers($categoryName: String!) {
-		getCategoryProductsForBuyers(categoryName: $categoryName) {
+export const GET_PRODUCTS_BY_SEARCH_PHRASE_FOR_BUYERS = gql`
+	query GetProductsBySearchPhraseForBuyers($searchPhrase: String!) {
+		getProductsBySearchPhraseForBuyers(searchPhrase: $searchPhrase) {
 			id
 			name
 			description
@@ -24,29 +24,14 @@ export const GET_CATEGORY_PRODUCTS_FOR_BUYERS = gql`
 				bChannel
 				timestamp
 			}
-			categories {
-				category {
-					id
-					name
-					timestamp
-				}
-			}
 			images {
 				id
 				productId
 				publicId
 				timestamp
 			}
+			tags
 			timestamp
-		}
-	}
-`;
-
-export const GET_PRODUCT_CATEGORIES = gql`
-	query GetProductCategories {
-		getProductCategories {
-			id
-			name
 		}
 	}
 `;
@@ -75,19 +60,13 @@ export const GET_PRODUCT_DETAILS = gql`
 				bChannel
 				timestamp
 			}
-			categories {
-				category {
-					id
-					name
-					timestamp
-				}
-			}
 			images {
 				id
 				productId
 				publicId
 				timestamp
 			}
+			tags
 			timestamp
 		}
 	}
