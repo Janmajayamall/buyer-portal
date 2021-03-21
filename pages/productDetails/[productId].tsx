@@ -125,9 +125,6 @@ const Page: React.FC = (props) => {
 		setOrderQuantityInputError,
 	] = useState<boolean>(false);
 
-	// state for tracking auth state
-	const [authState, setAuthState] = useState<Boolean>(false);
-
 	// DECLARING LOCAL STATES END
 
 	// DECLARING FUNCTIONS
@@ -287,19 +284,6 @@ const Page: React.FC = (props) => {
 			},
 		}
 	);
-
-	const {} = useQuery<IsBuyerAuthenticated>(IS_BUYER_AUTHENTICATED, {
-		onCompleted() {
-			setAuthState(true);
-			// @ts-ignore
-			props.onAuthStatusChange(true);
-		},
-		onError(error) {
-			setAuthState(false);
-			// @ts-ignore
-			props.onAuthStatusChange(false);
-		},
-	});
 
 	// DECLARING APOLLO HOOKS END
 
@@ -603,7 +587,8 @@ const Page: React.FC = (props) => {
 										Add To Cart
 									</Button> */}
 								{/* )} */}
-								{authState === true ? (
+								{/* ts-ignore */}
+								{props.authState === true ? (
 									<Button
 										onClick={placeNewOrderLocal}
 										variant="contained"

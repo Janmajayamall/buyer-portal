@@ -136,7 +136,7 @@ const Page: React.FC = (props) => {
 
 	return (
 		<div style={{ paddingLeft: 50, paddingRight: 50, marginTop: 30 }}>
-			<Paper>
+			<Paper variant="outlined" style={{ padding: 20 }}>
 				<Typography variant="h4" component="h2">
 					Profile
 				</Typography>
@@ -257,7 +257,6 @@ const Page: React.FC = (props) => {
 						<Button
 							color="secondary"
 							variant="contained"
-							fullWidth
 							type="button"
 							style={{ marginTop: 2 }}
 							onClick={() => {
@@ -271,7 +270,6 @@ const Page: React.FC = (props) => {
 						<Button
 							color="secondary"
 							variant="contained"
-							fullWidth
 							type="submit"
 						>
 							Save Profile

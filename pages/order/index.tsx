@@ -48,9 +48,6 @@ const Page: React.FC = (props) => {
 
 	// DECLARING LOCAL STATES
 
-	// state for tracking auth state
-	const [authState, setAuthState] = useState<boolean>(false);
-
 	// state for buyer order list
 	const [orderList, setOrderList] = useState<
 		GetOrderListForBuyer_getOrderListForBuyer[]
@@ -104,19 +101,6 @@ const Page: React.FC = (props) => {
 
 	// DECLARING APOLLO HOOKS
 
-	const {} = useQuery<IsBuyerAuthenticated>(IS_BUYER_AUTHENTICATED, {
-		onCompleted() {
-			setAuthState(true);
-			// @ts-ignore
-			props.onAuthStatusChange(true);
-		},
-		onError(error) {
-			setAuthState(false);
-			// @ts-ignore
-			props.onAuthStatusChange(false);
-		},
-	});
-
 	const {} = useQuery<GetOrderListForBuyer>(GET_ORDER_LIST_FOR_BUYER, {
 		onCompleted({ getOrderListForBuyer }) {
 			const modOrders = addOrderStatusToOrders(getOrderListForBuyer);
@@ -168,7 +152,7 @@ const Page: React.FC = (props) => {
 	}
 	// DECLARING FUNCTIONS END
 
-	if (authState === false) {
+	if (props.authState === false) {
 		return <div onClick={props.requestLogin}>Please login to continue</div>;
 	}
 
@@ -252,8 +236,6 @@ const Page: React.FC = (props) => {
 			<div style={{}}>
 				{filteredOrderList.map((order) => (
 					<OrderListing orderDetails={order} />
-					
-
 				))}
 			</div>
 		</div>

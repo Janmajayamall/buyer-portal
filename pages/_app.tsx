@@ -47,6 +47,7 @@ import Popper from "@material-ui/core/Popper";
 import Paper from "@material-ui/core/Paper";
 import { CustomButton } from "../src/components/button";
 import CustomTheme from "./../src/theme";
+import { IS_BUYER_AUTHENTICATED } from "../src/graphql/queries/buyer.graphql";
 
 const useStyles = makeStyles((theme: Theme) =>
 	createStyles({
@@ -110,6 +111,17 @@ function MyApp({ Component, pageProps }: AppProps) {
 	// DECLARING LOCAL STATES END
 
 	// DECLARING FUNCTIONS
+
+	async function checkAuthState() {
+		try {
+			const authState = await client.query({
+				query: IS_BUYER_AUTHENTICATED,
+			});
+			setAuthState(true);
+		} catch (e) {
+			setAuthState(false);
+		}
+	}
 
 	function requestLogin() {
 		if (authState === true) {
@@ -586,6 +598,8 @@ function MyApp({ Component, pageProps }: AppProps) {
 
 	// STUFF RELATED TO LOGIN MODAL ENDS
 
+	checkAuthState();
+
 	return (
 		<ApolloProvider client={client}>
 			<ThemeProvider theme={CustomTheme}>
@@ -607,9 +621,10 @@ function MyApp({ Component, pageProps }: AppProps) {
 				</AppBar>
 				<Component
 					{...pageProps}
-					onAuthStatusChange={(authState: boolean) => {
-						setAuthState(authState);
-					}}
+					// onAuthStatusChange={(authState: boolean) => {
+					// 	setAuthState(authState);
+					// }}
+					authState={authState}
 					requestLogin={requestLogin}
 				/>
 				<Modal

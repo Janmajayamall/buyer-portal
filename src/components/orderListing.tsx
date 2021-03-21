@@ -12,15 +12,19 @@ interface OrderListingProps {
 }
 
 const TopicDetailDiv = ({ title, detail }) => (
-	<div style={{ display: "flex", flexDirection: "column", padding: 10 }}>
-		<Typography
-			variant="subtitle2"
-			style={{ fontWeight: "bold", maxWidth: 150 }}
-		>
+	<div
+		style={{
+			display: "flex",
+			flexDirection: "column",
+			padding: 10,
+			maxWidth: 150,
+		}}
+	>
+		<Typography variant="subtitle2" style={{ fontWeight: "bold" }}>
 			{`${title} `}
 		</Typography>
 		<Typography
-			style={{ wordWrap: "break-word", maxWidth: 150 }}
+			style={{ wordWrap: "break-word" }}
 			variant="body2"
 			display="block"
 		>
@@ -40,55 +44,57 @@ export const OrderListing: FunctionComponent<OrderListingProps> = (props) => (
 			justifyContent: "space-between",
 		}}
 	>
-		<div
-			style={{
-				display: "flex",
-				justifyContent: "center",
-				alignItems: "center",
-			}}
-		>
-			<Image
-				width="100"
-				height="100"
-				cloudName={"jayeet"}
-				publicId={
-					"https://res.cloudinary.com/jayeet/image/upload/v1614622206/PIM-1583496423927-afea11e0-1270-41e3-8f6b-389a83687b45_v1-small_rfx3ca.jpg"
-				}
-			/>
-		</div>
-		<div style={{ display: "flex", flexDirection: "column" }}>
-			<div style={{ display: "flex", flexDirection: "row" }}>
-				<TopicDetailDiv
-					title={"Name"}
-					detail={props.orderDetails.productName}
-				/>
-				<TopicDetailDiv title={"Color"} detail={"% diawda"} />
-				<TopicDetailDiv
-					title={"Cloth Composition"}
-					detail={props.orderDetails.productClothComposition}
+		<div style={{ display: "flex", flexDirection: "row" }}>
+			<div
+				style={{
+					display: "flex",
+					justifyContent: "center",
+					alignItems: "center",
+					padding: 10,
+				}}
+			>
+				<Image
+					width="100"
+					height="100"
+					cloudName={"jayeet"}
+					publicId={
+						"https://res.cloudinary.com/jayeet/image/upload/v1614622206/PIM-1583496423927-afea11e0-1270-41e3-8f6b-389a83687b45_v1-small_rfx3ca.jpg"
+					}
 				/>
 			</div>
-			<div style={{ display: "flex", flexDirection: "row" }}>
-				<TopicDetailDiv
-					title={"Width"}
-					detail={`${formatNumberWithCommas(
-						props.orderDetails.productWidth
-					)} inches`}
-				/>
-				<TopicDetailDiv
-					title={"GSM"}
-					detail={formatNumberWithCommas(
-						props.orderDetails.productGsm
-					)}
-				/>
-				<TopicDetailDiv
-					title={"Pattern"}
-					detail={props.orderDetails.productPattern}
-				/>
+			<div style={{ display: "flex", flexDirection: "column" }}>
+				<div style={{ display: "flex", flexDirection: "row" }}>
+					<TopicDetailDiv
+						title={"Name"}
+						detail={props.orderDetails.productName}
+					/>
+					<TopicDetailDiv title={"Color"} detail={"% diawda"} />
+					<TopicDetailDiv
+						title={"Cloth Composition"}
+						detail={props.orderDetails.productClothComposition}
+					/>
+				</div>
+				<div style={{ display: "flex", flexDirection: "row" }}>
+					<TopicDetailDiv
+						title={"Width"}
+						detail={`${formatNumberWithCommas(
+							props.orderDetails.productWidth
+						)} inches`}
+					/>
+					<TopicDetailDiv
+						title={"GSM"}
+						detail={formatNumberWithCommas(
+							props.orderDetails.productGsm
+						)}
+					/>
+					<TopicDetailDiv
+						title={"Pattern"}
+						detail={props.orderDetails.productPattern}
+					/>
+				</div>
+				{/* <Divider orientation="vertical" flexItem /> */}
 			</div>
-			{/* <Divider orientation="vertical" flexItem /> */}
 		</div>
-
 		<div style={{ display: "flex", flexDirection: "column" }}>
 			<div style={{ display: "flex", flexDirection: "row" }}>
 				<TopicDetailDiv
