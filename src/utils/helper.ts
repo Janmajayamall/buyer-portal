@@ -27,11 +27,8 @@ export enum OrderStatusSelectFilter {
 export enum DatabaseOrderStage {
 	NEW = "new",
 	CANCELLED = "cancelled",
-	UNDER_PROCESS_MANUFACTURER = "under_process_manufacturer",
-	PROCESSED_MANUFACTURER = "processed_manufacturer",
-	UNDER_DELIVERY = "under_delivery",
+	PROCESSING = "processing",
 	DELIVERED = "delivered",
-	RETURNED = "returned",
 }
 
 export function formatNumberWithCommas(value: number): string {

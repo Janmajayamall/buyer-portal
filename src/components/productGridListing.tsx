@@ -52,10 +52,10 @@ export const ProductGridListing: FunctionComponent<ProductGridListingProps> = (
 		>
 			<span>&#x20B9;</span>
 			{getLowestVariantCost(props.productDetails.variations)}
-			<span>{" / metre"}</span>
+			<span>{" /metre"}</span>
 		</Typography>
 		<Typography variant="subtitle2" gutterBottom>
-			{props.productDetails.variations.length}
+			{`Available in ${props.productDetails.variations.length} colours`}
 		</Typography>
 	</div>
 );

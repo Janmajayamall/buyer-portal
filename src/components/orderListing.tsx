@@ -121,23 +121,21 @@ export const OrderListing: FunctionComponent<OrderListingProps> = (props) => (
 				<TopicDetailDiv
 					title={"Order Total"}
 					detail={`${
-						formatPriceValue(props.orderDetails.totalPrice)
+						formatPriceValue(props.orderDetails.orderTotalPrice)
 							.formattedPriceCurrency
-					}`}
-				/>
-				<TopicDetailDiv
-					title={"Grand Total"}
-					detail={`${
-						formatPriceValue(
-							props.orderDetails.totalPrice +
-								props.orderDetails.totalTax
-						).formattedPriceCurrency
 					}`}
 				/>
 				<TopicDetailDiv
 					title={"GST (8%)"}
 					detail={`${
 						formatPriceValue(props.orderDetails.totalTax)
+							.formattedPriceCurrency
+					}`}
+				/>
+				<TopicDetailDiv
+					title={"Grand Total"}
+					detail={`${
+						formatPriceValue(props.orderDetails.grandTotalPrice)
 							.formattedPriceCurrency
 					}`}
 				/>

@@ -7,8 +7,9 @@ export const GET_ORDER_LIST_FOR_BUYER = gql`
 
 			orderQuantity
 			orderStage
-			totalPrice
+			orderTotalPrice
 			totalTax
+			grandTotalPrice
 			buyerId
 			manufacturerId
 			timestamp

@@ -47,23 +47,23 @@ const useStyles = makeStyles((theme: Theme) =>
 	})
 );
 
-const ProductDetailsTopicDetailDiv = ({ title, detail }) => (
-	<div style={{ display: "flex", flexDirection: "row" }}>
-		<Typography
-			variant="body1"
-			style={{ fontWeight: "bold" }}
-			display="block"
-		>
-			{`${title}: `}
-		</Typography>
-		&nbsp;
-		<Typography variant="body1" display="block">
-			{` ${detail}`}
-		</Typography>
-	</div>
-);
+// const TopicDetailDiv = ({ title, detail }) => (
+// 	<div style={{ display: "flex", flexDirection: "row" }}>
+// 		<Typography
+// 			variant="body2"
+// 			style={{ fontWeight: "bold" }}
+// 			display="block"
+// 		>
+// 			{`${title}: `}
+// 		</Typography>
+// 		&nbsp;
+// 		<Typography variant="body2" display="block">
+// 			{` ${detail}`}
+// 		</Typography>
+// 	</div>
+// );
 
-const OrderDetailsTopicDetailDiv = ({ title, detail }) => (
+const TopicDetailDiv = ({ title, detail }) => (
 	<div style={{ display: "flex", flexDirection: "row", marginTop: 10 }}>
 		<Typography
 			variant="body2"
@@ -165,7 +165,7 @@ const Page: React.FC = (props) => {
 	}
 
 	// returns totalPrice (i.e. selectedOrderQuantity * pricePerUnit)
-	function getTotalPrice(): FormattedPriceInterface | null {
+	function getOrderTotal(): FormattedPriceInterface | null {
 		// if no product variation is selected or selected product quantity is zero then return null
 		if (
 			selectedProductQuantity === "" ||
@@ -189,13 +189,34 @@ const Page: React.FC = (props) => {
 			return null;
 		}
 
-		const totalPrice = roundToTwoPlaces(
+		const orderTotal = roundToTwoPlaces(
 			selectedProductVariation.price *
 				convertToInt(Number(selectedProductQuantity))
 		);
 		return formatPriceValue(
-			convertToInt(totalPrice * (productDetails.taxPercentage / 100))
+			convertToInt(orderTotal * (productDetails.taxPercentage / 100))
 		);
+	}
+
+	// returns grand total for the order
+	function getGrandTotal(): FormattedPriceInterface | null {
+		if (
+			selectedProductQuantity === "" ||
+			selectedProductVariation === null
+		) {
+			return null;
+		}
+
+		const orderTotal = roundToTwoPlaces(
+			selectedProductVariation.price *
+				convertToInt(Number(selectedProductQuantity))
+		);
+
+		const totalTax = convertToInt(
+			orderTotal * (productDetails.taxPercentage / 100)
+		);
+
+		return formatPriceValue(orderTotal + totalTax);
 	}
 
 	// returns true if order details are right
@@ -301,6 +322,7 @@ const Page: React.FC = (props) => {
 			<FeatureSideBar />
 			<div
 				style={{
+					marginLeft: 40,
 					padding: 20,
 					margin: 5,
 				}}
@@ -320,42 +342,52 @@ const Page: React.FC = (props) => {
 								{productDetails.name}
 							</Typography>
 							<Typography
-								variant="h5"
+								variant="h6"
 								style={{ fontWeight: "bold" }}
 								display="block"
 							>
-								{`${getLowestVariantCost(
-									productDetails.variations
-								)} /meter - ${getHighestVariantCost(
-									productDetails.variations
-								)} /meter`}
+								{`${
+									formatPriceValue(
+										getLowestVariantCost(
+											productDetails.variations
+										)
+									).formattedPriceCurrency
+								}/meter - ${
+									formatPriceValue(
+										getHighestVariantCost(
+											productDetails.variations
+										)
+									).formattedPriceCurrency
+								}/meter`}
 							</Typography>
 						</div>
-
-						<ProductDetailsTopicDetailDiv
-							title={"Minimum order quantity"}
-							detail={productDetails.minOrderSize}
-						/>
-
-						<ProductDetailsTopicDetailDiv
+						<Typography
+							variant="body2"
+							display="block"
+							style={{ marginTop: 10 }}
+						>
+							{productDetails.description}
+						</Typography>
+						<TopicDetailDiv
 							title={"Pattern"}
 							detail={productDetails.pattern}
 						/>
-						<ProductDetailsTopicDetailDiv
+						<TopicDetailDiv
 							title={"Cloth composition"}
 							detail={productDetails.clothComposition}
 						/>
-						<ProductDetailsTopicDetailDiv
+						<TopicDetailDiv
 							title={"GSM"}
-							detail={productDetails.gsm}
+							detail={`${productDetails.gsm} g/m2`}
 						/>
-						<ProductDetailsTopicDetailDiv
+						<TopicDetailDiv
 							title={"Width"}
-							detail={productDetails.width}
+							detail={`${productDetails.width} inches`}
 						/>
-						<Typography variant="body2" display="block">
-							{productDetails.description}
-						</Typography>
+						<TopicDetailDiv
+							title={"Minimum order quantity"}
+							detail={`${productDetails.minOrderSize} meters`}
+						/>
 					</div>
 				</div>
 
@@ -364,7 +396,7 @@ const Page: React.FC = (props) => {
 						width: "100%",
 						display: "flex",
 						flexDirection: "row",
-						marginTop: 10,
+						marginTop: 20,
 					}}
 				>
 					{Array.from(pricingTableMap.keys()).length !== 0 ? (
@@ -372,8 +404,9 @@ const Page: React.FC = (props) => {
 							style={{
 								width: 400,
 								padding: 10,
-								backgroundColor: "#d3d3d3",
+								backgroundColor: "#ededed",
 							}}
+							elevation={0}
 						>
 							<div
 								style={{
@@ -409,6 +442,7 @@ const Page: React.FC = (props) => {
 															selectedPricingTableMapKey
 																? "red"
 																: "black",
+														fontWeight: "bold",
 													}}
 													variant="body2"
 												>
@@ -438,14 +472,17 @@ const Page: React.FC = (props) => {
 												elevation={0}
 												style={{
 													display: "inline-block",
-													padding: 10,
+													padding: 5,
 													margin: 10,
-													backgroundColor:
+													backgroundColor: "#FFFFFF",
+													borderWidth: 1,
+													borderColor:
 														selectedProductVariation &&
 														selectedProductVariation.id ===
 															variation.id
-															? "#A9A9A9"
+															? "#000000"
 															: "#FFFFFF",
+													borderStyle: "solid",
 												}}
 												onClick={() => {
 													setSelectedProductVariation(
@@ -460,10 +497,10 @@ const Page: React.FC = (props) => {
 													}}
 												>
 													<Paper
-														elevation={3}
+														elevation={0}
 														style={{
-															width: 15,
-															height: 15,
+															width: 25,
+															height: 25,
 															backgroundColor:
 																variation.colourHexCode,
 														}}
@@ -477,135 +514,135 @@ const Page: React.FC = (props) => {
 					) : (
 						<div>No product available</div>
 					)}
-
-					<div
-						style={{
-							width: 250,
-							marginLeft: 20,
-						}}
-					>
+					<div style={{ marginLeft: 20 }}>
 						<Typography variant="h6">Order Details</Typography>
-						<TextField
-							id="order-quantity-size"
-							label="Order Quantity Size"
-							value={selectedProductQuantity}
-							onKeyDown={(e) => {
-								e.preventDefault();
-								handleNumberInputOnKeyPress(
-									String(selectedProductQuantity),
-									e.key,
-									(value: string) => {
-										setSelectedProductQuantity(value);
-									},
-									false
-								);
+						<div
+							style={{
+								display: "flex",
+								flexDirection: "row",
+								marginTop: 10,
 							}}
-							helperText={
-								Number(selectedProductQuantity) <
-									productDetails.minOrderSize &&
-								orderQuantityInputError
-									? `Quantity size should be more than ${productDetails.minOrderSize} Meters`
-									: ""
-							}
-							error={
-								Number(selectedProductQuantity) <
-									productDetails.minOrderSize &&
-								orderQuantityInputError
-							}
-						/>
-						<div>
-							<OrderDetailsTopicDetailDiv
-								title={"Order quantity size"}
-								detail={(() => {
-									if (selectedProductQuantity === "") {
-										return "N/A";
-									}
-									return `${formatNumberWithCommas(
-										Number(selectedProductQuantity)
-									)} meters`;
-								})()}
-							/>
-							<OrderDetailsTopicDetailDiv
-								title={"Price per unit"}
-								detail={(() => {
-									if (selectedProductVariation === null) {
-										return "N/A";
-									}
-									return formatPriceValue(
-										selectedProductVariation.price
-									).formattedPriceCurrency;
-								})()}
-							/>
-							<OrderDetailsTopicDetailDiv
-								title={"Total Price"}
-								detail={(() => {
-									const totalPrice = getTotalPrice();
-									if (totalPrice === null) {
-										return "N/A";
-									}
-
-									return totalPrice.formattedPriceCurrency;
-								})()}
-							/>
-							<OrderDetailsTopicDetailDiv
-								title={`Tax (GST - ${productDetails.taxPercentage})`}
-								detail={(() => {
-									const tax = getTotalTax();
-									if (tax === null) {
-										return "N/A";
-									}
-
-									return tax.formattedPriceCurrency;
-								})()}
-							/>
+						>
 							<div
 								style={{
-									marginTop: 15,
-									display: "flex",
-									flexDirection: "row",
+									width: 250,
 								}}
 							>
-								{/* {addItemToOrderCartRequestState ===
-								MutationRequestState.done ? (
-									<Button
-										onClick={() => {
-											router.push("/cart");
-										}}
-										variant="contained"
-										color="primary"
-									>
-										Go To Cart
-									</Button>
-								) : (
-									<Button
-										onClick={() => {
-											addItemToOrderCartLocal();
-										}}
-										variant="contained"
-										color="primary"
-									>
-										Add To Cart
-									</Button> */}
-								{/* )} */}
-								{/* ts-ignore */}
-								{props.authState === true ? (
-									<Button
-										onClick={placeNewOrderLocal}
-										variant="contained"
-										color="primary"
-									>
-										Place Order
-									</Button>
-								) : (
-									<Button
-										// @ts-ignore
-										onClick={props.requestLogin}
-										variant="contained"
-										color="primary"
-									>
-										Login to place order
-									</Button>
-								)}
+								<TextField
+									id="order-quantity-size"
+									label="Order Quantity Size"
+									value={selectedProductQuantity}
+									onKeyDown={(e) => {
+										e.preventDefault();
+										handleNumberInputOnKeyPress(
+											String(selectedProductQuantity),
+											e.key,
+											(value: string) => {
+												setSelectedProductQuantity(
+													value
+												);
+											},
+											false
+										);
+									}}
+									helperText={
+										Number(selectedProductQuantity) <
+											productDetails.minOrderSize &&
+										orderQuantityInputError
+											? `Quantity size should be more than ${productDetails.minOrderSize} Meters`
+											: ""
+									}
+									error={
+										Number(selectedProductQuantity) <
+											productDetails.minOrderSize &&
+										orderQuantityInputError
+									}
+								/>
+
+								<TopicDetailDiv
+									title={"Order quantity size"}
+									detail={(() => {
+										if (selectedProductQuantity === "") {
+											return "N/A";
+										}
+										return `${formatNumberWithCommas(
+											Number(selectedProductQuantity)
+										)} meters`;
+									})()}
+								/>
+								<TopicDetailDiv
+									title={"Price per unit"}
+									detail={(() => {
+										if (selectedProductVariation === null) {
+											return "N/A";
+										}
+										return formatPriceValue(
+											selectedProductVariation.price
+										).formattedPriceCurrency;
+									})()}
+								/>
+								<div
+									style={{
+										marginTop: 15,
+										display: "flex",
+										flexDirection: "row",
+									}}
+								></div>
+							</div>
+							<div>
+								<TopicDetailDiv
+									title={"Order Total"}
+									detail={(() => {
+										const orderTotal = getOrderTotal();
+										if (orderTotal === null) {
+											return "N/A";
+										}
+
+										return orderTotal.formattedPriceCurrency;
+									})()}
+								/>
+								<TopicDetailDiv
+									title={`Tax (GST - ${productDetails.taxPercentage}%)`}
+									detail={(() => {
+										const tax = getTotalTax();
+										if (tax === null) {
+											return "N/A";
+										}
+
+										return tax.formattedPriceCurrency;
+									})()}
+								/>
+								<TopicDetailDiv
+									title={"Grand Total"}
+									detail={(() => {
+										const grandTotal = getGrandTotal();
+										if (grandTotal === null) {
+											return "N/A";
+										}
+
+										return grandTotal.formattedPriceCurrency;
+									})()}
+								/>
+								<div style={{ marginTop: 20 }}>
+									{props.authState === true ? (
+										<Button
+											onClick={placeNewOrderLocal}
+											variant="contained"
+											color="secondary"
+										>
+											Place Order
+										</Button>
+									) : (
+										<Button
+											// @ts-ignore
+											onClick={props.requestLogin}
+											variant="contained"
+											color="secondary"
+										>
+											Login to place order
+										</Button>
+									)}
+								</div>
 							</div>
 						</div>
 					</div>

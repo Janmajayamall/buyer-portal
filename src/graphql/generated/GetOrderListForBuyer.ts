@@ -20,8 +20,9 @@ export interface GetOrderListForBuyer_getOrderListForBuyer {
   id: number;
   orderQuantity: number;
   orderStage: string;
-  totalPrice: number;
+  orderTotalPrice: number;
   totalTax: number;
+  grandTotalPrice: number;
   buyerId: number;
   manufacturerId: number;
   timestamp: string;
