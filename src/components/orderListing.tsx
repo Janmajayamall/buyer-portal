@@ -40,7 +40,7 @@ export const OrderListing: FunctionComponent<OrderListingProps> = (props) => (
 			display: "flex",
 			flexDirection: "row",
 			padding: 10,
-			margin: 20,
+			marginTop: 20,
 			justifyContent: "space-between",
 		}}
 	>
@@ -116,7 +116,7 @@ export const OrderListing: FunctionComponent<OrderListingProps> = (props) => (
 					} / meter`}
 				/>
 			</div>
-			<Divider />
+			{/* <Divider /> */}
 			<div style={{ display: "flex", flexDirection: "row" }}>
 				<TopicDetailDiv
 					title={"Order Total"}

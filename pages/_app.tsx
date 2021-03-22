@@ -67,7 +67,7 @@ const useStyles = makeStyles((theme: Theme) =>
 enum MenuNavOptions {
 	profile,
 	yourOrders,
-	invoices,
+	payemnts,
 	home,
 	logout,
 }
@@ -146,8 +146,8 @@ function MyApp({ Component, pageProps }: AppProps) {
 			case MenuNavOptions.yourOrders:
 				router.push("/order");
 				break;
-			case MenuNavOptions.invoices:
-				router.push("/invoices");
+			case MenuNavOptions.payemnts:
+				router.push("/payments");
 				break;
 			case MenuNavOptions.logout:
 				// logout
@@ -550,7 +550,21 @@ function MyApp({ Component, pageProps }: AppProps) {
 									autoFocusItem={isMenuOpen}
 									id="menu-list-grow"
 									onKeyDown={handleMenuListKeyDown}
+									style={{
+										backgroundColor: "#FFFFFF",
+										zIndex: 1,
+									}}
 								>
+									<MenuItem
+										onClick={(event) => {
+											handleMenuClose(
+												event,
+												MenuNavOptions.home
+											);
+										}}
+									>
+										Home
+									</MenuItem>
 									<MenuItem
 										onClick={(event) => {
 											handleMenuClose(
@@ -569,7 +583,17 @@ function MyApp({ Component, pageProps }: AppProps) {
 											);
 										}}
 									>
-										Your Orders
+										Orders
+									</MenuItem>
+									<MenuItem
+										onClick={(event) => {
+											handleMenuClose(
+												event,
+												MenuNavOptions.payemnts
+											);
+										}}
+									>
+										Payments
 									</MenuItem>
 									<MenuItem
 										onClick={(event) => {

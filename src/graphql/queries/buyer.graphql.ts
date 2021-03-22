@@ -23,3 +23,19 @@ export const GET_BUYER_PROFILE = gql`
 		}
 	}
 `;
+
+export const GET_BUYER_PAYMENTS = gql`
+	query GetBuyerPayments {
+		getBuyerPayments {
+			orderId
+			buyerId
+			orderTotalPrice
+			totalTax
+			grandTotalPrice
+			dueDate
+			paidStatus
+			timestamp
+			lastModifiedTimestamp
+		}
+	}
+`;

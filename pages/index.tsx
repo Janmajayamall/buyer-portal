@@ -14,6 +14,7 @@ import {
 	GetProductsBySearchPhraseForBuyersVariables,
 	GetProductsBySearchPhraseForBuyers_getProductsBySearchPhraseForBuyers,
 } from "../src/graphql/generated/GetProductsBySearchPhraseForBuyers";
+import NextImage from "next/image";
 
 const useStyles = makeStyles((theme: Theme) =>
 	createStyles({
@@ -56,42 +57,132 @@ const Page: React.FC = () => {
 		},
 	});
 
+	const CategoryRep = () => {
+		return (
+			<Paper
+				style={{
+					display: "inline-block",
+					padding: 10,
+				}}
+				elevation={0}
+				// variant="outlined"
+			>
+				<div
+					style={{
+						height: 50,
+						width: 50,
+						background: "green",
+						borderRadius: 25,
+						marginBottom: 2,
+					}}
+				/>
+				<Typography variant="body2" style={{}}>
+					Shirting
+				</Typography>
+			</Paper>
+		);
+	};
+
 	// DECLARING APOLLO HOOKS END
 
 	return (
 		<div
 			style={{
-				display: "inline-block",
-				paddingLeft: 50,
-				paddingRight: 50,
+				display: "flex",
+				flexDirection: "column",
+				width: "100%",
+				justifyContent: "center",
+				alignItems: "center",
 			}}
 		>
-			<Typography
-				variant="h5"
+			<div
 				style={{
-					fontWeight: "initial",
-					marginLeft: 20,
+					display: "flex",
+					flexDirection: "column",
+					// width: "100%",
+					justifyContent: "center",
+					width: 1100,
+					padding: 50,
 				}}
 			>
-				Now Trending
-			</Typography>
-			{products.map((product) => {
-				if (product.variations.length === 0) {
-					return undefined;
-				}
-
-				return (
-					<ProductGridListing
-						productDetails={product}
-						onClick={() => {
-							window.open(
-								`http://localhost:5000/productDetails/${product.id}`
-							);
-							// router.push(`/productDetails/${product.id}`);
+				<NextImage
+					src="/../public/main_banner.png"
+					alt="me"
+					width="1000"
+					height="250"
+				/>
+				<Paper
+					elevation={3}
+					style={{
+						backgroundColor: "#FFFFFF",
+						marginTop: 20,
+						// display: "inline-block",
+						padding: 10,
+					}}
+				>
+					<div
+						style={{
+							display: "flex",
+							flexDirection: "row",
+							justifyContent: "space-around",
 						}}
-					/>
-				);
-			})}
+					>
+						<CategoryRep />
+						<CategoryRep />
+						<CategoryRep />
+						<CategoryRep />
+						<CategoryRep />
+					</div>
+					<div
+						style={{
+							display: "flex",
+							flexDirection: "row",
+							justifyContent: "space-around",
+							marginTop: 10,
+						}}
+					>
+						<CategoryRep />
+						<CategoryRep />
+						<CategoryRep />
+						<CategoryRep />
+						<CategoryRep />
+					</div>
+				</Paper>
+
+				<div
+					style={{
+						display: "inline-block",
+					}}
+				>
+					<Typography
+						variant="h5"
+						style={{
+							fontWeight: "initial",
+							marginLeft: 20,
+							marginTop: 20,
+						}}
+					>
+						Now Trending
+					</Typography>
+					{products.map((product) => {
+						if (product.variations.length === 0) {
+							return undefined;
+						}
+
+						return (
+							<ProductGridListing
+								productDetails={product}
+								onClick={() => {
+									window.open(
+										`http://localhost:5000/productDetails/${product.id}`
+									);
+									// router.push(`/productDetails/${product.id}`);
+								}}
+							/>
+						);
+					})}
+				</div>
+			</div>
 		</div>
 	);
 };
