@@ -24,6 +24,7 @@ import {
 	getLowestVariantCost,
 	getHighestVariantCost,
 	convertToInt,
+	CommonPageProps,
 } from "./../../src/utils";
 import {
 	PlaceNewOrder,
@@ -86,7 +87,7 @@ enum MutationRequestState {
 	notInitiated,
 }
 
-const Page: React.FC = (props) => {
+const Page: React.FC<CommonPageProps> = ({ authState }) => {
 	const classes = useStyles();
 	const router = useRouter();
 
@@ -630,7 +631,7 @@ const Page: React.FC = (props) => {
 									})()}
 								/>
 								<div style={{ marginTop: 20 }}>
-									{props.authState === true ? (
+									{authState === true ? (
 										<Button
 											onClick={placeNewOrderLocal}
 											variant="contained"

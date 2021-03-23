@@ -17,6 +17,7 @@ import TextField from "@material-ui/core/TextField";
 import { makeStyles, createStyles, Theme } from "@material-ui/core/styles";
 import Button from "@material-ui/core/Button";
 import { FormatQuote } from "@material-ui/icons";
+import { CommonPageProps } from "../src/utils";
 
 const useStyles = makeStyles((theme: Theme) =>
 	createStyles({
@@ -51,7 +52,7 @@ const validationSchema = yup.object({
 	gstin: yup.string().required("GSTIN is required"),
 });
 
-const Page: React.FC = (props) => {
+const Page: React.FC<CommonPageProps> = ({ authState }) => {
 	const classes = useStyles();
 	const router = useRouter();
 

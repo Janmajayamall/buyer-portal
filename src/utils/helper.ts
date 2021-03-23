@@ -4,6 +4,11 @@ export interface FormattedPriceInterface {
 	formattedPriceString: string;
 }
 
+export interface CommonPageProps {
+	authState: boolean;
+	requestLogin: () => void;
+}
+
 export interface LoginProcessInterface {
 	stage: number;
 	phoneNumber: string;

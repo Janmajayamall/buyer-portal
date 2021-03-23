@@ -14,6 +14,7 @@ import {
 } from "../../src/graphql/generated/GetOrderListForBuyer";
 import { GET_ORDER_LIST_FOR_BUYER } from "../../src/graphql/queries/order.graphql";
 import {
+	CommonPageProps,
 	DatabaseOrderStage,
 	formatNumberWithCommas,
 	formatPriceValue,
@@ -42,7 +43,7 @@ const useStyles = makeStyles((theme: Theme) =>
 	})
 );
 
-const Page: React.FC = (props) => {
+const Page: React.FC<CommonPageProps> = ({ authState, requestLogin }) => {
 	const classes = useStyles();
 	const router = useRouter();
 
@@ -152,9 +153,9 @@ const Page: React.FC = (props) => {
 	}
 	// DECLARING FUNCTIONS END
 	// @ts-ignore
-	if (props.authState === false) {
+	if (authState === false) {
 		// @ts-ignore
-		return <div onClick={props.requestLogin}>Please login to continue</div>;
+		return <div onClick={requestLogin}>Please login to continue</div>;
 	}
 
 	return (

@@ -8,7 +8,7 @@ import { formatNumberWithCommas, formatPriceValue } from "../utils";
 import Button from "@material-ui/core/Button";
 
 interface OrderListingProps {
-	orderDetails: GetOrderListForBuyer_getOrderListForBuyer;
+	orderDetails: any;
 }
 
 const TopicDetailDiv = ({ title, detail }) => (

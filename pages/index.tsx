@@ -6,7 +6,7 @@ import Typography from "@material-ui/core/Typography";
 import Paper from "@material-ui/core/Paper";
 import { Image } from "cloudinary-react";
 import { useMutation, useQuery, useLazyQuery } from "@apollo/react-hooks";
-import { getLowestVariantCost } from "../src/utils";
+import { CommonPageProps, getLowestVariantCost } from "../src/utils";
 import { GET_PRODUCTS_BY_SEARCH_PHRASE_FOR_BUYERS } from "../src/graphql/queries/products.graphql";
 import { ProductGridListing } from "../src/components/productGridListing";
 import {
@@ -27,7 +27,7 @@ const useStyles = makeStyles((theme: Theme) =>
 	})
 );
 
-const Page: React.FC = () => {
+const Page: React.FC<CommonPageProps> = ({authState}) => {
 	const classes = useStyles();
 	const router = useRouter();
 
