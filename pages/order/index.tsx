@@ -151,8 +151,9 @@ const Page: React.FC = (props) => {
 		}
 	}
 	// DECLARING FUNCTIONS END
-
+	// @ts-ignore
 	if (props.authState === false) {
+		// @ts-ignore
 		return <div onClick={props.requestLogin}>Please login to continue</div>;
 	}
 
@@ -177,7 +178,7 @@ const Page: React.FC = (props) => {
 					<div style={{ marginRight: 30 }}>
 						<Typography
 							variant="subtitle1"
-							style={{ fontWeight: "700" }}
+							style={{ fontWeight: "bold" }}
 						>
 							Search by Order Number
 						</Typography>
@@ -201,7 +202,7 @@ const Page: React.FC = (props) => {
 					<div>
 						<Typography
 							variant="subtitle1"
-							style={{ fontWeight: "700" }}
+							style={{ fontWeight: "bold" }}
 						>
 							Filter by Order status
 						</Typography>
@@ -212,6 +213,7 @@ const Page: React.FC = (props) => {
 							style={{ width: 200 }}
 							onChange={(e) => {
 								resetFilterOfType(OrderFilterTypes.ID);
+								// @ts-ignore
 								setOrderStatusFilter(String(e.target.value));
 							}}
 						>

@@ -15,7 +15,7 @@ import {
 	GetBuyerPayments_getBuyerPayments,
 } from "../../src/graphql/generated/GetBuyerPayments";
 import { GET_BUYER_PAYMENTS } from "../../src/graphql/queries/buyer.graphql";
-import { Divider, Typography } from "@material-ui/core";
+import { Typography } from "@material-ui/core";
 import { formatPriceValue } from "../../src/utils";
 
 const useStyles = makeStyles({

@@ -2,7 +2,7 @@ import { AppProps } from "next/app";
 import React, { useEffect, useState } from "react";
 
 import "../styles/globals.css";
-import { ApolloProvider, useMutation, useQuery } from "@apollo/react-hooks";
+import { ApolloProvider } from "@apollo/react-hooks";
 import { client } from "../src/graphql/apollo-client";
 import Router, { useRouter } from "next/router";
 import {
@@ -15,9 +15,6 @@ import AppBar from "@material-ui/core/AppBar";
 import Toolbar from "@material-ui/core/Toolbar";
 import Typography from "@material-ui/core/Typography";
 import Button from "@material-ui/core/Button";
-import IconButton from "@material-ui/core/IconButton";
-import MenuIcon from "@material-ui/icons/Menu";
-import { Image } from "cloudinary-react";
 import Modal from "@material-ui/core/Modal";
 import {
 	handleNumberInputOnKeyPress,
@@ -27,17 +24,9 @@ import TextField from "@material-ui/core/TextField";
 import InputAdornment from "@material-ui/core/InputAdornment";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import {
-	BuyerRequestLoginVerificationCode,
-	BuyerRequestLoginVerificationCodeVariables,
-} from "../src/graphql/generated/BuyerRequestLoginVerificationCode";
-import {
 	BUYER_REQUEST_LOGIN_VERIFICATION_CODE,
 	BUYER_VERIFY_LOGIN_CODE,
 } from "../src/graphql/mutations/buyer.graphql";
-import {
-	BuyerVerifyLoginCode,
-	BuyerVerifyLoginCodeVariables,
-} from "../src/graphql/generated/BuyerVerifyLoginCode";
 import CustomTheme from "./../src/theme";
 import { IS_BUYER_AUTHENTICATED } from "../src/graphql/queries/buyer.graphql";
 
@@ -56,14 +45,6 @@ const useStyles = makeStyles((theme: Theme) =>
 	})
 );
 
-enum MenuNavOptions {
-	myProfile,
-	myOrders,
-	myInvoices,
-	home,
-	logout,
-}
-
 const loginProcessDefaultState: LoginProcessInterface = {
 	stage: 0,
 	phoneNumber: "",
@@ -74,9 +55,6 @@ const loginProcessDefaultState: LoginProcessInterface = {
 function MyApp({ Component, pageProps }: AppProps) {
 	const router = useRouter();
 	const classes = useStyles();
-
-	// menu anchor ref
-	const menuAnchorRef = React.useRef<HTMLButtonElement>(null);
 
 	// DECLARING LOCAL STATES
 
@@ -631,6 +609,17 @@ function MyApp({ Component, pageProps }: AppProps) {
 }
 
 export default MyApp;
+
+// enum MenuNavOptions {
+// 	myProfile,
+// 	myOrders,
+// 	myInvoices,
+// 	home,
+// 	logout,
+// }
+
+// // menu anchor ref
+// const menuAnchorRef = React.useRef<HTMLButtonElement>(null);
 
 // import MenuItem from "@material-ui/core/MenuItem";
 // import MenuList from "@material-ui/core/MenuList";

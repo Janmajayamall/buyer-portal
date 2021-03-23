@@ -1,15 +1,9 @@
 import React, { useState } from "react";
 import { useRouter } from "next/router";
 import { makeStyles, Theme, createStyles } from "@material-ui/core/styles";
-import Paper from "@material-ui/core/Paper";
-import { Image } from "cloudinary-react";
-import Typography from "@material-ui/core/Typography";
-import { useMutation, useQuery, useLazyQuery } from "@apollo/react-hooks";
+import { useQuery } from "@apollo/react-hooks";
 import { GET_PRODUCTS_BY_SEARCH_PHRASE_FOR_BUYERS } from "../src/graphql/queries/products.graphql";
 import { FeatureSideBar } from "../src/components/featureSidebar";
-import { getLowestVariantCost } from "../src/utils";
-import { IsBuyerAuthenticated } from "../src/graphql/generated/IsBuyerAuthenticated";
-import { IS_BUYER_AUTHENTICATED } from "../src/graphql/queries/buyer.graphql";
 import {
 	GetProductsBySearchPhraseForBuyers,
 	GetProductsBySearchPhraseForBuyersVariables,

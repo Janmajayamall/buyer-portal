@@ -14,12 +14,7 @@ import {
 import { UPDATE_BUYER_PROFILE } from "../src/graphql/mutations/buyer.graphql";
 import { Paper } from "@material-ui/core";
 import TextField from "@material-ui/core/TextField";
-import {
-	makeStyles,
-	createStyles,
-	useTheme,
-	Theme,
-} from "@material-ui/core/styles";
+import { makeStyles, createStyles, Theme } from "@material-ui/core/styles";
 import Button from "@material-ui/core/Button";
 import { FormatQuote } from "@material-ui/icons";
 
