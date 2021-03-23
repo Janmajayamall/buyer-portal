@@ -318,13 +318,19 @@ const Page: React.FC = (props) => {
 
 	const productDetails = getProductDetailsData.getProductDetails;
 	return (
-		<div style={{ flexDirection: "row", display: "flex" }}>
-			<FeatureSideBar />
+		<div
+			style={{
+				// flexDirection: "row",
+				display: "flex",
+				justifyContent: "center",
+			}}
+		>
 			<div
 				style={{
 					marginLeft: 40,
 					padding: 20,
 					margin: 5,
+					width: 800,
 				}}
 			>
 				<div style={{ display: "flex", flexDirection: "row" }}>

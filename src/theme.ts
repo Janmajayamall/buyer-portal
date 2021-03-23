@@ -7,7 +7,7 @@ export default createMuiTheme({
 			main: "#000000",
 		},
 		secondary: {
-			main: "#cf1020",
+			main: "#FF976B",
 		},
 		error: {
 			main: red.A400,

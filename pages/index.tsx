@@ -59,6 +59,15 @@ const Page: React.FC = () => {
 
 	const CategoryRep = () => {
 		return (
+			<NextImage
+				src="/../public/categories/Cotton.png"
+				alt="me"
+				width="150"
+				height="100"
+			/>
+		);
+
+		return (
 			<Paper
 				style={{
 					display: "inline-block",
@@ -90,101 +99,134 @@ const Page: React.FC = () => {
 			style={{
 				display: "flex",
 				flexDirection: "column",
-				width: "100%",
+				// width: "100%",
 				justifyContent: "center",
-				alignItems: "center",
+				// width: 1200,
+				// padding: 50,
 			}}
 		>
-			<div
+			<NextImage
+				src="/../public/main_banner.png"
+				alt="me"
+				width="1200"
+				height="497"
+			/>
+			<NextImage
+				src="/../public/features.png"
+				alt="me"
+				width="1200"
+				height="120"
+			/>
+			<Paper
 				style={{
-					display: "flex",
-					flexDirection: "column",
-					// width: "100%",
-					justifyContent: "center",
-					width: 1100,
-					padding: 50,
+					width: "90%",
+					alignSelf: "center",
+					marginTop: 30,
+					padding: 20,
 				}}
+				elevation={3}
 			>
-				<NextImage
-					src="/../public/main_banner.png"
-					alt="me"
-					width="1000"
-					height="250"
-				/>
-				<Paper
-					elevation={3}
-					style={{
-						backgroundColor: "#FFFFFF",
-						marginTop: 20,
-						// display: "inline-block",
-						padding: 10,
-					}}
-				>
-					<div
-						style={{
-							display: "flex",
-							flexDirection: "row",
-							justifyContent: "space-around",
-						}}
-					>
-						<CategoryRep />
-						<CategoryRep />
-						<CategoryRep />
-						<CategoryRep />
-						<CategoryRep />
-					</div>
-					<div
-						style={{
-							display: "flex",
-							flexDirection: "row",
-							justifyContent: "space-around",
-							marginTop: 10,
-						}}
-					>
-						<CategoryRep />
-						<CategoryRep />
-						<CategoryRep />
-						<CategoryRep />
-						<CategoryRep />
-					</div>
-				</Paper>
-
 				<div
 					style={{
-						display: "inline-block",
+						display: "flex",
+						flexDirection: "row",
+						justifyContent: "space-around",
 					}}
 				>
-					<Typography
-						variant="h5"
-						style={{
-							fontWeight: "initial",
-							marginLeft: 20,
-							marginTop: 20,
-						}}
-					>
-						Now Trending
-					</Typography>
-					{products.map((product) => {
-						if (product.variations.length === 0) {
-							return undefined;
-						}
-
-						return (
-							<ProductGridListing
-								productDetails={product}
-								onClick={() => {
-									window.open(
-										`http://localhost:5000/productDetails/${product.id}`
-									);
-									// router.push(`/productDetails/${product.id}`);
-								}}
-							/>
-						);
-					})}
+					<CategoryRep />
+					<CategoryRep />
+					<CategoryRep />
+					<CategoryRep />
+					<CategoryRep />
 				</div>
+				<div
+					style={{
+						display: "flex",
+						flexDirection: "row",
+						justifyContent: "space-around",
+						marginTop: 20,
+					}}
+				>
+					<CategoryRep />
+					<CategoryRep />
+					<CategoryRep />
+					<CategoryRep />
+					<CategoryRep />
+				</div>
+			</Paper>
+
+			<div
+				style={{
+					display: "inline-block",
+				}}
+			>
+				<Typography
+					variant="h5"
+					style={{
+						fontWeight: "initial",
+						marginLeft: 20,
+						marginTop: 20,
+					}}
+				>
+					Trending Now
+				</Typography>
+				{products.map((product) => {
+					if (product.variations.length === 0) {
+						return undefined;
+					}
+
+					return (
+						<ProductGridListing
+							productDetails={product}
+							onClick={() => {
+								window.open(
+									`http://localhost:5000/productDetails/${product.id}`
+								);
+							}}
+						/>
+					);
+				})}
 			</div>
 		</div>
 	);
 };
 
 export default Page;
+
+// <Paper
+// 	elevation={3}
+// 	style={{
+// 		backgroundColor: "#FFFFFF",
+// 		marginTop: 20,
+// 		// display: "inline-block",
+// 		padding: 10,
+// 	}}
+// >
+// 	<div
+// 		style={{
+// 			display: "flex",
+// 			flexDirection: "row",
+// 			justifyContent: "space-around",
+// 		}}
+// 	>
+// 		<CategoryRep />
+// 		<CategoryRep />
+// 		<CategoryRep />
+// 		<CategoryRep />
+// 		<CategoryRep />
+// 	</div>
+// 	<div
+// 		style={{
+// 			display: "flex",
+// 			flexDirection: "row",
+// 			justifyContent: "space-around",
+// 			marginTop: 10,
+// 		}}
+// 	>
+// 		<CategoryRep />
+// 		<CategoryRep />
+// 		<CategoryRep />
+// 		<CategoryRep />
+// 		<CategoryRep />
+// 	</div>
+// </Paper>;

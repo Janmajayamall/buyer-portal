@@ -13,7 +13,6 @@ import {
 	GetBuyerOrderCartItems,
 	GetBuyerOrderCartItems_getBuyerOrderCartItems,
 } from "../../src/graphql/generated/GetBuyerOrderCartItems";
-import { GET_BUYER_ORDER_CART_ITEMS } from "../../src/graphql/queries/order-cart.graphql";
 import {
 	constants,
 	formatNumberWithCommas,
@@ -21,11 +20,9 @@ import {
 } from "../../src/utils";
 import { GetBuyerAddresses } from "../../src/graphql/generated/GetBuyerAddresses";
 import {
-	GET_BUYER_ADDRESSES,
 	IS_BUYER_AUTHENTICATED,
 } from "../../src/graphql/queries/buyer.graphql";
 import { UpdateBuyerAddress } from "../../src/graphql/generated/UpdateBuyerAddress";
-import { UPDATE_BUYER_ADDRESS } from "../../src/graphql/mutations/buyer.graphql";
 import Modal from "@material-ui/core/Modal";
 import {
 	RemoveItemFromOrderCart,

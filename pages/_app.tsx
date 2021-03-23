@@ -38,14 +38,6 @@ import {
 	BuyerVerifyLoginCode,
 	BuyerVerifyLoginCodeVariables,
 } from "../src/graphql/generated/BuyerVerifyLoginCode";
-
-import MenuItem from "@material-ui/core/MenuItem";
-import MenuList from "@material-ui/core/MenuList";
-import ClickAwayListener from "@material-ui/core/ClickAwayListener";
-import Grow from "@material-ui/core/Grow";
-import Popper from "@material-ui/core/Popper";
-import Paper from "@material-ui/core/Paper";
-import { CustomButton } from "../src/components/button";
 import CustomTheme from "./../src/theme";
 import { IS_BUYER_AUTHENTICATED } from "../src/graphql/queries/buyer.graphql";
 
@@ -65,9 +57,9 @@ const useStyles = makeStyles((theme: Theme) =>
 );
 
 enum MenuNavOptions {
-	profile,
-	yourOrders,
-	payemnts,
+	myProfile,
+	myOrders,
+	myInvoices,
 	home,
 	logout,
 }
@@ -100,9 +92,6 @@ function MyApp({ Component, pageProps }: AppProps) {
 		setLoginProcessState,
 	] = useState<LoginProcessInterface>(loginProcessDefaultState);
 
-	// state for menu open
-	const [isMenuOpen, setMenuOpen] = React.useState(false);
-
 	// state for resend code time left
 	const [resendCodeTimeLeft, setResendCodeTimeLeft] = React.useState<number>(
 		0
@@ -131,62 +120,9 @@ function MyApp({ Component, pageProps }: AppProps) {
 		setLoginModalVisible(true);
 	}
 
-	function handleMenuClose(
-		event: React.MouseEvent<EventTarget>,
-		chosenOption: MenuNavOptions
-	) {
-		// navigate to the option
-		switch (chosenOption) {
-			case MenuNavOptions.home:
-				router.push("/");
-				break;
-			case MenuNavOptions.profile:
-				router.push("/profile");
-				break;
-			case MenuNavOptions.yourOrders:
-				router.push("/order");
-				break;
-			case MenuNavOptions.payemnts:
-				router.push("/payments");
-				break;
-			case MenuNavOptions.logout:
-				// logout
-				console.log("user requested to log out");
-		}
-
-		if (
-			menuAnchorRef.current &&
-			menuAnchorRef.current.contains(event.target as HTMLElement)
-		) {
-			return;
-		}
-
-		setMenuOpen(false);
-	}
-
-	function handleMenuToggle() {
-		setMenuOpen((prevOpen) => !prevOpen);
-	}
-
-	function handleMenuListKeyDown(event: React.KeyboardEvent) {
-		if (event.key === "Tab") {
-			event.preventDefault();
-			setMenuOpen(false);
-		}
-	}
-
 	// DECLARING FUNCTIONS END
 
 	// DECLARING EFFECTS
-
-	const prevMenuOpen = React.useRef(isMenuOpen);
-	useEffect(() => {
-		if (prevMenuOpen.current === true && isMenuOpen === false) {
-			menuAnchorRef.current!.focus();
-		}
-
-		prevMenuOpen.current = isMenuOpen;
-	});
 
 	useEffect(() => {
 		// if time reaches zero then return
@@ -364,6 +300,12 @@ function MyApp({ Component, pageProps }: AppProps) {
 						flexDirection: "column",
 					}}
 				>
+					<Typography
+						variant={"subtitle1"}
+						style={{ alignSelf: "center", marginBottom: 20 }}
+					>
+						Enter your 10-digit mobile number to Login
+					</Typography>
 					<TextField
 						fullWidth
 						id="phoneNumber"
@@ -402,6 +344,7 @@ function MyApp({ Component, pageProps }: AppProps) {
 							marginTop: 20,
 							justifySelf: "center",
 							alignSelf: "center",
+							color: "#ffffff",
 						}}
 					>
 						{loginProcessState.stage === 1 ? (
@@ -513,110 +456,40 @@ function MyApp({ Component, pageProps }: AppProps) {
 	const menu = (
 		<div>
 			<Button
-				ref={menuAnchorRef}
-				aria-controls={isMenuOpen ? "menu-list-grow" : undefined}
-				aria-haspopup="true"
-				onClick={handleMenuToggle}
+				onClick={() => {
+					router.push("/");
+				}}
 			>
-				Welcome
+				Home
 			</Button>
-			<Popper
-				open={isMenuOpen}
-				anchorEl={menuAnchorRef.current}
-				role={undefined}
-				transition
-				disablePortal
+			<Button
+				onClick={() => {
+					router.push("/order");
+				}}
 			>
-				{({ TransitionProps, placement }) => (
-					<Grow
-						{...TransitionProps}
-						style={{
-							transformOrigin:
-								placement === "bottom"
-									? "center top"
-									: "center bottom",
-						}}
-					>
-						<Paper>
-							<ClickAwayListener
-								onClickAway={(event) => {
-									handleMenuClose(
-										event,
-										MenuNavOptions.profile
-									);
-								}}
-							>
-								<MenuList
-									autoFocusItem={isMenuOpen}
-									id="menu-list-grow"
-									onKeyDown={handleMenuListKeyDown}
-									style={{
-										backgroundColor: "#FFFFFF",
-										zIndex: 1,
-									}}
-								>
-									<MenuItem
-										onClick={(event) => {
-											handleMenuClose(
-												event,
-												MenuNavOptions.home
-											);
-										}}
-									>
-										Home
-									</MenuItem>
-									<MenuItem
-										onClick={(event) => {
-											handleMenuClose(
-												event,
-												MenuNavOptions.profile
-											);
-										}}
-									>
-										Profile
-									</MenuItem>
-									<MenuItem
-										onClick={(event) => {
-											handleMenuClose(
-												event,
-												MenuNavOptions.yourOrders
-											);
-										}}
-									>
-										Orders
-									</MenuItem>
-									<MenuItem
-										onClick={(event) => {
-											handleMenuClose(
-												event,
-												MenuNavOptions.payemnts
-											);
-										}}
-									>
-										Payments
-									</MenuItem>
-									<MenuItem
-										onClick={(event) => {
-											handleMenuClose(
-												event,
-												MenuNavOptions.logout
-											);
-										}}
-									>
-										Logout
-									</MenuItem>
-									{/* <MenuItem onClick={handleMenuClose}>
-										My account
-									</MenuItem>
-									<MenuItem onClick={handleMenuClose}>
-										Logout
-									</MenuItem> */}
-								</MenuList>
-							</ClickAwayListener>
-						</Paper>
-					</Grow>
-				)}
-			</Popper>
+				My Orders
+			</Button>
+			<Button
+				onClick={() => {
+					router.push("/payments");
+				}}
+			>
+				My Invoices
+			</Button>
+			<Button
+				onClick={() => {
+					router.push("/profile");
+				}}
+			>
+				My Profile
+			</Button>
+			<Button
+				onClick={() => {
+					router.push("/");
+				}}
+			>
+				Logout
+			</Button>
 		</div>
 	);
 
@@ -632,7 +505,15 @@ function MyApp({ Component, pageProps }: AppProps) {
 					position="static"
 				>
 					<Toolbar>
-						<div style={{ position: "absolute", right: 50 }}>
+						<div
+							style={{
+								position: "absolute",
+								right: 50,
+								minWidth: 500,
+								display: "flex",
+								justifyContent: "flex-end",
+							}}
+						>
 							{authState ? (
 								<div>{menu}</div>
 							) : (
@@ -643,14 +524,91 @@ function MyApp({ Component, pageProps }: AppProps) {
 						</div>
 					</Toolbar>
 				</AppBar>
-				<Component
-					{...pageProps}
-					// onAuthStatusChange={(authState: boolean) => {
-					// 	setAuthState(authState);
-					// }}
-					authState={authState}
-					requestLogin={requestLogin}
-				/>
+				<div
+					style={{
+						width: "100%",
+						display: "flex",
+						justifyContent: "center",
+						alignItems: "center",
+					}}
+				>
+					<div
+						style={{
+							width: 1200,
+							// display: "flex",
+							// justifyContent: "center",
+							// alignItems: "center",
+						}}
+					>
+						<Component
+							{...pageProps}
+							// onAuthStatusChange={(authState: boolean) => {
+							// 	setAuthState(authState);
+							// }}
+							authState={authState}
+							requestLogin={requestLogin}
+						/>
+					</div>
+				</div>
+				<div style={{ width: "100%" }}>
+					<div
+						style={{
+							width: 1200,
+							display: "flex",
+							flexDirection: "row",
+							padding: 20,
+							backgroundColor: "#FF976B",
+							justifyContent: "space-around",
+						}}
+					>
+						<div
+							style={{
+								display: "flex",
+								flexDirection: "column",
+							}}
+						>
+							<Typography
+								variant="h6"
+								style={{ color: "#ffffff" }}
+							>
+								Contact Us
+							</Typography>
+							<Typography
+								variant="subtitle2"
+								style={{ color: "#ffffff" }}
+							>
+								Email: janmajaya.choithram@gmail.com
+							</Typography>
+							<Typography
+								variant="subtitle2"
+								style={{ color: "#ffffff" }}
+							>
+								Whatsapp: +85254906535
+							</Typography>
+						</div>
+
+						<div
+							style={{
+								display: "flex",
+								flexDirection: "column",
+							}}
+						>
+							<Typography
+								variant="h6"
+								style={{ color: "#ffffff" }}
+							>
+								Manufacturers
+							</Typography>
+							<Typography
+								variant="subtitle2"
+								style={{ color: "#ffffff" }}
+							>
+								To become our manufacturing partner, contact us
+								with your business details.
+							</Typography>
+						</div>
+					</div>
+				</div>
 				<Modal
 					open={loginModalVisible}
 					onClose={() => {
@@ -673,3 +631,165 @@ function MyApp({ Component, pageProps }: AppProps) {
 }
 
 export default MyApp;
+
+// import MenuItem from "@material-ui/core/MenuItem";
+// import MenuList from "@material-ui/core/MenuList";
+// import ClickAwayListener from "@material-ui/core/ClickAwayListener";
+// import Grow from "@material-ui/core/Grow";
+// import Popper from "@material-ui/core/Popper";
+// import Paper from "@material-ui/core/Paper";
+// import { CustomButton } from "../src/components/button";
+
+// 	const prevMenuOpen = React.useRef(isMenuOpen);
+// 	useEffect(() => {
+// 		if (prevMenuOpen.current === true && isMenuOpen === false) {
+// 			menuAnchorRef.current!.focus();
+// 		}
+
+// 		prevMenuOpen.current = isMenuOpen;
+// 	});
+
+// // state for menu open
+// const [isMenuOpen, setMenuOpen] = React.useState(false);
+
+// 	function handleMenuClose(
+// 		event: React.MouseEvent<EventTarget>,
+// 		chosenOption: MenuNavOptions
+// 	) {
+// 		// navigate to the option
+// 		switch (chosenOption) {
+// 			case MenuNavOptions.home:
+// 				router.push("/");
+// 				break;
+// 			case MenuNavOptions.profile:
+// 				router.push("/profile");
+// 				break;
+// 			case MenuNavOptions.yourOrders:
+// 				router.push("/order");
+// 				break;
+// 			case MenuNavOptions.payemnts:
+// 				router.push("/payments");
+// 				break;
+// 			case MenuNavOptions.logout:
+// 				// logout
+// 				console.log("user requested to log out");
+// 		}
+
+// 		if (
+// 			menuAnchorRef.current &&
+// 			menuAnchorRef.current.contains(event.target as HTMLElement)
+// 		) {
+// 			return;
+// 		}
+
+// 		setMenuOpen(false);
+// 	}
+
+// 	function handleMenuToggle() {
+// 		setMenuOpen((prevOpen) => !prevOpen);
+// 	}
+
+// 	function handleMenuListKeyDown(event: React.KeyboardEvent) {
+// 		if (event.key === "Tab") {
+// 			event.preventDefault();
+// 			setMenuOpen(false);
+// 		}
+// 	}
+
+// <Popper
+// 	open={isMenuOpen}
+// 	anchorEl={menuAnchorRef.current}
+// 	role={undefined}
+// 	transition
+// 	disablePortal
+// >
+// 	{({ TransitionProps, placement }) => (
+// 		<Grow
+// 			{...TransitionProps}
+// 			style={{
+// 				transformOrigin:
+// 					placement === "bottom"
+// 						? "center top"
+// 						: "center bottom",
+// 			}}
+// 		>
+// 			<Paper>
+// 				<ClickAwayListener
+// 					onClickAway={(event) => {
+// 						handleMenuClose(
+// 							event,
+// 							MenuNavOptions.profile
+// 						);
+// 					}}
+// 				>
+// 					<MenuList
+// 						autoFocusItem={isMenuOpen}
+// 						id="menu-list-grow"
+// 						onKeyDown={handleMenuListKeyDown}
+// 						style={{
+// 							backgroundColor: "#FFFFFF",
+// 							zIndex: 1,
+// 						}}
+// 					>
+// 						<MenuItem
+// 							onClick={(event) => {
+// 								handleMenuClose(
+// 									event,
+// 									MenuNavOptions.home
+// 								);
+// 							}}
+// 						>
+// 							Home
+// 						</MenuItem>
+// 						<MenuItem
+// 							onClick={(event) => {
+// 								handleMenuClose(
+// 									event,
+// 									MenuNavOptions.myProfile
+// 								);
+// 							}}
+// 						>
+// 							My Profile
+// 						</MenuItem>
+// 						<MenuItem
+// 							onClick={(event) => {
+// 								handleMenuClose(
+// 									event,
+// 									MenuNavOptions.myOrders
+// 								);
+// 							}}
+// 						>
+// 							My Orders
+// 						</MenuItem>
+// 						<MenuItem
+// 							onClick={(event) => {
+// 								handleMenuClose(
+// 									event,
+// 									MenuNavOptions.myInvoices
+// 								);
+// 							}}
+// 						>
+// 							My Invoices
+// 						</MenuItem>
+// 						<MenuItem
+// 							onClick={(event) => {
+// 								handleMenuClose(
+// 									event,
+// 									MenuNavOptions.logout
+// 								);
+// 							}}
+// 						>
+// 							Logout
+// 						</MenuItem>
+// 						{/* <MenuItem onClick={handleMenuClose}>
+// 							My account
+// 						</MenuItem>
+// 						<MenuItem onClick={handleMenuClose}>
+// 							Logout
+// 						</MenuItem> */}
+// 					</MenuList>
+// 				</ClickAwayListener>
+// 			</Paper>
+// 		</Grow>
+// 	)}
+// </Popper>;
