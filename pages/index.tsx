@@ -27,7 +27,7 @@ const useStyles = makeStyles((theme: Theme) =>
 	})
 );
 
-const Page: React.FC<CommonPageProps> = ({authState}) => {
+const Page: React.FC<CommonPageProps> = ({ authState }) => {
 	const classes = useStyles();
 	const router = useRouter();
 
@@ -60,7 +60,7 @@ const Page: React.FC<CommonPageProps> = ({authState}) => {
 	const CategoryRep = () => {
 		return (
 			<NextImage
-				src="/../public/categories/Cotton.png"
+				src="/categories/Cotton.png"
 				alt="me"
 				width="150"
 				height="100"
@@ -106,17 +106,12 @@ const Page: React.FC<CommonPageProps> = ({authState}) => {
 			}}
 		>
 			<NextImage
-				src="/../public/main_banner.png"
+				src="/main_banner.png"
 				alt="me"
 				width="1200"
 				height="497"
 			/>
-			<NextImage
-				src="/../public/features.png"
-				alt="me"
-				width="1200"
-				height="120"
-			/>
+			<NextImage src="/features.png" alt="me" width="1200" height="120" />
 			<Paper
 				style={{
 					width: "90%",
