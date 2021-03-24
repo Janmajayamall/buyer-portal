@@ -62,7 +62,7 @@ const Page: React.FC<CommonPageProps> = ({ authState }) => {
 			<NextImage
 				src="/categories/Cotton.png"
 				alt="me"
-				width="150"
+				width="100"
 				height="100"
 			/>
 		);
@@ -111,15 +111,14 @@ const Page: React.FC<CommonPageProps> = ({ authState }) => {
 				width="1200"
 				height="497"
 			/>
-			<NextImage src="/features.png" alt="me" width="1200" height="120" />
-			<Paper
+			<NextImage src="/features.png" alt="me" width="1200" height="230" />
+			<div
 				style={{
 					width: "90%",
 					alignSelf: "center",
-					marginTop: 30,
-					padding: 20,
+					marginTop: 40,
+					// padding: 20,
 				}}
-				elevation={3}
 			>
 				<div
 					style={{
@@ -148,7 +147,7 @@ const Page: React.FC<CommonPageProps> = ({ authState }) => {
 					<CategoryRep />
 					<CategoryRep />
 				</div>
-			</Paper>
+			</div>
 
 			<div
 				style={{

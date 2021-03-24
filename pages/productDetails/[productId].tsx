@@ -67,14 +67,16 @@ const useStyles = makeStyles((theme: Theme) =>
 const TopicDetailDiv = ({ title, detail }) => (
 	<div style={{ display: "flex", flexDirection: "row", marginTop: 10 }}>
 		<Typography
-			variant="body2"
-			style={{ fontWeight: "bold" }}
+			style={{ fontWeight: "bolder", fontSize: 12 }}
 			display="block"
 		>
 			{`${title}: `}
 		</Typography>
 		&nbsp;
-		<Typography variant="body2" display="block">
+		<Typography
+			style={{ fontWeight: "normal", fontSize: 12 }}
+			display="block"
+		>
 			{` ${detail}`}
 		</Typography>
 	</div>
@@ -87,7 +89,7 @@ enum MutationRequestState {
 	notInitiated,
 }
 
-const Page: React.FC<CommonPageProps> = ({ authState }) => {
+const Page: React.FC<CommonPageProps> = ({ authState, requestLogin }) => {
 	const classes = useStyles();
 	const router = useRouter();
 
@@ -331,7 +333,7 @@ const Page: React.FC<CommonPageProps> = ({ authState }) => {
 					marginLeft: 40,
 					padding: 20,
 					margin: 5,
-					width: 800,
+					// width: 800,
 				}}
 			>
 				<div style={{ display: "flex", flexDirection: "row" }}>
@@ -345,12 +347,12 @@ const Page: React.FC<CommonPageProps> = ({ authState }) => {
 					/>
 					<div style={{ marginLeft: 20, paddingLeft: 20, flex: 1 }}>
 						<div style={{ marginBottom: 10 }}>
-							<Typography variant="h4" display="block">
+							<Typography variant="h6" display="block">
 								{productDetails.name}
 							</Typography>
 							<Typography
-								variant="h6"
-								style={{ fontWeight: "bold" }}
+								variant="subtitle1"
+								// style={{ fontWeight: "bold" }}
 								display="block"
 							>
 								{`${
@@ -359,19 +361,18 @@ const Page: React.FC<CommonPageProps> = ({ authState }) => {
 											productDetails.variations
 										)
 									).formattedPriceCurrency
-								}/meter - ${
+								} /meter - ${
 									formatPriceValue(
 										getHighestVariantCost(
 											productDetails.variations
 										)
 									).formattedPriceCurrency
-								}/meter`}
+								} /meter`}
 							</Typography>
 						</div>
 						<Typography
-							variant="body2"
 							display="block"
-							style={{ marginTop: 10 }}
+							style={{ marginTop: 10, fontSize: 12 }}
 						>
 							{productDetails.description}
 						</Typography>
@@ -449,9 +450,8 @@ const Page: React.FC<CommonPageProps> = ({ authState }) => {
 															selectedPricingTableMapKey
 																? "red"
 																: "black",
-														fontWeight: "bold",
+														fontSize: 12,
 													}}
-													variant="body2"
 												>
 													{`\u20B9 ${formatNumberWithCommas(
 														key
@@ -527,13 +527,13 @@ const Page: React.FC<CommonPageProps> = ({ authState }) => {
 							style={{
 								display: "flex",
 								flexDirection: "row",
-								marginTop: 10,
+								marginTop: 5,
 							}}
 						>
 							<div
-								style={{
-									width: 250,
-								}}
+							// style={{
+							// 	width: 400,
+							// }}
 							>
 								<TextField
 									id="order-quantity-size"
@@ -559,6 +559,9 @@ const Page: React.FC<CommonPageProps> = ({ authState }) => {
 											? `Quantity size should be more than ${productDetails.minOrderSize} Meters`
 											: ""
 									}
+									InputProps={{
+										style: { fontSize: 12 },
+									}}
 									error={
 										Number(selectedProductQuantity) <
 											productDetails.minOrderSize &&
@@ -642,7 +645,7 @@ const Page: React.FC<CommonPageProps> = ({ authState }) => {
 									) : (
 										<Button
 											// @ts-ignore
-											onClick={props.requestLogin}
+											onClick={requestLogin}
 											variant="contained"
 											color="secondary"
 										>

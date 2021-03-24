@@ -420,7 +420,7 @@ function MyApp({ Component, pageProps }: AppProps) {
 							disabled={resendCodeTimeLeft > 0}
 						>
 							{resendCodeTimeLeft > 0
-								? `Wait ${resendCodeTimeLeft}(s)`
+								? `Resend ${resendCodeTimeLeft}(s)`
 								: "Resend Code"}
 						</Button>
 					</div>
@@ -528,14 +528,21 @@ function MyApp({ Component, pageProps }: AppProps) {
 						/>
 					</div>
 				</div>
-				<div style={{ width: "100%" }}>
+				<div
+					style={{
+						width: "100%",
+						justifyContent: "center",
+						alignItems: "center",
+						display: "flex",
+					}}
+				>
 					<div
 						style={{
 							width: 1200,
 							display: "flex",
 							flexDirection: "row",
 							padding: 20,
-							backgroundColor: "#FF976B",
+							backgroundColor: "#DBDEF7",
 							justifyContent: "space-around",
 						}}
 					>
@@ -547,19 +554,19 @@ function MyApp({ Component, pageProps }: AppProps) {
 						>
 							<Typography
 								variant="h6"
-								style={{ color: "#ffffff" }}
+								style={{ color: "#23106F" }}
 							>
 								Contact Us
 							</Typography>
 							<Typography
 								variant="subtitle2"
-								style={{ color: "#ffffff" }}
+								style={{ color: "#23106F" }}
 							>
 								Email: janmajaya.choithram@gmail.com
 							</Typography>
 							<Typography
 								variant="subtitle2"
-								style={{ color: "#ffffff" }}
+								style={{ color: "#23106F" }}
 							>
 								Whatsapp: +85254906535
 							</Typography>
@@ -573,13 +580,13 @@ function MyApp({ Component, pageProps }: AppProps) {
 						>
 							<Typography
 								variant="h6"
-								style={{ color: "#ffffff" }}
+								style={{ color: "#23106F" }}
 							>
 								Manufacturers
 							</Typography>
 							<Typography
 								variant="subtitle2"
-								style={{ color: "#ffffff" }}
+								style={{ color: "#23106F" }}
 							>
 								To become our manufacturing partner, contact us
 								with your business details.
