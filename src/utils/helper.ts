@@ -7,6 +7,12 @@ export interface FormattedPriceInterface {
 export interface CommonPageProps {
 	authState: boolean;
 	requestLogin: () => void;
+	windowDimensions: Dimensions;
+}
+
+export interface Dimensions {
+	width: number;
+	height: number;
 }
 
 export interface LoginProcessInterface {
@@ -161,4 +167,24 @@ export function getHighestVariantCost(variants: any[]): number | null {
 
 export function convertToInt(value: number): number {
 	return Math.round(value);
+}
+
+export function setAuthToken(token: string): void {
+	localStorage.setItem("token", token);
+}
+
+export function resetAuthToken(): void {
+	localStorage.removeItem("token");
+}
+
+export function getAdjustedImageDims(
+	imageDimensions: Dimensions,
+	windowDimensions: Dimensions
+): Dimensions {
+	return {
+		width: windowDimensions.width,
+		height:
+			(imageDimensions.height * windowDimensions.width) /
+			imageDimensions.width,
+	};
 }

@@ -21,9 +21,16 @@ export default class MyDocument extends Document {
 						rel="stylesheet"
 					></link>
 				</Head>
-				<body>
+				<body style={{ height: "100%", width: "100%" }}>
 					<Main />
 					<NextScript />
+					<style jsx global>{`
+						/* Other global styles such as 'html, body' etc... */
+
+						#__next {
+							height: 100%;
+						}
+					`}</style>
 				</body>
 			</Html>
 		);

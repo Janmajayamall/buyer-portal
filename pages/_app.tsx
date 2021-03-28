@@ -17,8 +17,10 @@ import Typography from "@material-ui/core/Typography";
 import Button from "@material-ui/core/Button";
 import Modal from "@material-ui/core/Modal";
 import {
+	Dimensions,
 	handleNumberInputOnKeyPress,
 	LoginProcessInterface,
+	setAuthToken,
 } from "../src/utils";
 import TextField from "@material-ui/core/TextField";
 import InputAdornment from "@material-ui/core/InputAdornment";
@@ -29,6 +31,7 @@ import {
 } from "../src/graphql/mutations/buyer.graphql";
 import CustomTheme from "./../src/theme";
 import { IS_BUYER_AUTHENTICATED } from "../src/graphql/queries/buyer.graphql";
+import { WSAEINVALIDPROCTABLE } from "constants";
 
 const useStyles = makeStyles((theme: Theme) =>
 	createStyles({
@@ -47,8 +50,8 @@ const useStyles = makeStyles((theme: Theme) =>
 
 const loginProcessDefaultState: LoginProcessInterface = {
 	stage: 0,
-	phoneNumber: "",
-	verificationCode: "",
+	phoneNumber: "1234567899",
+	verificationCode: "1202",
 	authenticationFailed: false,
 };
 
@@ -57,6 +60,9 @@ function MyApp({ Component, pageProps }: AppProps) {
 	const classes = useStyles();
 
 	// DECLARING LOCAL STATES
+
+	// state for tracking whether in browser window or not
+	const [isBrowser, setIsBrowser] = useState<boolean>(false);
 
 	// state for tracking auth state
 	const [authState, setAuthState] = useState<boolean>(false);
@@ -73,6 +79,19 @@ function MyApp({ Component, pageProps }: AppProps) {
 	// state for resend code time left
 	const [resendCodeTimeLeft, setResendCodeTimeLeft] = React.useState<number>(
 		0
+	);
+
+	// state for window dimensions
+	const [windowDimensions, setWindowDimensions] = useState<Dimensions>(
+		isBrowser === true
+			? {
+					width: window.innerWidth,
+					height: window.innerHeight,
+			  }
+			: {
+					width: 0,
+					height: 0,
+			  }
 	);
 
 	// DECLARING LOCAL STATES END
@@ -102,6 +121,18 @@ function MyApp({ Component, pageProps }: AppProps) {
 
 	// DECLARING EFFECTS
 
+	// to set state of isBrowser to true
+	useEffect(() => {
+		if (!isBrowser) {
+			setIsBrowser(true);
+			checkAuthState();
+			setWindowDimensions({
+				width: window.innerWidth,
+				height: window.innerHeight,
+			});
+		}
+	});
+
 	useEffect(() => {
 		// if time reaches zero then return
 		if (resendCodeTimeLeft <= 0) {
@@ -114,6 +145,18 @@ function MyApp({ Component, pageProps }: AppProps) {
 
 		return () => clearTimeout(setTimeoutId);
 	}, [resendCodeTimeLeft]);
+
+	useEffect(() => {
+		function handleResize() {
+			setWindowDimensions({
+				width: window.innerWidth,
+				height: window.innerHeight,
+			});
+		}
+
+		window.addEventListener("resize", handleResize);
+		return () => window.removeEventListener("resize", handleResize);
+	});
 
 	// DECLARING EFFECTS END
 
@@ -185,13 +228,16 @@ function MyApp({ Component, pageProps }: AppProps) {
 
 		try {
 			// send mutation request for verification
-			await client.mutate({
+			const { data } = await client.mutate({
 				mutation: BUYER_VERIFY_LOGIN_CODE,
 				variables: {
 					phoneNumber: loginProcessState.phoneNumber,
 					verificationCode: loginProcessState.verificationCode,
 				},
 			});
+
+			// set auth token in local storage
+			setAuthToken(data.buyerVerifyLoginCode.token);
 
 			// set auth state to true
 			setAuthState(true);
@@ -473,8 +519,6 @@ function MyApp({ Component, pageProps }: AppProps) {
 
 	// STUFF RELATED TO LOGIN MODAL ENDS
 
-	checkAuthState();
-
 	return (
 		<ApolloProvider client={client}>
 			<ThemeProvider theme={CustomTheme}>
@@ -512,7 +556,9 @@ function MyApp({ Component, pageProps }: AppProps) {
 				>
 					<div
 						style={{
-							width: 1200,
+							width: windowDimensions.width,
+							minHeight: windowDimensions.height,
+							// minWidth: 1200,
 							// display: "flex",
 							// justifyContent: "center",
 							// alignItems: "center",
@@ -525,6 +571,7 @@ function MyApp({ Component, pageProps }: AppProps) {
 							// }}
 							authState={authState}
 							requestLogin={requestLogin}
+							windowDimensions={windowDimensions}
 						/>
 					</div>
 				</div>
@@ -534,15 +581,16 @@ function MyApp({ Component, pageProps }: AppProps) {
 						justifyContent: "center",
 						alignItems: "center",
 						display: "flex",
+						flexDirection: "column",
+						backgroundColor: "#DBDEF7",
 					}}
 				>
 					<div
 						style={{
-							width: 1200,
+							width: "100%",
 							display: "flex",
 							flexDirection: "row",
 							padding: 20,
-							backgroundColor: "#DBDEF7",
 							justifyContent: "space-around",
 						}}
 					>

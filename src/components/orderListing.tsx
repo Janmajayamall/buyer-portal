@@ -17,14 +17,18 @@ const TopicDetailDiv = ({ title, detail }) => (
 			display: "flex",
 			flexDirection: "column",
 			padding: 10,
-			maxWidth: 150,
+			maxWidth: 175,
 		}}
 	>
-		<Typography variant="subtitle2" style={{ fontWeight: "bold" }}>
+		<Typography style={{ fontWeight: "bolder", fontSize: 12 }}>
 			{`${title} `}
 		</Typography>
 		<Typography
-			style={{ wordWrap: "break-word" }}
+			style={{
+				fontWeight: "normal",
+				fontSize: 12,
+				wordWrap: "break-word",
+			}}
 			variant="body2"
 			display="block"
 		>
@@ -35,13 +39,15 @@ const TopicDetailDiv = ({ title, detail }) => (
 
 export const OrderListing: FunctionComponent<OrderListingProps> = (props) => (
 	<Paper
-		variant="outlined"
+		variant="elevation"
+		elevation={0}
 		style={{
 			display: "flex",
 			flexDirection: "row",
 			padding: 10,
 			marginTop: 20,
 			justifyContent: "space-between",
+			backgroundColor: "#ededed",
 		}}
 	>
 		<div style={{ display: "flex", flexDirection: "row" }}>

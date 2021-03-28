@@ -6,7 +6,11 @@ import Typography from "@material-ui/core/Typography";
 import Paper from "@material-ui/core/Paper";
 import { Image } from "cloudinary-react";
 import { useMutation, useQuery, useLazyQuery } from "@apollo/react-hooks";
-import { CommonPageProps, getLowestVariantCost } from "../src/utils";
+import {
+	CommonPageProps,
+	getAdjustedImageDims,
+	getLowestVariantCost,
+} from "../src/utils";
 import { GET_PRODUCTS_BY_SEARCH_PHRASE_FOR_BUYERS } from "../src/graphql/queries/products.graphql";
 import { ProductGridListing } from "../src/components/productGridListing";
 import {
@@ -27,7 +31,7 @@ const useStyles = makeStyles((theme: Theme) =>
 	})
 );
 
-const Page: React.FC<CommonPageProps> = ({ authState }) => {
+const Page: React.FC<CommonPageProps> = ({ authState, windowDimensions }) => {
 	const classes = useStyles();
 	const router = useRouter();
 
@@ -49,7 +53,6 @@ const Page: React.FC<CommonPageProps> = ({ authState }) => {
 			searchPhrase: "",
 		},
 		onCompleted({ getProductsBySearchPhraseForBuyers }) {
-			console.log(getProductsBySearchPhraseForBuyers);
 			setProducts(getProductsBySearchPhraseForBuyers);
 		},
 		onError(error) {
@@ -108,10 +111,39 @@ const Page: React.FC<CommonPageProps> = ({ authState }) => {
 			<NextImage
 				src="/main_banner.png"
 				alt="me"
-				width="1200"
-				height="497"
+				width={(() => {
+					const temp = getAdjustedImageDims(
+						{ width: 1200, height: 497 },
+						windowDimensions
+					);
+					return temp.width.toString();
+				})()}
+				height={(() => {
+					const temp = getAdjustedImageDims(
+						{ width: 1200, height: 497 },
+						windowDimensions
+					);
+					return temp.height.toString();
+				})()}
 			/>
-			<NextImage src="/features.png" alt="me" width="1200" height="230" />
+			<NextImage
+				src="/features.png"
+				alt="me"
+				width={(() => {
+					const temp = getAdjustedImageDims(
+						{ width: 1200, height: 240 },
+						windowDimensions
+					);
+					return temp.width.toString();
+				})()}
+				height={(() => {
+					const temp = getAdjustedImageDims(
+						{ width: 1200, height: 240 },
+						windowDimensions
+					);
+					return temp.height.toString();
+				})()}
+			/>
 			<div
 				style={{
 					width: "90%",
@@ -157,9 +189,9 @@ const Page: React.FC<CommonPageProps> = ({ authState }) => {
 				<Typography
 					variant="h5"
 					style={{
-						fontWeight: "initial",
+						fontWeight: "bolder",
 						marginLeft: 20,
-						marginTop: 20,
+						marginTop: 35,
 					}}
 				>
 					Trending Now

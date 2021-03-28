@@ -10,16 +10,27 @@ import {
 import fetch from "isomorphic-unfetch";
 import { onError } from "@apollo/client/link/error";
 import { setContext } from "@apollo/client/link/context";
+import { resetAuthToken } from "../utils";
 // import Router from "next/router";
 
 const httpLink = new HttpLink({
 	fetch,
+	// uri:"http://ec2-13-235-13-251.ap-south-1.compute.amazonaws.com:3000/graphql",
 	uri: "http://localhost:3000/graphql",
 });
 
-const authLink = setContext((request, previousContext) => ({
-	credentials: "include",
-}));
+const authLink = setContext((_, { headers }) => {
+	// get token
+	const token = localStorage.getItem("token");
+
+	return {
+		headers: {
+			...headers,
+			authorization: token ? token : undefined,
+		},
+		credentials: "include",
+	};
+});
 
 const errorLink = onError(({ graphQLErrors, networkError }) => {
 	if (!graphQLErrors) {
@@ -28,7 +39,7 @@ const errorLink = onError(({ graphQLErrors, networkError }) => {
 
 	graphQLErrors.forEach((error) => {
 		if (error.message === "Unauthorized") {
-			// window.location.href = "/login";
+			resetAuthToken();
 		}
 	});
 });
@@ -36,4 +47,5 @@ const errorLink = onError(({ graphQLErrors, networkError }) => {
 export const client: ApolloClient<NormalizedCacheObject> = new ApolloClient({
 	link: authLink.concat(errorLink).concat(httpLink),
 	cache: new InMemoryCache(),
+	credentials: "include",
 });

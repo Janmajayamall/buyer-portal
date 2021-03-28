@@ -236,7 +236,7 @@ const Page: React.FC<CommonPageProps> = ({ authState, requestLogin }) => {
 					</div>
 				</div>
 			</div>
-			<div style={{}}>
+			<div style={{ marginBottom: 20 }}>
 				{filteredOrderList.map((order) => (
 					<OrderListing orderDetails={order} />
 				))}

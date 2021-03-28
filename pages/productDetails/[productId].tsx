@@ -25,14 +25,14 @@ import {
 	getHighestVariantCost,
 	convertToInt,
 	CommonPageProps,
+	getAdjustedImageDims,
 } from "./../../src/utils";
 import {
 	PlaceNewOrder,
 	PlaceNewOrderVariables,
 } from "../../src/graphql/generated/PlaceNewOrder";
 import { PLACE_NEW_ORDER } from "../../src/graphql/mutations/order.graphl";
-import { IsBuyerAuthenticated } from "../../src/graphql/generated/IsBuyerAuthenticated";
-import { IS_BUYER_AUTHENTICATED } from "../../src/graphql/queries/buyer.graphql";
+import CircularProgress from "@material-ui/core/CircularProgress";
 
 const useStyles = makeStyles((theme: Theme) =>
 	createStyles({
@@ -89,7 +89,11 @@ enum MutationRequestState {
 	notInitiated,
 }
 
-const Page: React.FC<CommonPageProps> = ({ authState, requestLogin }) => {
+const Page: React.FC<CommonPageProps> = ({
+	authState,
+	requestLogin,
+	windowDimensions,
+}) => {
 	const classes = useStyles();
 	const router = useRouter();
 
@@ -127,6 +131,12 @@ const Page: React.FC<CommonPageProps> = ({ authState, requestLogin }) => {
 		orderQuantityInputError,
 		setOrderQuantityInputError,
 	] = useState<boolean>(false);
+
+	// state for tracking place order mutation request
+	const [
+		placeOrderMutationRequestState,
+		setPlaceOrderMutationRequestState,
+	] = useState<MutationRequestState>(MutationRequestState.notInitiated);
 
 	// DECLARING LOCAL STATES END
 
@@ -252,7 +262,10 @@ const Page: React.FC<CommonPageProps> = ({ authState, requestLogin }) => {
 	// place new order location function
 	function placeNewOrderLocal() {
 		// check order details validity
-		if (!checkOrderDetails()) {
+		if (
+			!checkOrderDetails() ||
+			placeOrderMutationRequestState !== MutationRequestState.notInitiated
+		) {
 			return;
 		}
 
@@ -264,6 +277,9 @@ const Page: React.FC<CommonPageProps> = ({ authState, requestLogin }) => {
 				orderQuantity: convertToInt(Number(selectedProductQuantity)),
 			},
 		});
+
+		// change mutation request state to loading
+		setPlaceOrderMutationRequestState(MutationRequestState.loading);
 	}
 
 	// changes pricing key for pricing table & resets currently selected variation
@@ -302,9 +318,13 @@ const Page: React.FC<CommonPageProps> = ({ authState, requestLogin }) => {
 	const [placeNewOrder] = useMutation<PlaceNewOrder, PlaceNewOrderVariables>(
 		PLACE_NEW_ORDER,
 		{
-			onCompleted({ placeNewOrder }) {},
+			onCompleted({ placeNewOrder }) {
+				// change mutation request state to done
+				setPlaceOrderMutationRequestState(MutationRequestState.done);
+			},
 			onError(error) {
 				console.log(error);
+				setPlaceOrderMutationRequestState(MutationRequestState.error);
 			},
 		}
 	);
@@ -323,340 +343,446 @@ const Page: React.FC<CommonPageProps> = ({ authState, requestLogin }) => {
 	return (
 		<div
 			style={{
-				// flexDirection: "row",
+				marginLeft: 40,
+				paddingTop: 20,
+				paddingRight: 50,
+				paddingLeft: 50,
+				margin: 5,
+				width: "100%",
 				display: "flex",
 				justifyContent: "center",
+				flexDirection: "column",
+				alignItems: "center",
 			}}
 		>
 			<div
 				style={{
-					marginLeft: 40,
-					padding: 20,
-					margin: 5,
-					// width: 800,
+					width: "100%",
+					display: "flex",
+					flexDirection: "row",
 				}}
 			>
-				<div style={{ display: "flex", flexDirection: "row" }}>
-					<Image
-						width="225"
-						height="300"
-						cloudName={"jayeet"}
-						publicId={
-							"https://res.cloudinary.com/jayeet/image/upload/v1614622206/PIM-1583496423927-afea11e0-1270-41e3-8f6b-389a83687b45_v1-small_rfx3ca.jpg"
-						}
-					/>
-					<div style={{ marginLeft: 20, paddingLeft: 20, flex: 1 }}>
-						<div style={{ marginBottom: 10 }}>
-							<Typography variant="h6" display="block">
-								{productDetails.name}
-							</Typography>
-							<Typography
-								variant="subtitle1"
-								// style={{ fontWeight: "bold" }}
-								display="block"
-							>
-								{`${
-									formatPriceValue(
-										getLowestVariantCost(
-											productDetails.variations
-										)
-									).formattedPriceCurrency
-								} /meter - ${
-									formatPriceValue(
-										getHighestVariantCost(
-											productDetails.variations
-										)
-									).formattedPriceCurrency
-								} /meter`}
-							</Typography>
-						</div>
-						<Typography
-							display="block"
-							style={{ marginTop: 10, fontSize: 12 }}
-						>
-							{productDetails.description}
+				<Image
+					width={250}
+					height={300}
+					cloudName={"jayeet"}
+					publicId={
+						"https://res.cloudinary.com/jayeet/image/upload/v1614622206/PIM-1583496423927-afea11e0-1270-41e3-8f6b-389a83687b45_v1-small_rfx3ca.jpg"
+					}
+				/>
+				<div style={{ marginLeft: 20, paddingLeft: 20, flex: 1 }}>
+					<div style={{ marginBottom: 10 }}>
+						<Typography variant="h6" display="block">
+							{productDetails.name}
 						</Typography>
-						<TopicDetailDiv
-							title={"Pattern"}
-							detail={productDetails.pattern}
-						/>
-						<TopicDetailDiv
-							title={"Cloth composition"}
-							detail={productDetails.clothComposition}
-						/>
-						<TopicDetailDiv
-							title={"GSM"}
-							detail={`${productDetails.gsm} g/m2`}
-						/>
-						<TopicDetailDiv
-							title={"Width"}
-							detail={`${productDetails.width} inches`}
-						/>
-						<TopicDetailDiv
-							title={"Minimum order quantity"}
-							detail={`${productDetails.minOrderSize} meters`}
-						/>
-					</div>
-				</div>
-
-				<div
-					style={{
-						width: "100%",
-						display: "flex",
-						flexDirection: "row",
-						marginTop: 20,
-					}}
-				>
-					{Array.from(pricingTableMap.keys()).length !== 0 ? (
-						<Paper
-							style={{
-								width: 400,
-								padding: 10,
-								backgroundColor: "#ededed",
-							}}
-							elevation={0}
+						<Typography
+							variant="subtitle1"
+							// style={{ fontWeight: "bold" }}
+							display="block"
 						>
-							<div
-								style={{
-									width: "100%",
-									height: 40,
-									overflowX: "scroll",
-									overflowY: "hidden",
-									whiteSpace: "nowrap",
-								}}
-							>
-								{Array.from(pricingTableMap.keys())
-									.sort((a, b) => a - b)
-									.map((key) => {
-										return (
-											<div
-												style={{
-													display: "inline-block",
-													// padding: 15,
-													paddingRight: 15,
-													paddingLeft: 15,
-													height: 60,
-												}}
-												onClick={() => {
-													setSelectedPricingTableMapKeyLocal(
-														key
-													);
-												}}
-											>
-												<Typography
-													style={{
-														color:
-															key ===
-															selectedPricingTableMapKey
-																? "red"
-																: "black",
-														fontSize: 12,
-													}}
-												>
-													{`\u20B9 ${formatNumberWithCommas(
-														key
-													)}`}{" "}
-													<span>{" /M"}</span>
-												</Typography>
-											</div>
-										);
-									})}
-							</div>
-							<Divider
-								style={{ marginTop: 5, marginBottom: 15 }}
-							/>
-							{selectedPricingTableMapKey !== -1 ? (
-								<div
-									style={{
-										display: "inline-block",
-										width: "100%",
-									}}
-								>
-									{pricingTableMap
-										.get(selectedPricingTableMapKey)
-										.map((variation) => (
-											<Paper
-												elevation={0}
-												style={{
-													display: "inline-block",
-													padding: 5,
-													margin: 10,
-													backgroundColor: "#FFFFFF",
-													borderWidth: 1,
-													borderColor:
-														selectedProductVariation &&
-														selectedProductVariation.id ===
-															variation.id
-															? "#000000"
-															: "#FFFFFF",
-													borderStyle: "solid",
-												}}
-												onClick={() => {
-													setSelectedProductVariation(
-														variation
-													);
-												}}
-											>
-												<div
-													style={{
-														display: "flex",
-														flexDirection: "row",
-													}}
-												>
-													<Paper
-														elevation={0}
-														style={{
-															width: 25,
-															height: 25,
-															backgroundColor:
-																variation.colourHexCode,
-														}}
-													/>
-												</div>
-											</Paper>
-										))}
-								</div>
-							) : undefined}
-						</Paper>
-					) : (
-						<div>No product available</div>
-					)}
-					<div style={{ marginLeft: 20 }}>
-						<Typography variant="h6">Order Details</Typography>
+							{`${
+								formatPriceValue(
+									getLowestVariantCost(
+										productDetails.variations
+									)
+								).formattedPriceCurrency
+							} /meter - ${
+								formatPriceValue(
+									getHighestVariantCost(
+										productDetails.variations
+									)
+								).formattedPriceCurrency
+							} /meter`}
+						</Typography>
+					</div>
+					<Typography
+						display="block"
+						style={{ marginTop: 10, fontSize: 12 }}
+					>
+						{productDetails.description}
+					</Typography>
+					<TopicDetailDiv
+						title={"Pattern"}
+						detail={productDetails.pattern}
+					/>
+					<TopicDetailDiv
+						title={"Cloth composition"}
+						detail={productDetails.clothComposition}
+					/>
+					<TopicDetailDiv
+						title={"GSM"}
+						detail={`${productDetails.gsm} g/m2`}
+					/>
+					<TopicDetailDiv
+						title={"Width"}
+						detail={`${productDetails.width} inches`}
+					/>
+					<TopicDetailDiv
+						title={"Minimum order quantity"}
+						detail={`${productDetails.minOrderSize} meters`}
+					/>
+				</div>
+			</div>
+
+			<div
+				style={{
+					width: "100%",
+					display: "flex",
+					flexDirection: "row",
+					marginTop: 20,
+					minHeight: 350,
+				}}
+			>
+				{Array.from(pricingTableMap.keys()).length !== 0 ? (
+					<Paper
+						style={{
+							width: "40%",
+							padding: 10,
+							backgroundColor: "#ededed",
+						}}
+						elevation={0}
+					>
 						<div
 							style={{
-								display: "flex",
-								flexDirection: "row",
-								marginTop: 5,
+								width: "100%",
+								height: 40,
+								overflowX: "scroll",
+								overflowY: "hidden",
+								whiteSpace: "nowrap",
 							}}
 						>
-							<div
-							// style={{
-							// 	width: 400,
-							// }}
-							>
-								<TextField
-									id="order-quantity-size"
-									label="Order Quantity Size"
-									value={selectedProductQuantity}
-									onKeyDown={(e) => {
-										e.preventDefault();
-										handleNumberInputOnKeyPress(
-											String(selectedProductQuantity),
-											e.key,
-											(value: string) => {
-												setSelectedProductQuantity(
-													value
+							{Array.from(pricingTableMap.keys())
+								.sort((a, b) => a - b)
+								.map((key) => {
+									return (
+										<div
+											style={{
+												display: "inline-block",
+												// padding: 15,
+												paddingRight: 15,
+												paddingLeft: 15,
+												height: 60,
+											}}
+											onClick={() => {
+												setSelectedPricingTableMapKeyLocal(
+													key
 												);
-											},
-											false
-										);
-									}}
-									helperText={
-										Number(selectedProductQuantity) <
-											productDetails.minOrderSize &&
-										orderQuantityInputError
-											? `Quantity size should be more than ${productDetails.minOrderSize} Meters`
-											: ""
-									}
-									InputProps={{
-										style: { fontSize: 12 },
-									}}
-									error={
-										Number(selectedProductQuantity) <
-											productDetails.minOrderSize &&
-										orderQuantityInputError
-									}
-								/>
-
-								<TopicDetailDiv
-									title={"Order quantity size"}
-									detail={(() => {
-										if (selectedProductQuantity === "") {
-											return "N/A";
-										}
-										return `${formatNumberWithCommas(
-											Number(selectedProductQuantity)
-										)} meters`;
-									})()}
-								/>
-								<TopicDetailDiv
-									title={"Price per unit"}
-									detail={(() => {
-										if (selectedProductVariation === null) {
-											return "N/A";
-										}
-										return formatPriceValue(
-											selectedProductVariation.price
-										).formattedPriceCurrency;
-									})()}
-								/>
+											}}
+										>
+											<Typography
+												style={{
+													color:
+														key ===
+														selectedPricingTableMapKey
+															? "red"
+															: "black",
+													fontSize: 12,
+												}}
+											>
+												{`\u20B9 ${formatNumberWithCommas(
+													key
+												)}`}{" "}
+												<span>{" /M"}</span>
+											</Typography>
+										</div>
+									);
+								})}
+						</div>
+						<Divider style={{ marginTop: 5, marginBottom: 15 }} />
+						{selectedPricingTableMapKey !== -1 ? (
+							<div
+								style={{
+									display: "inline-block",
+									width: "100%",
+								}}
+							>
+								{pricingTableMap
+									.get(selectedPricingTableMapKey)
+									.map((variation) => (
+										<Paper
+											elevation={0}
+											style={{
+												display: "inline-block",
+												padding: 5,
+												margin: 10,
+												backgroundColor: "#FFFFFF",
+												borderWidth: 1,
+												borderColor:
+													selectedProductVariation &&
+													selectedProductVariation.id ===
+														variation.id
+														? "#000000"
+														: "#FFFFFF",
+												borderStyle: "solid",
+											}}
+											onClick={() => {
+												setSelectedProductVariation(
+													variation
+												);
+											}}
+										>
+											<div
+												style={{
+													display: "flex",
+													flexDirection: "row",
+												}}
+											>
+												<Paper
+													elevation={0}
+													style={{
+														width: 25,
+														height: 25,
+														backgroundColor:
+															variation.colourHexCode,
+													}}
+												/>
+											</div>
+										</Paper>
+									))}
+							</div>
+						) : undefined}
+					</Paper>
+				) : (
+					<div>No product available</div>
+				)}
+				<div style={{ marginLeft: 20, width: "50%" }}>
+					{placeOrderMutationRequestState !==
+					MutationRequestState.done ? (
+						<div style={{ width: "100%" }}>
+							<Typography variant="h6">Order Details</Typography>
+							<div
+								style={{
+									display: "flex",
+									flexDirection: "row",
+									marginTop: 5,
+									width: "100%",
+								}}
+							>
 								<div
 									style={{
-										marginTop: 15,
-										display: "flex",
-										flexDirection: "row",
+										width: "50%",
 									}}
-								></div>
-							</div>
-							<div>
-								<TopicDetailDiv
-									title={"Order Total"}
-									detail={(() => {
-										const orderTotal = getOrderTotal();
-										if (orderTotal === null) {
-											return "N/A";
+								>
+									<TextField
+										id="order-quantity-size"
+										label="Order Quantity Size"
+										value={selectedProductQuantity}
+										onKeyDown={(e) => {
+											e.preventDefault();
+											handleNumberInputOnKeyPress(
+												String(selectedProductQuantity),
+												e.key,
+												(value: string) => {
+													setSelectedProductQuantity(
+														value
+													);
+												},
+												false
+											);
+										}}
+										helperText={
+											Number(selectedProductQuantity) <
+												productDetails.minOrderSize &&
+											orderQuantityInputError
+												? `Quantity size should be more than ${productDetails.minOrderSize} Meters`
+												: ""
 										}
-
-										return orderTotal.formattedPriceCurrency;
-									})()}
-								/>
-								<TopicDetailDiv
-									title={`Tax (GST - ${productDetails.taxPercentage}%)`}
-									detail={(() => {
-										const tax = getTotalTax();
-										if (tax === null) {
-											return "N/A";
+										InputProps={{
+											style: { fontSize: 12 },
+										}}
+										style={{
+											width: "100%",
+											paddingRight: 20,
+										}}
+										error={
+											Number(selectedProductQuantity) <
+												productDetails.minOrderSize &&
+											orderQuantityInputError
 										}
+									/>
 
-										return tax.formattedPriceCurrency;
-									})()}
-								/>
-								<TopicDetailDiv
-									title={"Grand Total"}
-									detail={(() => {
-										const grandTotal = getGrandTotal();
-										if (grandTotal === null) {
-											return "N/A";
-										}
+									<TopicDetailDiv
+										title={"Order quantity size"}
+										detail={(() => {
+											if (
+												selectedProductQuantity === ""
+											) {
+												return "N/A";
+											}
+											return `${formatNumberWithCommas(
+												Number(selectedProductQuantity)
+											)} meters`;
+										})()}
+									/>
+									<TopicDetailDiv
+										title={"Price per unit"}
+										detail={(() => {
+											if (
+												selectedProductVariation ===
+												null
+											) {
+												return "N/A";
+											}
+											return formatPriceValue(
+												selectedProductVariation.price
+											).formattedPriceCurrency;
+										})()}
+									/>
+									<div
+										style={{
+											marginTop: 15,
+											display: "flex",
+											flexDirection: "row",
+										}}
+									></div>
+								</div>
+								<div
+									style={{
+										width: "50%",
+									}}
+								>
+									<TopicDetailDiv
+										title={"Order Total"}
+										detail={(() => {
+											const orderTotal = getOrderTotal();
+											if (orderTotal === null) {
+												return "N/A";
+											}
 
-										return grandTotal.formattedPriceCurrency;
-									})()}
-								/>
-								<div style={{ marginTop: 20 }}>
-									{authState === true ? (
-										<Button
-											onClick={placeNewOrderLocal}
-											variant="contained"
-											color="secondary"
+											return orderTotal.formattedPriceCurrency;
+										})()}
+									/>
+									<TopicDetailDiv
+										title={`Tax (GST - ${productDetails.taxPercentage}%)`}
+										detail={(() => {
+											const tax = getTotalTax();
+											if (tax === null) {
+												return "N/A";
+											}
+
+											return tax.formattedPriceCurrency;
+										})()}
+									/>
+									<TopicDetailDiv
+										title={"Grand Total"}
+										detail={(() => {
+											const grandTotal = getGrandTotal();
+											if (grandTotal === null) {
+												return "N/A";
+											}
+
+											return grandTotal.formattedPriceCurrency;
+										})()}
+									/>
+
+									<Paper
+										style={{
+											marginTop: 10,
+											padding: 10,
+											width: "75%",
+											display: "flex",
+											justifyContent: "center",
+											alignItems: "center",
+										}}
+										variant="outlined"
+									>
+										<Typography
+											style={{
+												fontWeight: "bolder",
+												fontSize: 12,
+												textAlign: "center",
+											}}
+											display="block"
 										>
-											Place Order
-										</Button>
-									) : (
-										<Button
-											// @ts-ignore
-											onClick={requestLogin}
-											variant="contained"
-											color="secondary"
-										>
-											Login to place order
-										</Button>
-									)}
+											Shipping charges may apply and will
+											be confirmed before we process the
+											order
+										</Typography>
+									</Paper>
+
+									<div style={{ marginTop: 20 }}>
+										{authState === true ? (
+											<Button
+												onClick={placeNewOrderLocal}
+												variant="contained"
+												color="secondary"
+											>
+												{placeOrderMutationRequestState ===
+												MutationRequestState.notInitiated ? (
+													"Place Order"
+												) : (
+													<CircularProgress
+														size={24}
+														style={{
+															color: "#ffffff",
+														}}
+													/>
+												)}
+											</Button>
+										) : (
+											<Button
+												onClick={requestLogin}
+												variant="contained"
+												color="secondary"
+											>
+												Login to place order
+											</Button>
+										)}
+									</div>
 								</div>
 							</div>
 						</div>
-					</div>
+					) : undefined}
+					{placeOrderMutationRequestState ===
+					MutationRequestState.done ? (
+						<div
+							style={{
+								width: "100%",
+								display: "flex",
+								flexDirection: "column",
+								justifyContent: "center",
+								alignItems: "center",
+							}}
+						>
+							<Typography
+								variant="h6"
+								style={{
+									textAlign: "center",
+									marginBottom: 10,
+								}}
+							>
+								Thank you! Your order has been received. We will
+								contact you shortly to confirm your details!
+							</Typography>
+							<Button
+								onClick={requestLogin}
+								variant="contained"
+								color="secondary"
+							>
+								Search more product products
+							</Button>
+						</div>
+					) : undefined}
 				</div>
+			</div>
+
+			<div
+				style={{
+					width: "100%",
+					marginLeft: 20,
+					marginRight: 20,
+				}}
+			>
+				<Typography
+					variant="h5"
+					style={{
+						fontWeight: "bolder",
+						marginLeft: 20,
+						marginTop: 35,
+					}}
+				>
+					Related Products
+				</Typography>
 			</div>
 		</div>
 	);
