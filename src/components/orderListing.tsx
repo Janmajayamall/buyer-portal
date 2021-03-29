@@ -174,7 +174,7 @@ export const OrderListing: FunctionComponent<OrderListingProps> = (props) => (
 				<Button
 					onClick={() => {
 						window.open(
-							`http://localhost:5000/productDetails/${props.orderDetails.productId}`
+							`${process.env.DOMAIN}/productDetails/${props.orderDetails.productId}`
 						);
 					}}
 					variant="outlined"

@@ -20,6 +20,7 @@ import {
 	Dimensions,
 	handleNumberInputOnKeyPress,
 	LoginProcessInterface,
+	resetAuthToken,
 	setAuthToken,
 } from "../src/utils";
 import TextField from "@material-ui/core/TextField";
@@ -509,7 +510,9 @@ function MyApp({ Component, pageProps }: AppProps) {
 			</Button>
 			<Button
 				onClick={() => {
-					router.push("/");
+					resetAuthToken();
+					client.resetStore();
+					router.reload();
 				}}
 			>
 				Logout

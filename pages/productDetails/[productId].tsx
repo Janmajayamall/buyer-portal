@@ -752,7 +752,7 @@ const Page: React.FC<CommonPageProps> = ({
 								}}
 							>
 								Thank you! Your order has been received. We will
-								contact you shortly to confirm your details!
+								contact you shortly to confirm further details!
 							</Typography>
 							<Button
 								onClick={requestLogin}

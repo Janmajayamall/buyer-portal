@@ -89,7 +89,7 @@ const Page: React.FC = (props) => {
 							productDetails={product}
 							onClick={() => {
 								window.open(
-									`http://localhost:5000/productDetails/${product.id}`
+									`${process.env.DOMAIN}/productDetails/${product.id}`
 								);
 							}}
 						/>

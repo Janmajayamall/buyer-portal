@@ -12,11 +12,10 @@ import { onError } from "@apollo/client/link/error";
 import { setContext } from "@apollo/client/link/context";
 import { resetAuthToken } from "../utils";
 // import Router from "next/router";
-
+console.log(process.env.API_URL);
 const httpLink = new HttpLink({
 	fetch,
-	// uri:"http://ec2-13-235-13-251.ap-south-1.compute.amazonaws.com:3000/graphql",
-	uri: "http://localhost:3000/graphql",
+	uri: process.env.API_URL,
 });
 
 const authLink = setContext((_, { headers }) => {
