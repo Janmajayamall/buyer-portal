@@ -205,9 +205,9 @@ const Page: React.FC<CommonPageProps> = ({ authState, windowDimensions }) => {
 						<ProductGridListing
 							productDetails={product}
 							onClick={() => {
-								window.open(
-									`${process.env.DOMAIN}/productDetails/${product.id}`
-								);
+								// window.open(
+								// 	`${process.env.DOMAIN}/productDetails/${product.id}`
+								// );
 							}}
 						/>
 					);
