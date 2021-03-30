@@ -33,6 +33,10 @@ import {
 } from "../../src/graphql/generated/PlaceNewOrder";
 import { PLACE_NEW_ORDER } from "../../src/graphql/mutations/order.graphl";
 import CircularProgress from "@material-ui/core/CircularProgress";
+import {
+	ErrorComponent,
+	LoadingComponent,
+} from "../../src/components/LoadingComponent";
 
 const useStyles = makeStyles((theme: Theme) =>
 	createStyles({
@@ -330,13 +334,12 @@ const Page: React.FC<CommonPageProps> = ({
 	);
 
 	// DECLARING APOLLO HOOKS END
-
 	if (getProductDetailsLoading && !getProductDetailsData) {
-		return <div>Loading!!!</div>;
+		return <LoadingComponent />;
 	}
 
 	if (getProductDetailsError) {
-		return <div>Error</div>;
+		return <ErrorComponent />;
 	}
 
 	const productDetails = getProductDetailsData.getProductDetails;
@@ -363,11 +366,13 @@ const Page: React.FC<CommonPageProps> = ({
 				}}
 			>
 				<Image
-					width={250}
+					width={300}
 					height={300}
 					cloudName={"jayeet"}
 					publicId={
-						"https://res.cloudinary.com/jayeet/image/upload/v1614622206/PIM-1583496423927-afea11e0-1270-41e3-8f6b-389a83687b45_v1-small_rfx3ca.jpg"
+						productDetails.images.length !== 0
+							? `https://res.cloudinary.com/jayeet/image/upload/v1614622206/${productDetails.images[0].publicId}.jpg`
+							: "https://res.cloudinary.com/jayeet/image/upload/v1614622206/PIM-1583496423927-afea11e0-1270-41e3-8f6b-389a83687b45_v1-small_rfx3ca.jpg"
 					}
 				/>
 				<div style={{ marginLeft: 20, paddingLeft: 20, flex: 1 }}>

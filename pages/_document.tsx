@@ -30,6 +30,10 @@ export default class MyDocument extends Document {
 						#__next {
 							height: 100%;
 						}
+
+						.avatar {
+							border-radius: 50;
+						}
 					`}</style>
 				</body>
 			</Html>

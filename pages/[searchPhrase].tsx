@@ -9,6 +9,10 @@ import {
 	GetProductsBySearchPhraseForBuyersVariables,
 } from "../src/graphql/generated/GetProductsBySearchPhraseForBuyers";
 import { ProductGridListing } from "../src/components/productGridListing";
+import TextField from "@material-ui/core/TextField";
+import SearchIcon from "@material-ui/icons/Search";
+import Button from "@material-ui/core/Button";
+import { LoadingComponent } from "../src/components/LoadingComponent";
 
 const useStyles = makeStyles((theme: Theme) =>
 	createStyles({
@@ -28,12 +32,18 @@ const Page: React.FC = (props) => {
 	const classes = useStyles();
 	const router = useRouter();
 
-	let searchPhrase = router.query.searchPhrase;
-	if (searchPhrase && typeof searchPhrase !== "string") {
-		searchPhrase = searchPhrase[0];
+	let searchPhraseRouted = router.query.searchPhrase;
+	if (searchPhraseRouted && typeof searchPhraseRouted !== "string") {
+		searchPhraseRouted = searchPhraseRouted[0];
 	}
 
 	// declaring local states
+
+	// hook for tracking search phrase
+	const [searchPhrase, setSearchPhrase] = useState<string | null>(
+		searchPhraseRouted
+	);
+	console.log(searchPhraseRouted, searchPhrase);
 	// local states end
 
 	// apollo hooks
@@ -46,7 +56,7 @@ const Page: React.FC = (props) => {
 		GetProductsBySearchPhraseForBuyersVariables
 	>(GET_PRODUCTS_BY_SEARCH_PHRASE_FOR_BUYERS, {
 		variables: {
-			searchPhrase: searchPhrase as string,
+			searchPhrase: String(searchPhraseRouted),
 		},
 		onCompleted({ getProductsBySearchPhraseForBuyers }) {
 			console.log(getProductsBySearchPhraseForBuyers);
@@ -59,7 +69,7 @@ const Page: React.FC = (props) => {
 	// apollo hooks end
 
 	if (getProductsBySearchPhraseLoading && !getProductsBySearchPhraseData) {
-		return <div>Loading!!!</div>;
+		return <LoadingComponent />;
 	}
 
 	// trial
@@ -76,8 +86,47 @@ const Page: React.FC = (props) => {
 	];
 
 	return (
-		<div style={{ flexDirection: "row", display: "flex" }}>
-			<FeatureSideBar />
+		<div
+			style={{
+				width: "100%",
+				height: "100%",
+				// justifyContent: "flex-start",
+			}}
+		>
+			<div
+				style={{
+					padding: 10,
+					display: "flex",
+					flexDirection: "row",
+					justifyContent: "flex-start",
+					marginLeft: 10,
+					marginTop: 20,
+					marginBottom: 20,
+					marginRight: 10,
+				}}
+			>
+				<TextField
+					variant="standard"
+					id="SearchPhrase"
+					label="Search Fabric Product"
+					value={searchPhrase}
+					onChange={(e) => {
+						setSearchPhrase(e.target.value);
+					}}
+					style={{ width: "90%", marginRight: 5 }}
+				/>
+				<Button
+					style={{ justifySelf: "center" }}
+					color="secondary"
+					variant="contained"
+					onClick={() => {
+						router.push(`/${searchPhrase}`);
+					}}
+				>
+					<SearchIcon />
+					{"Search"}
+				</Button>
+			</div>
 			<div>
 				{d.map((product) => {
 					if (product.variations.length === 0) {

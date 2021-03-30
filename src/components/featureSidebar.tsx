@@ -4,27 +4,73 @@ import { Image } from "cloudinary-react";
 import Divider from "@material-ui/core/Divider";
 import Paper from "@material-ui/core/Paper";
 import { useRouter } from "next/router";
+import NextImage from "next/image";
+
+const CategoryRep = ({ categoryName }) => {
+	const router = useRouter();
+	// return (
+	// 	<NextImage
+	// 		src="/categories/Cotton.png"
+	// 		alt="me"
+	// 		width="100"
+	// 		height="100"
+	// 	/>
+	// );
+
+	return (
+		<div
+			style={{
+				display: "flex",
+				flexDirection: "column",
+				justifyContent: "center",
+				alignItems: "center",
+			}}
+			onClick={() => {
+				router.push(`/${categoryName.toLowerCase()}`);
+			}}
+		>
+			<NextImage
+				className="categoryImage"
+				src={`/categories/${categoryName}.jpeg`}
+				alt="me"
+				layout="intrinsic"
+				width={50}
+				height={50}
+			/>
+			<style jsx global>{`
+				.categoryImage {
+					border-radius: 50px;
+				}
+			`}</style>
+
+			<Typography variant="subtitle2" style={{ marginTop: 5 }}>
+				{categoryName}
+			</Typography>
+		</div>
+	);
+};
 
 export const FeatureSideBar: FunctionComponent = () => {
 	const router = useRouter();
 	return (
 		<div
 			style={{
-				width: 200,
-				maxWidth: 200,
+				width: 600,
 				flexGrow: 1,
 				borderRightWidth: 1,
 				borderRightColor: "#DCDCDC",
 				borderRightStyle: "solid",
-				padding: 5,
+				margin: 10,
 			}}
 		>
-			<Typography variant="h6">Other categories</Typography>
+			<Typography style={{ margin: 10 }} variant="h6">
+				More categories
+			</Typography>
 			<div style={{ display: "inline-block" }}>
-				{["cotton", "silk", "polyester"].map((val) => {
+				{["cotton", "cotton", "cotton"].map((val) => {
 					return (
-						<div style={{ display: "inline-block" }}>
-							<Paper
+						<div style={{ display: "inline-block", margin: 10 }}>
+							{/* <Paper
 								style={{
 									padding: 10,
 									margin: 10,
@@ -50,12 +96,12 @@ export const FeatureSideBar: FunctionComponent = () => {
 								<Typography variant="caption" display="block">
 									{val}
 								</Typography>
-							</Paper>
+							</Paper> */}
+							<CategoryRep categoryName={val} />
 						</div>
 					);
 				})}
 			</div>
-			<Divider />
 		</div>
 	);
 };

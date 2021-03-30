@@ -64,7 +64,10 @@ export const OrderListing: FunctionComponent<OrderListingProps> = (props) => (
 					height="100"
 					cloudName={"jayeet"}
 					publicId={
-						"https://res.cloudinary.com/jayeet/image/upload/v1614622206/PIM-1583496423927-afea11e0-1270-41e3-8f6b-389a83687b45_v1-small_rfx3ca.jpg"
+						props.orderDetails.productImages &&
+						props.orderDetails.productImages.length !== 0
+							? `https://res.cloudinary.com/jayeet/image/upload/v1614622206/${props.orderDetails.productImages[0]}.jpg`
+							: "https://res.cloudinary.com/jayeet/image/upload/v1614622206/PIM-1583496423927-afea11e0-1270-41e3-8f6b-389a83687b45_v1-small_rfx3ca.jpg"
 					}
 				/>
 			</div>

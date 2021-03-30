@@ -19,6 +19,9 @@ import {
 	GetProductsBySearchPhraseForBuyers_getProductsBySearchPhraseForBuyers,
 } from "../src/graphql/generated/GetProductsBySearchPhraseForBuyers";
 import NextImage from "next/image";
+import TextField from "@material-ui/core/TextField";
+import SearchIcon from "@material-ui/icons/Search";
+import Button from "@material-ui/core/Button";
 
 const useStyles = makeStyles((theme: Theme) =>
 	createStyles({
@@ -41,6 +44,9 @@ const Page: React.FC<CommonPageProps> = ({ authState, windowDimensions }) => {
 		GetProductsBySearchPhraseForBuyers_getProductsBySearchPhraseForBuyers[]
 	>([]);
 
+	// hook for tracking search phrase
+	const [searchPhrase, setSearchPhrase] = useState<string>("");
+
 	// DECLARING LOCAL STATE ENDS
 
 	// DECLARING APOLLO HOOKS
@@ -60,38 +66,48 @@ const Page: React.FC<CommonPageProps> = ({ authState, windowDimensions }) => {
 		},
 	});
 
-	const CategoryRep = () => {
-		return (
-			<NextImage
-				src="/categories/Cotton.png"
-				alt="me"
-				width="100"
-				height="100"
-			/>
-		);
+	const CategoryRep = ({ categoryName }) => {
+		// return (
+		// 	<NextImage
+		// 		src="/categories/Cotton.png"
+		// 		alt="me"
+		// 		width="100"
+		// 		height="100"
+		// 	/>
+		// );
 
 		return (
-			<Paper
+			<div
 				style={{
-					display: "inline-block",
-					padding: 10,
+					display: "flex",
+					flexDirection: "column",
+					justifyContent: "center",
+					alignItems: "center",
 				}}
-				elevation={0}
-				// variant="outlined"
+				onClick={() => {
+					window.open(
+						`${process.env.DOMAIN}/${categoryName.toLowerCase()}`
+					);
+				}}
 			>
-				<div
-					style={{
-						height: 50,
-						width: 50,
-						background: "green",
-						borderRadius: 25,
-						marginBottom: 2,
-					}}
+				<NextImage
+					className="categoryImage"
+					src={`/categories/${categoryName}.jpeg`}
+					alt="me"
+					layout="intrinsic"
+					width={100}
+					height={100}
 				/>
-				<Typography variant="body2" style={{}}>
-					Shirting
+				<style jsx global>{`
+					.categoryImage {
+						border-radius: 50px;
+					}
+				`}</style>
+
+				<Typography variant="subtitle1" style={{ marginTop: 5 }}>
+					{categoryName}
 				</Typography>
-			</Paper>
+			</div>
 		);
 	};
 
@@ -159,13 +175,13 @@ const Page: React.FC<CommonPageProps> = ({ authState, windowDimensions }) => {
 						justifyContent: "space-around",
 					}}
 				>
-					<CategoryRep />
-					<CategoryRep />
-					<CategoryRep />
-					<CategoryRep />
-					<CategoryRep />
+					<CategoryRep categoryName="Cotton" />
+					<CategoryRep categoryName="Cotton" />
+					<CategoryRep categoryName="Cotton" />
+					<CategoryRep categoryName="Cotton" />
+					<CategoryRep categoryName="Cotton" />
 				</div>
-				<div
+				{/* <div
 					style={{
 						display: "flex",
 						flexDirection: "row",
@@ -178,7 +194,42 @@ const Page: React.FC<CommonPageProps> = ({ authState, windowDimensions }) => {
 					<CategoryRep />
 					<CategoryRep />
 					<CategoryRep />
-				</div>
+				</div> */}
+			</div>
+
+			<div
+				style={{
+					padding: 10,
+					display: "flex",
+					flexDirection: "row",
+					justifyContent: "flex-start",
+					marginLeft: 10,
+					marginTop: 20,
+					marginBottom: 20,
+					marginRight: 10,
+				}}
+			>
+				<TextField
+					variant="standard"
+					id="SearchPhrase"
+					label="Search Fabric Product"
+					value={searchPhrase}
+					onChange={(e) => {
+						setSearchPhrase(e.target.value);
+					}}
+					style={{ width: "90%", marginRight: 5 }}
+				/>
+				<Button
+					style={{ justifySelf: "center" }}
+					color="secondary"
+					variant="contained"
+					onClick={() => {
+						router.push(`/${searchPhrase}`);
+					}}
+				>
+					<SearchIcon />
+					{"Search"}
+				</Button>
 			</div>
 
 			<div
@@ -191,7 +242,7 @@ const Page: React.FC<CommonPageProps> = ({ authState, windowDimensions }) => {
 					style={{
 						fontWeight: "bolder",
 						marginLeft: 20,
-						marginTop: 35,
+						marginTop: 10,
 					}}
 				>
 					Trending Now

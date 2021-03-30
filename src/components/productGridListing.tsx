@@ -28,7 +28,9 @@ export const ProductGridListing: FunctionComponent<ProductGridListingProps> = (
 			height="200"
 			cloudName={"jayeet"}
 			publicId={
-				"https://res.cloudinary.com/jayeet/image/upload/v1614622206/PIM-1583496423927-afea11e0-1270-41e3-8f6b-389a83687b45_v1-small_rfx3ca.jpg"
+				props.productDetails.images.length !== 0
+					? `https://res.cloudinary.com/jayeet/image/upload/v1614622206/${props.productDetails.images[0].publicId}.jpg`
+					: "https://res.cloudinary.com/jayeet/image/upload/v1614622206/PIM-1583496423927-afea11e0-1270-41e3-8f6b-389a83687b45_v1-small_rfx3ca.jpg"
 			}
 		/>
 		<Typography

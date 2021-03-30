@@ -552,31 +552,21 @@ function MyApp({ Component, pageProps }: AppProps) {
 				<div
 					style={{
 						width: "100%",
-						display: "flex",
-						justifyContent: "center",
-						alignItems: "center",
+						// display: "flex",
+						// justifyContent: "center",
+						// alignItems: "center",
+						minHeight: windowDimensions.height,
 					}}
 				>
-					<div
-						style={{
-							width: windowDimensions.width,
-							minHeight: windowDimensions.height,
-							// minWidth: 1200,
-							// display: "flex",
-							// justifyContent: "center",
-							// alignItems: "center",
-						}}
-					>
-						<Component
-							{...pageProps}
-							// onAuthStatusChange={(authState: boolean) => {
-							// 	setAuthState(authState);
-							// }}
-							authState={authState}
-							requestLogin={requestLogin}
-							windowDimensions={windowDimensions}
-						/>
-					</div>
+					<Component
+						{...pageProps}
+						// onAuthStatusChange={(authState: boolean) => {
+						// 	setAuthState(authState);
+						// }}
+						authState={authState}
+						requestLogin={requestLogin}
+						windowDimensions={windowDimensions}
+					/>
 				</div>
 				<div
 					style={{
