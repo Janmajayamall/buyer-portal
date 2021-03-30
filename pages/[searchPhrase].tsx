@@ -41,7 +41,7 @@ const Page: React.FC = (props) => {
 
 	// hook for tracking search phrase
 	const [searchPhrase, setSearchPhrase] = useState<string | null>(
-		searchPhraseRouted
+		String(searchPhraseRouted)
 	);
 	console.log(searchPhraseRouted, searchPhrase);
 	// local states end
