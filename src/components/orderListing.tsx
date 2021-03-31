@@ -11,7 +11,12 @@ interface OrderListingProps {
 	orderDetails: any;
 }
 
-const TopicDetailDiv = ({ title, detail }) => (
+const TopicDetailDiv = ({
+	title,
+	detail = "",
+	colourHexCode = "#000000",
+	color = false,
+}) => (
 	<div
 		style={{
 			display: "flex",
@@ -23,17 +28,28 @@ const TopicDetailDiv = ({ title, detail }) => (
 		<Typography style={{ fontWeight: "bolder", fontSize: 12 }}>
 			{`${title} `}
 		</Typography>
-		<Typography
-			style={{
-				fontWeight: "normal",
-				fontSize: 12,
-				wordWrap: "break-word",
-			}}
-			variant="body2"
-			display="block"
-		>
-			{` ${detail}`}
-		</Typography>
+		{color === false ? (
+			<Typography
+				style={{
+					fontWeight: "normal",
+					fontSize: 12,
+					wordWrap: "break-word",
+				}}
+				variant="body2"
+				display="block"
+			>
+				{` ${detail}`}
+			</Typography>
+		) : (
+			<Paper
+				elevation={0}
+				style={{
+					width: 25,
+					height: 25,
+					backgroundColor: colourHexCode,
+				}}
+			/>
+		)}
 	</div>
 );
 
@@ -77,7 +93,13 @@ export const OrderListing: FunctionComponent<OrderListingProps> = (props) => (
 						title={"Name"}
 						detail={props.orderDetails.productName}
 					/>
-					<TopicDetailDiv title={"Color"} detail={"% diawda"} />
+					<TopicDetailDiv
+						title={"Color"}
+						colourHexCode={
+							props.orderDetails.productVariationColourHexCode
+						}
+						color={true}
+					/>
 					<TopicDetailDiv
 						title={"Cloth Composition"}
 						detail={props.orderDetails.productClothComposition}

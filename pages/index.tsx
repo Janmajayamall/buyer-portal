@@ -176,25 +176,11 @@ const Page: React.FC<CommonPageProps> = ({ authState, windowDimensions }) => {
 					}}
 				>
 					<CategoryRep categoryName="Cotton" />
-					<CategoryRep categoryName="Cotton" />
-					<CategoryRep categoryName="Cotton" />
-					<CategoryRep categoryName="Cotton" />
-					<CategoryRep categoryName="Cotton" />
+					<CategoryRep categoryName="Denim" />
+					<CategoryRep categoryName="Poplin" />
+					<CategoryRep categoryName="Silk" />
+					<CategoryRep categoryName="Viscose" />
 				</div>
-				{/* <div
-					style={{
-						display: "flex",
-						flexDirection: "row",
-						justifyContent: "space-around",
-						marginTop: 20,
-					}}
-				>
-					<CategoryRep />
-					<CategoryRep />
-					<CategoryRep />
-					<CategoryRep />
-					<CategoryRep />
-				</div> */}
 			</div>
 
 			<div
