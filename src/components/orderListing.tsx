@@ -82,7 +82,7 @@ export const OrderListing: FunctionComponent<OrderListingProps> = (props) => (
 					publicId={
 						props.orderDetails.productImages &&
 						props.orderDetails.productImages.length !== 0
-							? `https://res.cloudinary.com/jayeet/image/upload/v1614622206/${props.orderDetails.productImages[0]}.jpg`
+							? `https://res.cloudinary.com/jayeet/image/upload/v1614622206/${props.orderDetails.productImages[0].publicId}.jpg`
 							: "https://res.cloudinary.com/jayeet/image/upload/v1614622206/PIM-1583496423927-afea11e0-1270-41e3-8f6b-389a83687b45_v1-small_rfx3ca.jpg"
 					}
 				/>
@@ -90,15 +90,12 @@ export const OrderListing: FunctionComponent<OrderListingProps> = (props) => (
 			<div style={{ display: "flex", flexDirection: "column" }}>
 				<div style={{ display: "flex", flexDirection: "row" }}>
 					<TopicDetailDiv
-						title={"Name"}
-						detail={props.orderDetails.productName}
+						title={"Product ID"}
+						detail={props.orderDetails.productId}
 					/>
 					<TopicDetailDiv
-						title={"Color"}
-						colourHexCode={
-							props.orderDetails.productVariationColourHexCode
-						}
-						color={true}
+						title={"Name"}
+						detail={props.orderDetails.productName}
 					/>
 					<TopicDetailDiv
 						title={"Cloth Composition"}
@@ -106,6 +103,13 @@ export const OrderListing: FunctionComponent<OrderListingProps> = (props) => (
 					/>
 				</div>
 				<div style={{ display: "flex", flexDirection: "row" }}>
+					<TopicDetailDiv
+						title={"Color"}
+						colourHexCode={
+							props.orderDetails.productVariationColourHexCode
+						}
+						color={true}
+					/>
 					<TopicDetailDiv
 						title={"Width"}
 						detail={`${formatNumberWithCommas(
@@ -170,7 +174,14 @@ export const OrderListing: FunctionComponent<OrderListingProps> = (props) => (
 							.formattedPriceCurrency
 					}`}
 				/>
-				<TopicDetailDiv title={"Delivery Charges"} detail={"100"} />
+				<TopicDetailDiv
+					title={"Delivery Charges"}
+					detail={
+						props.orderDetails.deliveryCharges != undefined
+							? props.orderDetails.deliveryCharges
+							: "To be confirmed"
+					}
+				/>
 			</div>
 		</div>
 		{/* <Divider orientation="vertical" flexItem /> */}

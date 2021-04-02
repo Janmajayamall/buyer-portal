@@ -32,6 +32,7 @@ export const GET_PRODUCTS_BY_SEARCH_PHRASE_FOR_BUYERS = gql`
 			}
 			tags
 			timestamp
+			usage
 		}
 	}
 `;
@@ -68,6 +69,7 @@ export const GET_PRODUCT_DETAILS = gql`
 			}
 			tags
 			timestamp
+			usage
 		}
 	}
 `;

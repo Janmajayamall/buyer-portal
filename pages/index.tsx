@@ -210,7 +210,11 @@ const Page: React.FC<CommonPageProps> = ({ authState, windowDimensions }) => {
 					color="secondary"
 					variant="contained"
 					onClick={() => {
-						router.push(`/${searchPhrase}`);
+						if (searchPhrase.trim() === "") {
+							router.push(`/any`);
+						} else {
+							router.push(`/${searchPhrase}`);
+						}
 					}}
 				>
 					<SearchIcon />

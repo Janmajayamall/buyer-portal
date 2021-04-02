@@ -33,8 +33,8 @@ export interface GetProductsBySearchPhraseForBuyers_getProductsBySearchPhraseFor
   name: string;
   description: string;
   clothComposition: string;
-  width: number;
-  gsm: number;
+  width: string;
+  gsm: string;
   pattern: string;
   minOrderSize: number;
   referenceId: string | null;
@@ -44,6 +44,7 @@ export interface GetProductsBySearchPhraseForBuyers_getProductsBySearchPhraseFor
   images: GetProductsBySearchPhraseForBuyers_getProductsBySearchPhraseForBuyers_images[];
   tags: string[];
   timestamp: string;
+  usage: string;
 }
 
 export interface GetProductsBySearchPhraseForBuyers {

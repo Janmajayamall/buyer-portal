@@ -32,7 +32,7 @@ import {
 } from "../src/graphql/mutations/buyer.graphql";
 import CustomTheme from "./../src/theme";
 import { IS_BUYER_AUTHENTICATED } from "../src/graphql/queries/buyer.graphql";
-import { WSAEINVALIDPROCTABLE } from "constants";
+import NextImage from "next/image";
 
 const useStyles = makeStyles((theme: Theme) =>
 	createStyles({
@@ -478,7 +478,7 @@ function MyApp({ Component, pageProps }: AppProps) {
 
 	// STUFF RELATED TO MENU OPTIONS
 
-	const menu = (
+	const menu = authState ? (
 		<div>
 			<Button
 				onClick={() => {
@@ -512,11 +512,26 @@ function MyApp({ Component, pageProps }: AppProps) {
 				onClick={() => {
 					resetAuthToken();
 					client.resetStore();
-					router.reload();
+					if (router.pathname === "/") {
+						router.reload();
+					} else {
+						router.push("/");
+					}
 				}}
 			>
 				Logout
 			</Button>
+		</div>
+	) : (
+		<div>
+			<Button
+				onClick={() => {
+					router.push("/");
+				}}
+			>
+				Home
+			</Button>
+			<Button onClick={requestLogin}>Login</Button>
 		</div>
 	);
 
@@ -530,6 +545,15 @@ function MyApp({ Component, pageProps }: AppProps) {
 					position="static"
 				>
 					<Toolbar>
+						<NextImage
+							onClick={() => {
+								router.push("/");
+							}}
+							src={`/logo.png`}
+							alt="logo"
+							width={110}
+							height={24.2}
+						/>
 						<div
 							style={{
 								position: "absolute",
@@ -539,13 +563,7 @@ function MyApp({ Component, pageProps }: AppProps) {
 								justifyContent: "flex-end",
 							}}
 						>
-							{authState ? (
-								<div>{menu}</div>
-							) : (
-								<Button onClick={requestLogin} variant="text">
-									Login
-								</Button>
-							)}
+							<div>{menu}</div>
 						</div>
 					</Toolbar>
 				</AppBar>

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import { makeStyles, Theme, createStyles } from "@material-ui/core/styles";
 import { useQuery } from "@apollo/react-hooks";
@@ -13,6 +13,8 @@ import TextField from "@material-ui/core/TextField";
 import SearchIcon from "@material-ui/icons/Search";
 import Button from "@material-ui/core/Button";
 import { LoadingComponent } from "../src/components/LoadingComponent";
+import { CommonPageProps } from "../src/utils";
+import { Typography } from "@material-ui/core";
 
 const useStyles = makeStyles((theme: Theme) =>
 	createStyles({
@@ -28,7 +30,7 @@ const useStyles = makeStyles((theme: Theme) =>
 	})
 );
 
-const Page: React.FC = (props) => {
+const Page: React.FC<CommonPageProps> = () => {
 	const classes = useStyles();
 	const router = useRouter();
 
@@ -40,10 +42,14 @@ const Page: React.FC = (props) => {
 	// declaring local states
 
 	// hook for tracking search phrase
-	const [searchPhrase, setSearchPhrase] = useState<string | null>(
-		String(searchPhraseRouted)
+	const [searchPhrase, setSearchPhrase] = useState<string | undefined>(
+		searchPhraseRouted != undefined
+			? String(searchPhraseRouted).trim() === "any"
+				? ""
+				: String(searchPhraseRouted)
+			: undefined
 	);
-	console.log(searchPhraseRouted, searchPhrase);
+
 	// local states end
 
 	// apollo hooks
@@ -56,7 +62,10 @@ const Page: React.FC = (props) => {
 		GetProductsBySearchPhraseForBuyersVariables
 	>(GET_PRODUCTS_BY_SEARCH_PHRASE_FOR_BUYERS, {
 		variables: {
-			searchPhrase: String(searchPhraseRouted),
+			searchPhrase:
+				String(searchPhraseRouted).trim() === "any"
+					? ""
+					: String(searchPhraseRouted),
 		},
 		onCompleted({ getProductsBySearchPhraseForBuyers }) {
 			console.log(getProductsBySearchPhraseForBuyers);
@@ -67,6 +76,10 @@ const Page: React.FC = (props) => {
 	});
 
 	// apollo hooks end
+
+	// effect hooks
+
+	// effect hooks end
 
 	if (getProductsBySearchPhraseLoading && !getProductsBySearchPhraseData) {
 		return <LoadingComponent />;
@@ -127,23 +140,53 @@ const Page: React.FC = (props) => {
 					{"Search"}
 				</Button>
 			</div>
+			{String(searchPhraseRouted).trim() !== "any" ? (
+				<div
+					style={{
+						marginLeft: 20,
+					}}
+				>
+					<Typography
+						variant="subtitle1"
+						style={{ color: "#808080" }}
+					>
+						{`Showing results for ${searchPhraseRouted}...`}
+					</Typography>
+				</div>
+			) : undefined}
 			<div>
-				{d.map((product) => {
-					if (product.variations.length === 0) {
-						return undefined;
-					}
+				{d.length === 0 ? (
+					<div
+						style={{
+							display: "flex",
+							flexDirection: "column",
+							justifyContent: "center",
+							alignItems: "center",
+							margin: 50,
+						}}
+					>
+						<Typography variant="h6">
+							Sorry, 0 products match your search!
+						</Typography>
+					</div>
+				) : (
+					d.map((product) => {
+						if (product.variations.length === 0) {
+							return undefined;
+						}
 
-					return (
-						<ProductGridListing
-							productDetails={product}
-							onClick={() => {
-								window.open(
-									`${process.env.DOMAIN}/productDetails/${product.id}`
-								);
-							}}
-						/>
-					);
-				})}
+						return (
+							<ProductGridListing
+								productDetails={product}
+								onClick={() => {
+									window.open(
+										`${process.env.DOMAIN}/productDetails/${product.id}`
+									);
+								}}
+							/>
+						);
+					})
+				)}
 			</div>
 		</div>
 	);

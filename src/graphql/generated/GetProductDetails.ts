@@ -33,8 +33,8 @@ export interface GetProductDetails_getProductDetails {
   name: string;
   description: string;
   clothComposition: string;
-  width: number;
-  gsm: number;
+  width: string;
+  gsm: string;
   pattern: string;
   minOrderSize: number;
   referenceId: string | null;
@@ -44,6 +44,7 @@ export interface GetProductDetails_getProductDetails {
   images: GetProductDetails_getProductDetails_images[];
   tags: string[];
   timestamp: string;
+  usage: string;
 }
 
 export interface GetProductDetails {

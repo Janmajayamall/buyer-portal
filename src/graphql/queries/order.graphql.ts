@@ -10,6 +10,7 @@ export const GET_ORDER_LIST_FOR_BUYER = gql`
 			orderTotalPrice
 			totalTax
 			grandTotalPrice
+			deliveryCharges
 			buyerId
 			manufacturerId
 			timestamp

@@ -236,11 +236,27 @@ const Page: React.FC<CommonPageProps> = ({ authState, requestLogin }) => {
 					</div>
 				</div>
 			</div>
-			<div style={{ marginBottom: 20 }}>
-				{filteredOrderList.map((order) => (
-					<OrderListing orderDetails={order} />
-				))}
-			</div>
+			{filteredOrderList.length === 0 ? (
+				<div
+					style={{
+						display: "flex",
+						flexDirection: "column",
+						justifyContent: "center",
+						alignItems: "center",
+						margin: 50,
+					}}
+				>
+					<Typography variant="h6">
+						You have got 0 order records
+					</Typography>
+				</div>
+			) : (
+				<div style={{ marginBottom: 20 }}>
+					{filteredOrderList.map((order) => (
+						<OrderListing orderDetails={order} />
+					))}
+				</div>
+			)}
 		</div>
 	);
 };

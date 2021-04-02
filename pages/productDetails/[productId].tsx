@@ -13,7 +13,10 @@ import {
 	GetProductDetailsVariables,
 	GetProductDetails_getProductDetails_variations,
 } from "../../src/graphql/generated/GetProductDetails";
-import { GET_PRODUCT_DETAILS } from "../../src/graphql/queries/products.graphql";
+import {
+	GET_PRODUCTS_BY_SEARCH_PHRASE_FOR_BUYERS,
+	GET_PRODUCT_DETAILS,
+} from "../../src/graphql/queries/products.graphql";
 import { Divider } from "@material-ui/core";
 import {
 	FormattedPriceInterface,
@@ -37,6 +40,12 @@ import {
 	ErrorComponent,
 	LoadingComponent,
 } from "../../src/components/LoadingComponent";
+import {
+	GetProductsBySearchPhraseForBuyers,
+	GetProductsBySearchPhraseForBuyersVariables,
+	GetProductsBySearchPhraseForBuyers_getProductsBySearchPhraseForBuyers,
+} from "../../src/graphql/generated/GetProductsBySearchPhraseForBuyers";
+import { ProductGridListing } from "../../src/components/productGridListing";
 
 const useStyles = makeStyles((theme: Theme) =>
 	createStyles({
@@ -141,6 +150,11 @@ const Page: React.FC<CommonPageProps> = ({
 		placeOrderMutationRequestState,
 		setPlaceOrderMutationRequestState,
 	] = useState<MutationRequestState>(MutationRequestState.notInitiated);
+
+	// state for recommended products
+	const [recommendedProducts, setRecommendedProducts] = useState<
+		GetProductsBySearchPhraseForBuyers_getProductsBySearchPhraseForBuyers[]
+	>([]);
 
 	// DECLARING LOCAL STATES END
 
@@ -333,6 +347,18 @@ const Page: React.FC<CommonPageProps> = ({
 		}
 	);
 
+	const {} = useQuery<
+		GetProductsBySearchPhraseForBuyers,
+		GetProductsBySearchPhraseForBuyersVariables
+	>(GET_PRODUCTS_BY_SEARCH_PHRASE_FOR_BUYERS, {
+		variables: {
+			searchPhrase: "",
+		},
+		onCompleted({ getProductsBySearchPhraseForBuyers }) {
+			setRecommendedProducts(getProductsBySearchPhraseForBuyers);
+		},
+	});
+
 	// DECLARING APOLLO HOOKS END
 	if (getProductDetailsLoading && !getProductDetailsData) {
 		return <LoadingComponent />;
@@ -416,7 +442,7 @@ const Page: React.FC<CommonPageProps> = ({
 					/>
 					<TopicDetailDiv
 						title={"GSM"}
-						detail={`${productDetails.gsm} g/m2`}
+						detail={`${productDetails.gsm}`}
 					/>
 					<TopicDetailDiv
 						title={"Width"}
@@ -426,6 +452,12 @@ const Page: React.FC<CommonPageProps> = ({
 						title={"Minimum order quantity"}
 						detail={`${productDetails.minOrderSize} meters`}
 					/>
+					{productDetails.usage !== "" ? (
+						<TopicDetailDiv
+							title={"Usage"}
+							detail={productDetails.usage}
+						/>
+					) : undefined}
 				</div>
 			</div>
 
@@ -760,11 +792,13 @@ const Page: React.FC<CommonPageProps> = ({
 								contact you shortly to confirm further details!
 							</Typography>
 							<Button
-								onClick={requestLogin}
+								onClick={() => {
+									router.push("/any");
+								}}
 								variant="contained"
 								color="secondary"
 							>
-								Search more product products
+								Continue Shopping
 							</Button>
 						</div>
 					) : undefined}
@@ -786,8 +820,22 @@ const Page: React.FC<CommonPageProps> = ({
 						marginTop: 35,
 					}}
 				>
-					Related Products
+					Recommended Products
 				</Typography>
+				{recommendedProducts.map((product) => {
+					if (product.variations.length === 0) {
+						return undefined;
+					}
+
+					return (
+						<ProductGridListing
+							productDetails={product}
+							onClick={() => {
+								router.push(`/productDetails/${product.id}`);
+							}}
+						/>
+					);
+				})}
 			</div>
 		</div>
 	);

@@ -23,6 +23,7 @@ export interface GetOrderListForBuyer_getOrderListForBuyer {
   orderTotalPrice: number;
   totalTax: number;
   grandTotalPrice: number;
+  deliveryCharges: number | null;
   buyerId: number;
   manufacturerId: number;
   timestamp: string;
@@ -30,14 +31,14 @@ export interface GetOrderListForBuyer_getOrderListForBuyer {
   productName: string;
   productDescription: string;
   productClothComposition: string;
-  productWidth: number;
-  productGsm: number;
+  productWidth: string;
+  productGsm: string;
   productPattern: string;
   productMinOrderSize: number;
   productReferenceId: string;
   productHsnCode: string;
   productTaxPercentage: number;
-  productImages: GetOrderListForBuyer_getOrderListForBuyer_productImages[] | null;
+  productImages: GetOrderListForBuyer_getOrderListForBuyer_productImages[];
   productVariationId: number;
   productVariationPrice: number;
   productVariationInStock: boolean;
