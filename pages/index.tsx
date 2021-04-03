@@ -160,73 +160,73 @@ const Page: React.FC<CommonPageProps> = ({ authState, windowDimensions }) => {
 					return temp.height.toString();
 				})()}
 			/>
-			<div
-				style={{
-					width: "90%",
-					alignSelf: "center",
-					marginTop: 40,
-					// padding: 20,
-				}}
-			>
-				<div
-					style={{
-						display: "flex",
-						flexDirection: "row",
-						justifyContent: "space-around",
-					}}
-				>
-					<CategoryRep categoryName="Cotton" />
-					<CategoryRep categoryName="Denim" />
-					<CategoryRep categoryName="Poplin" />
-					<CategoryRep categoryName="Silk" />
-					<CategoryRep categoryName="Viscose" />
-				</div>
-			</div>
-
-			<div
-				style={{
-					padding: 10,
-					display: "flex",
-					flexDirection: "row",
-					justifyContent: "flex-start",
-					marginLeft: 10,
-					marginTop: 20,
-					marginBottom: 20,
-					marginRight: 10,
-				}}
-			>
-				<TextField
-					variant="standard"
-					id="SearchPhrase"
-					label="Search Fabric Product"
-					value={searchPhrase}
-					onChange={(e) => {
-						setSearchPhrase(e.target.value);
-					}}
-					style={{ width: "90%", marginRight: 5 }}
-				/>
-				<Button
-					style={{ justifySelf: "center" }}
-					color="secondary"
-					variant="contained"
-					onClick={() => {
-						if (searchPhrase.trim() === "") {
-							router.push(`/any`);
-						} else {
-							router.push(`/${searchPhrase}`);
-						}
-					}}
-				>
-					<SearchIcon />
-					{"Search"}
-				</Button>
-			</div>
 
 			<div
 				style={{
 					display: "inline-block",
+					paddingRight: 50,
+					paddingLeft: 50,
 				}}
 			>
+				<div
+					style={{
+						alignSelf: "center",
+						marginTop: 40,
+						// padding: 20,
+					}}
+				>
+					<div
+						style={{
+							display: "flex",
+							flexDirection: "row",
+							justifyContent: "space-around",
+						}}
+					>
+						<CategoryRep categoryName="Cotton" />
+						<CategoryRep categoryName="Denim" />
+						<CategoryRep categoryName="Poplin" />
+						<CategoryRep categoryName="Silk" />
+						<CategoryRep categoryName="Viscose" />
+					</div>
+				</div>
+				<div
+					style={{
+						padding: 10,
+						display: "flex",
+						flexDirection: "row",
+						justifyContent: "flex-start",
+						marginLeft: 10,
+						marginTop: 20,
+						marginBottom: 20,
+						marginRight: 10,
+					}}
+				>
+					<TextField
+						variant="standard"
+						id="SearchPhrase"
+						label="Search Fabric Product"
+						value={searchPhrase}
+						onChange={(e) => {
+							setSearchPhrase(e.target.value);
+						}}
+						style={{ width: "90%", marginRight: 5 }}
+					/>
+					<Button
+						style={{ justifySelf: "center" }}
+						color="secondary"
+						variant="contained"
+						onClick={() => {
+							if (searchPhrase.trim() === "") {
+								router.push(`/any`);
+							} else {
+								router.push(`/${searchPhrase}`);
+							}
+						}}
+					>
+						<SearchIcon />
+						{"Search"}
+					</Button>
+				</div>
 				<Typography
 					variant="h5"
 					style={{
@@ -237,6 +237,11 @@ const Page: React.FC<CommonPageProps> = ({ authState, windowDimensions }) => {
 				>
 					Trending Now
 				</Typography>
+				{/* <div
+					style={{
+						display: "flex",
+					}}
+				> */}
 				{products.map((product) => {
 					if (product.variations.length === 0) {
 						return undefined;
@@ -253,6 +258,7 @@ const Page: React.FC<CommonPageProps> = ({ authState, windowDimensions }) => {
 						/>
 					);
 				})}
+				{/* </div> */}
 			</div>
 		</div>
 	);

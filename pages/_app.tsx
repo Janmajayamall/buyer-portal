@@ -601,7 +601,10 @@ function MyApp({ Component, pageProps }: AppProps) {
 							width: "100%",
 							display: "flex",
 							flexDirection: "row",
-							padding: 20,
+							paddingTop: 50,
+							paddingBottom: 50,
+							paddingLeft: 20,
+							paddingRight: 20,
 							justifyContent: "space-around",
 						}}
 					>
@@ -612,19 +615,19 @@ function MyApp({ Component, pageProps }: AppProps) {
 							}}
 						>
 							<Typography
-								variant="h6"
+								variant="h5"
 								style={{ color: "#23106F" }}
 							>
 								Contact Us
 							</Typography>
 							<Typography
-								variant="subtitle2"
+								variant="subtitle1"
 								style={{ color: "#23106F" }}
 							>
 								Email: janmajaya.choithram@gmail.com
 							</Typography>
 							<Typography
-								variant="subtitle2"
+								variant="subtitle1"
 								style={{ color: "#23106F" }}
 							>
 								Whatsapp: +85254906535
@@ -638,13 +641,13 @@ function MyApp({ Component, pageProps }: AppProps) {
 							}}
 						>
 							<Typography
-								variant="h6"
+								variant="h5"
 								style={{ color: "#23106F" }}
 							>
 								Manufacturers
 							</Typography>
 							<Typography
-								variant="subtitle2"
+								variant="subtitle1"
 								style={{ color: "#23106F" }}
 							>
 								To become our manufacturing partner, contact us

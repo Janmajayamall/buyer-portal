@@ -85,19 +85,6 @@ const Page: React.FC<CommonPageProps> = () => {
 		return <LoadingComponent />;
 	}
 
-	// trial
-	const d = [
-		...getProductsBySearchPhraseData.getProductsBySearchPhraseForBuyers,
-		...getProductsBySearchPhraseData.getProductsBySearchPhraseForBuyers,
-		...getProductsBySearchPhraseData.getProductsBySearchPhraseForBuyers,
-		...getProductsBySearchPhraseData.getProductsBySearchPhraseForBuyers,
-		...getProductsBySearchPhraseData.getProductsBySearchPhraseForBuyers,
-		...getProductsBySearchPhraseData.getProductsBySearchPhraseForBuyers,
-		...getProductsBySearchPhraseData.getProductsBySearchPhraseForBuyers,
-		...getProductsBySearchPhraseData.getProductsBySearchPhraseForBuyers,
-		...getProductsBySearchPhraseData.getProductsBySearchPhraseForBuyers,
-	];
-
 	return (
 		<div
 			style={{
@@ -155,7 +142,8 @@ const Page: React.FC<CommonPageProps> = () => {
 				</div>
 			) : undefined}
 			<div>
-				{d.length === 0 ? (
+				{getProductsBySearchPhraseData
+					.getProductsBySearchPhraseForBuyers.length === 0 ? (
 					<div
 						style={{
 							display: "flex",
@@ -170,22 +158,24 @@ const Page: React.FC<CommonPageProps> = () => {
 						</Typography>
 					</div>
 				) : (
-					d.map((product) => {
-						if (product.variations.length === 0) {
-							return undefined;
-						}
+					getProductsBySearchPhraseData.getProductsBySearchPhraseForBuyers.map(
+						(product) => {
+							if (product.variations.length === 0) {
+								return undefined;
+							}
 
-						return (
-							<ProductGridListing
-								productDetails={product}
-								onClick={() => {
-									window.open(
-										`${process.env.DOMAIN}/productDetails/${product.id}`
-									);
-								}}
-							/>
-						);
-					})
+							return (
+								<ProductGridListing
+									productDetails={product}
+									onClick={() => {
+										window.open(
+											`${process.env.DOMAIN}/productDetails/${product.id}`
+										);
+									}}
+								/>
+							);
+						}
+					)
 				)}
 			</div>
 		</div>
