@@ -288,7 +288,7 @@ function MyApp({ Component, pageProps }: AppProps) {
 			});
 
 			// set resend code time to 120 s
-			setResendCodeTimeLeft(120);
+			setResendCodeTimeLeft(210);
 		} catch (e) {
 			console.log(e);
 		}
