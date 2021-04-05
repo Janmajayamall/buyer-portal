@@ -145,6 +145,12 @@ const Page: React.FC<CommonPageProps> = ({
 		setOrderQuantityInputError,
 	] = useState<boolean>(false);
 
+	// state for keeping a track of selected product variation
+	const [
+		productVariationSelectError,
+		setProductVariationSelectError,
+	] = useState<boolean>(false);
+
 	// state for tracking place order mutation request
 	const [
 		placeOrderMutationRequestState,
@@ -252,29 +258,30 @@ const Page: React.FC<CommonPageProps> = ({
 
 	// returns true if order details are right
 	function checkOrderDetails(): boolean {
+		let passed: boolean = true;
+
 		// check for selected product variation
 		if (!selectedProductVariation) {
-			return false;
+			passed = false;
+			setProductVariationSelectError(true);
 		}
 
-		// check for selected product quantity
-		if (selectedProductQuantity === "") {
-			return false;
-		}
-
-		// check if order quantity size is smaller than MOQ.
-		// If yes, then display MOQ error
-		if (Number(selectedProductQuantity) < productDetails.minOrderSize) {
+		// check for selected product quantity and check if order quantity size is smaller than MOQ.
+		if (
+			selectedProductQuantity === "" ||
+			Number(selectedProductQuantity) < productDetails.minOrderSize
+		) {
+			passed = false;
 			setOrderQuantityInputError(true);
-			return false;
 		}
 
 		// check if product details are present
 		if (!productDetails) {
+			passed = false;
 			return false;
 		}
 
-		return true;
+		return passed;
 	}
 
 	// place new order location function
@@ -307,6 +314,7 @@ const Page: React.FC<CommonPageProps> = ({
 
 		// empty selected variation if any from last key && reset order input field touched value
 		setSelectedProductVariation(null);
+		setProductVariationSelectError(false);
 		setOrderQuantityInputError(false);
 	}
 
@@ -460,13 +468,38 @@ const Page: React.FC<CommonPageProps> = ({
 					) : undefined}
 				</div>
 			</div>
-
 			<div
 				style={{
 					width: "100%",
 					display: "flex",
 					flexDirection: "row",
 					marginTop: 20,
+				}}
+			>
+				<Typography variant="h6" display="block">
+					Choose color{" "}
+				</Typography>
+				{productVariationSelectError && (
+					<Typography
+						variant="subtitle2"
+						style={{
+							alignSelf: "center",
+							marginLeft: 10,
+							color: "#FF0000",
+							fontSize: 12,
+						}}
+						display="block"
+					>
+						Please choose a color
+					</Typography>
+				)}
+			</div>
+			<div
+				style={{
+					width: "100%",
+					display: "flex",
+					flexDirection: "row",
+					marginTop: 10,
 					minHeight: 350,
 				}}
 			>
@@ -553,6 +586,9 @@ const Page: React.FC<CommonPageProps> = ({
 												borderStyle: "solid",
 											}}
 											onClick={() => {
+												setProductVariationSelectError(
+													false
+												);
 												setSelectedProductVariation(
 													variation
 												);
@@ -618,8 +654,10 @@ const Page: React.FC<CommonPageProps> = ({
 											);
 										}}
 										helperText={
-											Number(selectedProductQuantity) <
-												productDetails.minOrderSize &&
+											(Number(selectedProductQuantity) <
+												productDetails.minOrderSize ||
+												selectedProductQuantity ===
+													"") &&
 											orderQuantityInputError
 												? `Quantity size should be more than ${productDetails.minOrderSize} Meters`
 												: ""
@@ -632,8 +670,10 @@ const Page: React.FC<CommonPageProps> = ({
 											paddingRight: 20,
 										}}
 										error={
-											Number(selectedProductQuantity) <
-												productDetails.minOrderSize &&
+											(Number(selectedProductQuantity) <
+												productDetails.minOrderSize ||
+												selectedProductQuantity ===
+													"") &&
 											orderQuantityInputError
 										}
 									/>
@@ -732,7 +772,7 @@ const Page: React.FC<CommonPageProps> = ({
 											display="block"
 										>
 											Shipping charges may apply and will
-											be confirmed before we process the
+											be confirmed before we process your
 											order
 										</Typography>
 									</Paper>

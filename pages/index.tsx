@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import { useRouter } from "next/router";
 import { makeStyles, Theme, createStyles } from "@material-ui/core/styles";
 import CircularProgress from "@material-ui/core/CircularProgress";
@@ -37,6 +37,8 @@ const useStyles = makeStyles((theme: Theme) =>
 const Page: React.FC<CommonPageProps> = ({ authState, windowDimensions }) => {
 	const classes = useStyles();
 	const router = useRouter();
+
+	const categoryDivRef = useRef(null);
 
 	// DECLARING LOCAL STATE
 
@@ -127,6 +129,11 @@ const Page: React.FC<CommonPageProps> = ({ authState, windowDimensions }) => {
 			<NextImage
 				src="/main_banner.png"
 				alt="me"
+				onClick={() => {
+					categoryDivRef.current.scrollIntoView({
+						behavior: "smooth",
+					});
+				}}
 				width={(() => {
 					const temp = getAdjustedImageDims(
 						{ width: 1200, height: 497 },
@@ -169,6 +176,7 @@ const Page: React.FC<CommonPageProps> = ({ authState, windowDimensions }) => {
 				}}
 			>
 				<div
+					ref={categoryDivRef}
 					style={{
 						alignSelf: "center",
 						marginTop: 40,
