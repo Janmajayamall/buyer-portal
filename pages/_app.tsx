@@ -51,8 +51,8 @@ const useStyles = makeStyles((theme: Theme) =>
 
 const loginProcessDefaultState: LoginProcessInterface = {
 	stage: 0,
-	phoneNumber: "1234567899",
-	verificationCode: "1202",
+	phoneNumber: "54906535",
+	verificationCode: "123456",
 	authenticationFailed: false,
 };
 
@@ -132,7 +132,7 @@ function MyApp({ Component, pageProps }: AppProps) {
 				height: window.innerHeight,
 			});
 		}
-	});
+	}, []);
 
 	useEffect(() => {
 		// if time reaches zero then return
@@ -172,7 +172,7 @@ function MyApp({ Component, pageProps }: AppProps) {
 
 	async function requestLoginVerificationCode() {
 		// check whether phone number is valid
-		if (loginProcessState.phoneNumber.length !== 10) {
+		if (loginProcessState.phoneNumber.length !== 8) {
 			return;
 		}
 
@@ -192,7 +192,7 @@ function MyApp({ Component, pageProps }: AppProps) {
 			await client.mutate({
 				mutation: BUYER_REQUEST_LOGIN_VERIFICATION_CODE,
 				variables: {
-					phoneNumber: loginProcessState.phoneNumber,
+					phoneNumber: loginProcessState.phoneNumber.trim(),
 				},
 			});
 
@@ -203,14 +203,18 @@ function MyApp({ Component, pageProps }: AppProps) {
 			});
 		} catch (e) {
 			console.log(e);
+			setLoginProcessState({
+				...loginProcessState,
+				stage: 0,
+			});
 		}
 	}
 
 	async function verifyLoginCode() {
 		// validation verification code
 		if (
-			loginProcessState.verificationCode.length !== 4 ||
-			loginProcessState.phoneNumber.length !== 10
+			loginProcessState.verificationCode.length !== 6 ||
+			loginProcessState.phoneNumber.length !== 8
 		) {
 			return;
 		}
@@ -232,8 +236,8 @@ function MyApp({ Component, pageProps }: AppProps) {
 			const { data } = await client.mutate({
 				mutation: BUYER_VERIFY_LOGIN_CODE,
 				variables: {
-					phoneNumber: loginProcessState.phoneNumber,
-					verificationCode: loginProcessState.verificationCode,
+					phoneNumber: loginProcessState.phoneNumber.trim(),
+					verificationCode: loginProcessState.verificationCode.trim(),
 				},
 			});
 
@@ -269,7 +273,7 @@ function MyApp({ Component, pageProps }: AppProps) {
 		}
 
 		// check whether phone number is valid
-		if (loginProcessState.phoneNumber.length !== 10) {
+		if (loginProcessState.phoneNumber.length !== 8) {
 			return;
 		}
 
@@ -573,6 +577,7 @@ function MyApp({ Component, pageProps }: AppProps) {
 						// display: "flex",
 						// justifyContent: "center",
 						// alignItems: "center",
+						backgroundColor: "#ffffff",
 						minHeight: windowDimensions.height,
 					}}
 				>
@@ -584,6 +589,7 @@ function MyApp({ Component, pageProps }: AppProps) {
 						authState={authState}
 						requestLogin={requestLogin}
 						windowDimensions={windowDimensions}
+						checkAuthState={checkAuthState}
 					/>
 				</div>
 				<div

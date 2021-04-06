@@ -43,7 +43,11 @@ const useStyles = makeStyles((theme: Theme) =>
 	})
 );
 
-const Page: React.FC<CommonPageProps> = ({ authState, requestLogin }) => {
+const Page: React.FC<CommonPageProps> = ({
+	authState,
+	requestLogin,
+	checkAuthState,
+}) => {
 	const classes = useStyles();
 	const router = useRouter();
 
@@ -76,6 +80,11 @@ const Page: React.FC<CommonPageProps> = ({ authState, requestLogin }) => {
 	// DECLARING LOCAL STATE END
 
 	// DECLARING LOCAL EFFECTS
+
+	// on first render
+	useEffect(() => {
+		checkAuthState();
+	}, []);
 
 	// effect for filtering orders on the basis of filters
 	useEffect(() => {

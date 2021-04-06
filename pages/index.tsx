@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/router";
 import { makeStyles, Theme, createStyles } from "@material-ui/core/styles";
 import CircularProgress from "@material-ui/core/CircularProgress";
@@ -34,7 +34,11 @@ const useStyles = makeStyles((theme: Theme) =>
 	})
 );
 
-const Page: React.FC<CommonPageProps> = ({ authState, windowDimensions }) => {
+const Page: React.FC<CommonPageProps> = ({
+	authState,
+	windowDimensions,
+	checkAuthState,
+}) => {
 	const classes = useStyles();
 	const router = useRouter();
 
@@ -50,6 +54,15 @@ const Page: React.FC<CommonPageProps> = ({ authState, windowDimensions }) => {
 	const [searchPhrase, setSearchPhrase] = useState<string>("");
 
 	// DECLARING LOCAL STATE ENDS
+
+	// DECLARING EFFECTS
+
+	// on first render
+	useEffect(() => {
+		checkAuthState();
+	}, []);
+
+	// DECLARING EFFECTS END
 
 	// DECLARING APOLLO HOOKS
 

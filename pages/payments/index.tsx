@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import { makeStyles } from "@material-ui/core/styles";
 import Table from "@material-ui/core/Table";
@@ -16,7 +16,7 @@ import {
 } from "../../src/graphql/generated/GetBuyerPayments";
 import { GET_BUYER_PAYMENTS } from "../../src/graphql/queries/buyer.graphql";
 import { Typography } from "@material-ui/core";
-import { formatPriceValue } from "../../src/utils";
+import { CommonPageProps, formatPriceValue } from "../../src/utils";
 
 const useStyles = makeStyles({
 	table: {
@@ -104,7 +104,7 @@ const PaymentsTable = ({ payments }) => {
 	);
 };
 
-const Page: React.FC = () => {
+const Page: React.FC<CommonPageProps> = ({ checkAuthState }) => {
 	const classes = useStyles();
 	const router = useRouter();
 
@@ -118,6 +118,15 @@ const Page: React.FC = () => {
 	>([]);
 
 	// LOCAL HOOKS END
+
+	// DECLARING EFFECTS
+
+	// on first render
+	useEffect(() => {
+		checkAuthState();
+	}, []);
+
+	// DECLARING EFFECTS END
 
 	// APOLLO HOOKS
 
@@ -143,10 +152,6 @@ const Page: React.FC = () => {
 	);
 
 	// APOLLO HOOKS END
-
-	if (loading && !data) {
-		return <div></div>;
-	}
 
 	return (
 		<div style={{ paddingLeft: 50, paddingRight: 50, marginTop: 30 }}>

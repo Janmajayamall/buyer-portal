@@ -52,7 +52,7 @@ const validationSchema = yup.object({
 	gstin: yup.string().required("GSTIN is required"),
 });
 
-const Page: React.FC<CommonPageProps> = ({ authState }) => {
+const Page: React.FC<CommonPageProps> = ({ checkAuthState }) => {
 	const classes = useStyles();
 	const router = useRouter();
 
@@ -109,6 +109,11 @@ const Page: React.FC<CommonPageProps> = ({ authState }) => {
 	});
 
 	// DECLARING APOLLO HOOKS ENDS
+
+	// DECLARING LOCAL EFFECTS
+	useEffect(() => {
+		checkAuthState();
+	}, []);
 
 	// DECLARING FUNCTIONS
 

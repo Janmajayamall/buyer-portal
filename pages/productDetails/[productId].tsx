@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import { makeStyles, Theme, createStyles } from "@material-ui/core/styles";
 import Paper from "@material-ui/core/Paper";
@@ -105,7 +105,7 @@ enum MutationRequestState {
 const Page: React.FC<CommonPageProps> = ({
 	authState,
 	requestLogin,
-	windowDimensions,
+	checkAuthState,
 }) => {
 	const classes = useStyles();
 	const router = useRouter();
@@ -163,6 +163,14 @@ const Page: React.FC<CommonPageProps> = ({
 	>([]);
 
 	// DECLARING LOCAL STATES END
+
+	// DECLARING EFFECTS
+
+	useEffect(() => {
+		checkAuthState();
+	}, []);
+
+	// DECLARING EFFECTS END
 
 	// DECLARING FUNCTIONS
 

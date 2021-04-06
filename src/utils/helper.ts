@@ -8,6 +8,7 @@ export interface CommonPageProps {
 	authState: boolean;
 	requestLogin: () => void;
 	windowDimensions: Dimensions;
+	checkAuthState: () => void;
 }
 
 export interface Dimensions {

@@ -30,7 +30,7 @@ const useStyles = makeStyles((theme: Theme) =>
 	})
 );
 
-const Page: React.FC<CommonPageProps> = () => {
+const Page: React.FC<CommonPageProps> = ({ checkAuthState }) => {
 	const classes = useStyles();
 	const router = useRouter();
 
@@ -51,6 +51,15 @@ const Page: React.FC<CommonPageProps> = () => {
 	);
 
 	// local states end
+
+	// declaring effects
+
+	// on first render
+	useEffect(() => {
+		checkAuthState();
+	}, []);
+
+	// declaring effects end
 
 	// apollo hooks
 	const {
