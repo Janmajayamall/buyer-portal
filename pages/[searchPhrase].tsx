@@ -56,7 +56,8 @@ const Page: React.FC<CommonPageProps> = ({ checkAuthState }) => {
 
 	// on first render
 	useEffect(() => {
-		checkAuthState();
+		router.push("/");
+		// checkAuthState();
 	}, []);
 
 	// declaring effects end

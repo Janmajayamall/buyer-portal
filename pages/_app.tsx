@@ -33,6 +33,7 @@ import {
 import CustomTheme from "./../src/theme";
 import { IS_BUYER_AUTHENTICATED } from "../src/graphql/queries/buyer.graphql";
 import NextImage from "next/image";
+import { Grid } from "@material-ui/core";
 
 const useStyles = makeStyles((theme: Theme) =>
 	createStyles({
@@ -72,15 +73,12 @@ function MyApp({ Component, pageProps }: AppProps) {
 	const [loginModalVisible, setLoginModalVisible] = useState<boolean>(false);
 
 	// state for login process
-	const [
-		loginProcessState,
-		setLoginProcessState,
-	] = useState<LoginProcessInterface>(loginProcessDefaultState);
+	const [loginProcessState, setLoginProcessState] =
+		useState<LoginProcessInterface>(loginProcessDefaultState);
 
 	// state for resend code time left
-	const [resendCodeTimeLeft, setResendCodeTimeLeft] = React.useState<number>(
-		0
-	);
+	const [resendCodeTimeLeft, setResendCodeTimeLeft] =
+		React.useState<number>(0);
 
 	// state for window dimensions
 	const [windowDimensions, setWindowDimensions] = useState<Dimensions>(
@@ -99,17 +97,6 @@ function MyApp({ Component, pageProps }: AppProps) {
 
 	// DECLARING FUNCTIONS
 
-	async function checkAuthState() {
-		try {
-			const authState = await client.query({
-				query: IS_BUYER_AUTHENTICATED,
-			});
-			setAuthState(true);
-		} catch (e) {
-			setAuthState(false);
-		}
-	}
-
 	function requestLogin() {
 		if (authState === true) {
 			return;
@@ -126,7 +113,7 @@ function MyApp({ Component, pageProps }: AppProps) {
 	useEffect(() => {
 		if (!isBrowser) {
 			setIsBrowser(true);
-			checkAuthState();
+			// checkAuthState();
 			setWindowDimensions({
 				width: window.innerWidth,
 				height: window.innerHeight,
@@ -161,386 +148,6 @@ function MyApp({ Component, pageProps }: AppProps) {
 
 	// DECLARING EFFECTS END
 
-	// STUFF RELATED TO LOGIN MODAL
-
-	function resetLoginProcessState() {
-		setLoginProcessState(loginProcessDefaultState);
-
-		// reset the time
-		setResendCodeTimeLeft(0);
-	}
-
-	async function requestLoginVerificationCode() {
-		// check whether phone number is valid
-		if (loginProcessState.phoneNumber.length !== 8) {
-			return;
-		}
-
-		// return if stage isn't 0
-		if (loginProcessState.stage !== 0) {
-			return;
-		}
-
-		// change login state to loading
-		setLoginProcessState({
-			...loginProcessState,
-			stage: 1,
-		});
-
-		try {
-			// send mutation request for verification code
-			await client.mutate({
-				mutation: BUYER_REQUEST_LOGIN_VERIFICATION_CODE,
-				variables: {
-					phoneNumber: loginProcessState.phoneNumber.trim(),
-				},
-			});
-
-			// change the state to 2
-			setLoginProcessState({
-				...loginProcessState,
-				stage: 2,
-			});
-		} catch (e) {
-			console.log(e);
-			setLoginProcessState({
-				...loginProcessState,
-				stage: 0,
-			});
-		}
-	}
-
-	async function verifyLoginCode() {
-		// validation verification code
-		if (
-			loginProcessState.verificationCode.length !== 6 ||
-			loginProcessState.phoneNumber.length !== 8
-		) {
-			return;
-		}
-
-		// return if stage isn't 2
-		if (loginProcessState.stage !== 2) {
-			return;
-		}
-
-		// change loadingProgress state to loading for verification (3)
-		setLoginProcessState({
-			...loginProcessState,
-			stage: 3,
-			authenticationFailed: false,
-		});
-
-		try {
-			// send mutation request for verification
-			const { data } = await client.mutate({
-				mutation: BUYER_VERIFY_LOGIN_CODE,
-				variables: {
-					phoneNumber: loginProcessState.phoneNumber.trim(),
-					verificationCode: loginProcessState.verificationCode.trim(),
-				},
-			});
-
-			// set auth token in local storage
-			setAuthToken(data.buyerVerifyLoginCode.token);
-
-			// set auth state to true
-			setAuthState(true);
-
-			// set login modal visibility to false
-			setLoginModalVisible(false);
-
-			// reset login progress state
-			resetLoginProcessState();
-
-			// reload current path page
-			Router.reload();
-		} catch (e) {
-			console.log(e);
-			// authorization failed
-			setLoginProcessState({
-				...loginProcessState,
-				authenticationFailed: true,
-				stage: 2,
-			});
-		}
-	}
-
-	async function resendVerificationCode() {
-		// check whether resend time is equal to zero
-		if (resendCodeTimeLeft > 0) {
-			return;
-		}
-
-		// check whether phone number is valid
-		if (loginProcessState.phoneNumber.length !== 8) {
-			return;
-		}
-
-		// return if stage isn't 4 or 2
-		if (loginProcessState.stage !== 4 && loginProcessState.stage !== 2) {
-			return;
-		}
-
-		try {
-			// send mutation request for verification code
-			await client.mutate({
-				mutation: BUYER_REQUEST_LOGIN_VERIFICATION_CODE,
-				variables: {
-					phoneNumber: loginProcessState.phoneNumber,
-				},
-			});
-
-			// set resend code time to 120 s
-			setResendCodeTimeLeft(210);
-		} catch (e) {
-			console.log(e);
-		}
-	}
-
-	function editPhoneNumberAtVerification() {
-		// return if stage isn't 2
-		if (loginProcessState.stage !== 2) {
-			return;
-		}
-
-		setLoginProcessState({
-			...loginProcessState,
-			stage: 0,
-			verificationCode: "",
-			authenticationFailed: false,
-		});
-	}
-
-	const loginModalBody = (
-		<div
-			style={{
-				alignItems: "center",
-				justifyContent: "center",
-				backgroundColor: "#FFFFFF",
-				padding: 20,
-				width: 400,
-			}}
-		>
-			{loginProcessState.stage === 0 || loginProcessState.stage === 1 ? (
-				<div
-					style={{
-						display: "flex",
-						flexDirection: "column",
-					}}
-				>
-					<Typography
-						variant={"subtitle1"}
-						style={{ alignSelf: "center", marginBottom: 20 }}
-					>
-						Enter your 10-digit mobile number to Login
-					</Typography>
-					<TextField
-						fullWidth
-						id="phoneNumber"
-						name="phoneNumber"
-						label="Phone Number"
-						value={loginProcessState.phoneNumber}
-						onKeyDown={(e) => {
-							e.preventDefault();
-							handleNumberInputOnKeyPress(
-								String(loginProcessState.phoneNumber),
-								e.key,
-								(value: string) => {
-									setLoginProcessState({
-										...loginProcessState,
-										phoneNumber: value,
-									});
-								},
-								false
-							);
-						}}
-						InputProps={{
-							startAdornment: (
-								<InputAdornment position="start">
-									+91 -{" "}
-								</InputAdornment>
-							),
-						}}
-					/>
-					<Button
-						color="secondary"
-						variant="contained"
-						onClick={() => {
-							requestLoginVerificationCode();
-						}}
-						style={{
-							marginTop: 20,
-							justifySelf: "center",
-							alignSelf: "center",
-							color: "#ffffff",
-						}}
-					>
-						{loginProcessState.stage === 1 ? (
-							<CircularProgress size={24} color={"secondary"} />
-						) : (
-							"Get Code"
-						)}
-					</Button>
-				</div>
-			) : (
-				<div style={{ display: "flex", flexDirection: "column" }}>
-					<TextField
-						fullWidth
-						id="verificationCode"
-						name="verificationCode"
-						label="Enter Verification Code"
-						value={loginProcessState.verificationCode}
-						onKeyDown={(e) => {
-							e.preventDefault();
-							handleNumberInputOnKeyPress(
-								String(loginProcessState.verificationCode),
-								e.key,
-								(value: string) => {
-									setLoginProcessState({
-										...loginProcessState,
-										verificationCode: value,
-									});
-								},
-								false
-							);
-						}}
-					/>
-
-					{loginProcessState.authenticationFailed === true ? (
-						<div>
-							<Typography
-								variant="subtitle2"
-								style={{
-									color: "#FF0000",
-									marginTop: 5,
-								}}
-							>
-								Invalid Verification Code. Please try again!
-							</Typography>
-						</div>
-					) : undefined}
-
-					<div onClick={editPhoneNumberAtVerification}>
-						<Typography
-							variant="subtitle2"
-							style={{
-								color: "#A9A9A9",
-								marginTop: 5,
-							}}
-						>
-							Change Phone Number?
-						</Typography>
-					</div>
-
-					<div
-						style={{
-							display: "flex",
-							flexDirection: "row",
-							justifyContent: "space-around",
-						}}
-					>
-						<Button
-							color="secondary"
-							variant="contained"
-							onClick={verifyLoginCode}
-							style={{
-								marginTop: 20,
-								justifySelf: "center",
-								alignSelf: "center",
-							}}
-						>
-							{loginProcessState.stage === 3 ? (
-								<CircularProgress
-									size={24}
-									color={"secondary"}
-								/>
-							) : (
-								"Submit"
-							)}
-						</Button>
-						<Button
-							color="secondary"
-							variant="contained"
-							onClick={resendVerificationCode}
-							style={{
-								marginTop: 20,
-								justifySelf: "center",
-								alignSelf: "center",
-							}}
-							disabled={resendCodeTimeLeft > 0}
-						>
-							{resendCodeTimeLeft > 0
-								? `Resend ${resendCodeTimeLeft}(s)`
-								: "Resend Code"}
-						</Button>
-					</div>
-				</div>
-			)}
-		</div>
-	);
-
-	// STUFF RELATED TO MENU OPTIONS
-
-	const menu = authState ? (
-		<div>
-			<Button
-				onClick={() => {
-					router.push("/");
-				}}
-			>
-				Home
-			</Button>
-			<Button
-				onClick={() => {
-					router.push("/order");
-				}}
-			>
-				My Orders
-			</Button>
-			<Button
-				onClick={() => {
-					router.push("/payments");
-				}}
-			>
-				My Invoices
-			</Button>
-			<Button
-				onClick={() => {
-					router.push("/profile");
-				}}
-			>
-				My Profile
-			</Button>
-			<Button
-				onClick={() => {
-					resetAuthToken();
-					client.resetStore();
-					if (router.pathname === "/") {
-						router.reload();
-					} else {
-						router.push("/");
-					}
-				}}
-			>
-				Logout
-			</Button>
-		</div>
-	) : (
-		<div>
-			<Button
-				onClick={() => {
-					router.push("/");
-				}}
-			>
-				Home
-			</Button>
-			<Button onClick={requestLogin}>Login</Button>
-		</div>
-	);
-
-	// STUFF RELATED TO LOGIN MODAL ENDS
-
 	return (
 		<ApolloProvider client={client}>
 			<ThemeProvider theme={CustomTheme}>
@@ -566,124 +173,94 @@ function MyApp({ Component, pageProps }: AppProps) {
 								display: "flex",
 								justifyContent: "flex-end",
 							}}
-						>
-							<div>{menu}</div>
-						</div>
+						></div>
 					</Toolbar>
 				</AppBar>
-				<div
+
+				<Component {...pageProps} windowDimensions={windowDimensions} />
+
+				<Grid
+					container
 					style={{
-						width: "100%",
+						// width: "100%",
 						// display: "flex",
-						// justifyContent: "center",
-						// alignItems: "center",
-						backgroundColor: "#ffffff",
-						minHeight: windowDimensions.height,
-					}}
-				>
-					<Component
-						{...pageProps}
-						// onAuthStatusChange={(authState: boolean) => {
-						// 	setAuthState(authState);
-						// }}
-						authState={authState}
-						requestLogin={requestLogin}
-						windowDimensions={windowDimensions}
-						checkAuthState={checkAuthState}
-					/>
-				</div>
-				<div
-					style={{
-						width: "100%",
-						justifyContent: "center",
-						alignItems: "center",
-						display: "flex",
-						flexDirection: "column",
+						// flexDirection: "row",
+						// justifyContent: "space-around",
+						marginTop: 50,
 						backgroundColor: "#DBDEF7",
 					}}
 				>
-					<div
+					<Grid
+						item
+						md={5}
+						xs={11}
 						style={{
-							width: "100%",
 							display: "flex",
-							flexDirection: "row",
-							paddingTop: 50,
-							paddingBottom: 50,
-							paddingLeft: 20,
-							paddingRight: 20,
-							justifyContent: "space-around",
+							flexDirection: "column",
+							margin: 50,
 						}}
 					>
-						<div
-							style={{
-								display: "flex",
-								flexDirection: "column",
-							}}
+						<Typography variant="h5" style={{ color: "#23106F" }}>
+							Contact Us
+						</Typography>
+						<Typography
+							variant="subtitle1"
+							style={{ color: "#23106F" }}
 						>
-							<Typography
-								variant="h5"
-								style={{ color: "#23106F" }}
-							>
-								Contact Us
-							</Typography>
-							<Typography
-								variant="subtitle1"
-								style={{ color: "#23106F" }}
-							>
-								Email: janmajaya.choithram@gmail.com
-							</Typography>
-							<Typography
-								variant="subtitle1"
-								style={{ color: "#23106F" }}
-							>
-								Whatsapp: +85254906535
-							</Typography>
-						</div>
+							Email: janmajaya.choithram@gmail.com
+						</Typography>
+						<Typography
+							variant="subtitle1"
+							style={{ color: "#23106F" }}
+						>
+							WhatsApp: +917428039460
+						</Typography>
+					</Grid>
 
-						<div
-							style={{
-								display: "flex",
-								flexDirection: "column",
-							}}
+					<Grid
+						item
+						md={5}
+						xs={11}
+						style={{
+							display: "flex",
+							flexDirection: "column",
+							margin: 50,
+						}}
+					>
+						<Typography variant="h5" style={{ color: "#23106F" }}>
+							Manufacturers
+						</Typography>
+						<Typography
+							variant="subtitle1"
+							style={{ color: "#23106F" }}
 						>
-							<Typography
-								variant="h5"
-								style={{ color: "#23106F" }}
-							>
-								Manufacturers
-							</Typography>
-							<Typography
-								variant="subtitle1"
-								style={{ color: "#23106F" }}
-							>
-								To become our manufacturing partner, contact us
-								with your business details.
-							</Typography>
-						</div>
-					</div>
-				</div>
-				<Modal
-					open={loginModalVisible}
-					onClose={() => {
-						resetLoginProcessState();
-						setLoginModalVisible(false);
-					}}
-					aria-labelledby="simple-modal-title"
-					aria-describedby="simple-modal-description"
-					style={{
-						justifyContent: "center",
-						alignItems: "center",
-						display: "flex",
-					}}
-				>
-					{loginModalBody}
-				</Modal>
+							To become our manufacturing partner, contact us with
+							your product catalogue and business details
+						</Typography>
+					</Grid>
+				</Grid>
 			</ThemeProvider>
 		</ApolloProvider>
 	);
 }
 
 export default MyApp;
+
+// <Modal
+// 	onClose={() => {
+// 		resetLoginProcessState();
+// 		setLoginModalVisible(false);
+// 	}}
+// 	aria-labelledby="simple-modal-title"
+// 	aria-describedby="simple-modal-description"
+// 	style={{
+// 		justifyContent: "center",
+// 		alignItems: "center",
+// 		display: "flex",
+// 	}}
+// >
+// 	{loginModalBody}
+// </Modal>;
 
 // enum MenuNavOptions {
 // 	myProfile,

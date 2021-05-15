@@ -7,7 +7,6 @@ import Paper from "@material-ui/core/Paper";
 import { Image } from "cloudinary-react";
 import { useMutation, useQuery, useLazyQuery } from "@apollo/react-hooks";
 import { IsBuyerAuthenticated } from "../../src/graphql/generated/IsBuyerAuthenticated";
-import { IS_BUYER_AUTHENTICATED } from "../../src/graphql/queries/buyer.graphql";
 import {
 	GetOrderListForBuyer,
 	GetOrderListForBuyer_getOrderListForBuyer,
@@ -69,10 +68,8 @@ const Page: React.FC<CommonPageProps> = ({
 	);
 
 	// state for tracking filter of order status
-	const [
-		orderStatusFilter,
-		setOrderStatusFilter,
-	] = useState<OrderStatusSelectFilter>(OrderStatusSelectFilter.PROCESSING);
+	const [orderStatusFilter, setOrderStatusFilter] =
+		useState<OrderStatusSelectFilter>(OrderStatusSelectFilter.PROCESSING);
 
 	// state for tracking search order by id
 	const [orderIdSearchPhrase, setOrderIdSearchPhrase] = useState<string>("");
@@ -129,8 +126,8 @@ const Page: React.FC<CommonPageProps> = ({
 	function addOrderStatusToOrders(
 		orders: GetOrderListForBuyer_getOrderListForBuyer[]
 	): GetOrderListForBuyer_getOrderListForBuyer[] {
-		const modOrders: GetOrderListForBuyer_getOrderListForBuyer[] = orders.map(
-			(order) => {
+		const modOrders: GetOrderListForBuyer_getOrderListForBuyer[] =
+			orders.map((order) => {
 				if (order.orderStage === DatabaseOrderStage.CANCELLED) {
 					return {
 						...order,
@@ -146,8 +143,7 @@ const Page: React.FC<CommonPageProps> = ({
 					...order,
 					filterStatus: OrderStatusSelectFilter.PROCESSING,
 				};
-			}
-		);
+			});
 		return modOrders;
 	}
 

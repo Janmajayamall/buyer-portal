@@ -11,8 +11,7 @@ import fetch from "isomorphic-unfetch";
 import { onError } from "@apollo/client/link/error";
 import { setContext } from "@apollo/client/link/context";
 import { resetAuthToken } from "../utils";
-// import Router from "next/router";
-console.log(process.env.API_URL);
+
 const httpLink = new HttpLink({
 	fetch,
 	uri: process.env.API_URL,

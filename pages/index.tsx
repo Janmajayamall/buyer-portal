@@ -22,6 +22,8 @@ import NextImage from "next/image";
 import TextField from "@material-ui/core/TextField";
 import SearchIcon from "@material-ui/icons/Search";
 import Button from "@material-ui/core/Button";
+import { CustomProductForm } from "../src/components/customProductForm";
+import { Divider } from "@material-ui/core";
 
 const useStyles = makeStyles((theme: Theme) =>
 	createStyles({
@@ -34,11 +36,7 @@ const useStyles = makeStyles((theme: Theme) =>
 	})
 );
 
-const Page: React.FC<CommonPageProps> = ({
-	authState,
-	windowDimensions,
-	checkAuthState,
-}) => {
+const Page: React.FC<CommonPageProps> = ({ windowDimensions }) => {
 	const classes = useStyles();
 	const router = useRouter();
 
@@ -54,15 +52,6 @@ const Page: React.FC<CommonPageProps> = ({
 	const [searchPhrase, setSearchPhrase] = useState<string>("");
 
 	// DECLARING LOCAL STATE ENDS
-
-	// DECLARING EFFECTS
-
-	// on first render
-	useEffect(() => {
-		checkAuthState();
-	}, []);
-
-	// DECLARING EFFECTS END
 
 	// DECLARING APOLLO HOOKS
 
@@ -80,51 +69,6 @@ const Page: React.FC<CommonPageProps> = ({
 			console.log(error);
 		},
 	});
-
-	const CategoryRep = ({ categoryName }) => {
-		// return (
-		// 	<NextImage
-		// 		src="/categories/Cotton.png"
-		// 		alt="me"
-		// 		width="100"
-		// 		height="100"
-		// 	/>
-		// );
-
-		return (
-			<div
-				style={{
-					display: "flex",
-					flexDirection: "column",
-					justifyContent: "center",
-					alignItems: "center",
-				}}
-				onClick={() => {
-					window.open(
-						`${process.env.DOMAIN}/${categoryName.toLowerCase()}`
-					);
-				}}
-			>
-				<NextImage
-					className="categoryImage"
-					src={`/categories/${categoryName}.jpeg`}
-					alt="me"
-					layout="intrinsic"
-					width={100}
-					height={100}
-				/>
-				<style jsx global>{`
-					.categoryImage {
-						border-radius: 50px;
-					}
-				`}</style>
-
-				<Typography variant="subtitle1" style={{ marginTop: 5 }}>
-					{categoryName}
-				</Typography>
-			</div>
-		);
-	};
 
 	// DECLARING APOLLO HOOKS END
 
@@ -181,105 +125,101 @@ const Page: React.FC<CommonPageProps> = ({
 				})()}
 			/>
 
-			<div
-				style={{
-					display: "inline-block",
-					paddingRight: 50,
-					paddingLeft: 50,
-				}}
-			>
-				<div
-					ref={categoryDivRef}
-					style={{
-						alignSelf: "center",
-						marginTop: 40,
-						// padding: 20,
-					}}
-				>
-					<div
-						style={{
-							display: "flex",
-							flexDirection: "row",
-							justifyContent: "space-around",
-						}}
-					>
-						<CategoryRep categoryName="Cotton" />
-						<CategoryRep categoryName="Denim" />
-						<CategoryRep categoryName="Poplin" />
-						<CategoryRep categoryName="Silk" />
-						<CategoryRep categoryName="Viscose" />
-					</div>
-				</div>
-				<div
-					style={{
-						padding: 10,
-						display: "flex",
-						flexDirection: "row",
-						justifyContent: "flex-start",
-						marginLeft: 10,
-						marginTop: 20,
-						marginBottom: 20,
-						marginRight: 10,
-					}}
-				>
-					<TextField
-						variant="standard"
-						id="SearchPhrase"
-						label="Search Fabric Product"
-						value={searchPhrase}
-						onChange={(e) => {
-							setSearchPhrase(e.target.value);
-						}}
-						style={{ width: "90%", marginRight: 5 }}
-					/>
-					<Button
-						style={{ justifySelf: "center" }}
-						color="secondary"
-						variant="contained"
-						onClick={() => {
-							if (searchPhrase.trim() === "") {
-								router.push(`/any`);
-							} else {
-								router.push(`/${searchPhrase}`);
-							}
-						}}
-					>
-						<SearchIcon />
-						{"Search"}
-					</Button>
-				</div>
-				<Typography
-					variant="h5"
-					style={{
-						fontWeight: "bolder",
-						marginLeft: 20,
-						marginTop: 10,
-					}}
-				>
-					Trending Now
-				</Typography>
-				{/* <div
-					style={{
-						display: "flex",
-					}}
-				> */}
-				{products.map((product) => {
-					if (product.variations.length === 0) {
-						return undefined;
+			<div ref={categoryDivRef}>
+				<CustomProductForm
+					title={"Cotton Fabrics"}
+					subtitle={
+						"We have enabled our clients to source Cotton Drill fabric, Cotton Poplin Fabric, Cotton Muslin Fabric, Cotton Satin Fabric, Cotton Oxford Fabric, Cotton Slub Fabric, Cotton Dobby Fabric, Cotton Terry Fabric, Cotton Velvet Fabric, Cotton Jerseys, Cotton Gingham fabric, Cotton Lawn Fabric, Cotton Swiss Fabric!"
 					}
-
-					return (
-						<ProductGridListing
-							productDetails={product}
-							onClick={() => {
-								window.open(
-									`${process.env.DOMAIN}/productDetails/${product.id}`
-								);
-							}}
-						/>
-					);
-				})}
-				{/* </div> */}
+					subtitle2={
+						"If you require cotton based fabric, gives us a try by filling up the request form."
+					}
+					onSubmit={() => {
+						console.log("submitted");
+					}}
+					cloudinaryURL={
+						"https://res.cloudinary.com/jayeet/image/upload/v1617396905/bkvhuc6r2c31kwrh0fzg.jpg"
+					}
+				/>
+				<Divider
+					style={{
+						// marginTop: 30,
+						// marginBottom: 30,
+						marginRight: 20,
+						marginLeft: 20,
+						backgroundColor: "#000000",
+					}}
+				/>
+				<CustomProductForm
+					title={"Polyester Fabrics"}
+					subtitle={
+						"We have enabled our clients to source Polyester Chiffon Fabric, Polyester Satin Fabric, Polyester Organza Fabric, Polyester Charmeuse Fabric, Polyester Georgette Fabric, Polyester Oxford Fabric!"
+					}
+					subtitle2={
+						"If you require polyester based fabric, gives us a try by filling up the request form."
+					}
+					onSubmit={() => {
+						console.log("submitted");
+					}}
+					cloudinaryURL={
+						"https://res.cloudinary.com/jayeet/image/upload/v1617396905/bkvhuc6r2c31kwrh0fzg.jpg"
+					}
+				/>
+				<Divider
+					style={{
+						marginTop: 30,
+						marginBottom: 30,
+						marginRight: 20,
+						marginLeft: 20,
+						backgroundColor: "#000000",
+					}}
+				/>
+				<CustomProductForm
+					title={"Rayon/Viscose Fabrics"}
+					subtitle={
+						"We have enabled our clients to source Plain Rayon Fabric, Rayon Modal Fabric, Rayon Tencell Fabric!"
+					}
+					subtitle2={
+						"If you require rayon based fabric, gives us a try by filling up the request form."
+					}
+					onSubmit={() => {
+						console.log("submitted");
+					}}
+					cloudinaryURL={
+						"https://res.cloudinary.com/jayeet/image/upload/v1617396905/bkvhuc6r2c31kwrh0fzg.jpg"
+					}
+				/>
+				<Divider
+					style={{
+						marginTop: 30,
+						marginBottom: 30,
+						marginRight: 20,
+						marginLeft: 20,
+						backgroundColor: "#000000",
+					}}
+				/>
+				<CustomProductForm
+					title={"Any other fabric?"}
+					subtitle={
+						"Even if you require some other type of fabric, do let us know. Our team will definitely work search for your requirement among our trusted manufacturing partners"
+					}
+					subtitle2={"Please fill up the form!"}
+					onSubmit={() => {
+						console.log("submitted");
+					}}
+					cloudinaryURL={
+						"https://res.cloudinary.com/jayeet/image/upload/v1617396905/bkvhuc6r2c31kwrh0fzg.jpg"
+					}
+				/>
+				<Divider
+					style={{
+						marginTop: 30,
+						marginBottom: 30,
+						marginRight: 20,
+						marginLeft: 20,
+						backgroundColor: "#000000",
+					}}
+				/>
 			</div>
 		</div>
 	);
