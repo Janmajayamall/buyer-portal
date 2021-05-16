@@ -67,7 +67,7 @@ const productFormInfoArr = [
 	{
 		title: "Any other fabric?",
 		subtitle:
-			"Even if you require some other type of fabric, do let us know. Our team will definitely work search for your requirement among our trusted manufacturing partners",
+			"Even if you require some other type of fabric, do let us know. Our team will definitely search to fullfil your requirement among our trusted manufacturing partners.",
 		subtitle2: "Feel free to fill up the form!",
 		cloudinaryURL:
 			"https://res.cloudinary.com/jayeet/image/upload/v1617396905/any_fabric_ynxc5g.jpg",
