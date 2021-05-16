@@ -26,12 +26,7 @@ import {
 import TextField from "@material-ui/core/TextField";
 import InputAdornment from "@material-ui/core/InputAdornment";
 import CircularProgress from "@material-ui/core/CircularProgress";
-import {
-	BUYER_REQUEST_LOGIN_VERIFICATION_CODE,
-	BUYER_VERIFY_LOGIN_CODE,
-} from "../src/graphql/mutations/buyer.graphql";
 import CustomTheme from "./../src/theme";
-import { IS_BUYER_AUTHENTICATED } from "../src/graphql/queries/buyer.graphql";
 import NextImage from "next/image";
 import { Grid } from "@material-ui/core";
 

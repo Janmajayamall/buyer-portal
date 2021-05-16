@@ -3,16 +3,16 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
+import { RequestInputType } from "./globalTypes";
+
 // ====================================================
-// GraphQL mutation operation: PlaceNewOrder
+// GraphQL mutation operation: AddRequest
 // ====================================================
 
-export interface PlaceNewOrder {
-  placeNewOrder: boolean;
+export interface AddRequest {
+  addRequest: boolean;
 }
 
-export interface PlaceNewOrderVariables {
-  productId: number;
-  productVariationId: number;
-  orderQuantity: number;
+export interface AddRequestVariables {
+  requestInput: RequestInputType;
 }

@@ -1,8 +1,6 @@
 import React, { useState, FunctionComponent } from "react";
 import Typography from "@material-ui/core/Typography";
 import { Image } from "cloudinary-react";
-import { getLowestVariantCost } from "../utils";
-import { GetProductsBySearchPhraseForBuyers_getProductsBySearchPhraseForBuyers } from "../graphql/generated/GetProductsBySearchPhraseForBuyers";
 import TextField from "@material-ui/core/TextField";
 import { Divider } from "@material-ui/core";
 import {
@@ -21,8 +19,9 @@ interface CustomProductFormProps {
 	title: string;
 	subtitle: string;
 	subtitle2: string;
-	onSubmit: () => void;
+	onSubmit: (requestDetails: string, phoneNumber: string) => void;
 	cloudinaryURL: string;
+	tag: string;
 }
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -49,16 +48,32 @@ export const CustomProductForm: FunctionComponent<CustomProductFormProps> = (
 	// formik hooks
 	const formik = useFormik({
 		initialValues: {
-			fabricType: "",
-			construction: "",
-			count: "",
+			fabricMaterial: "",
+			pattern: "",
+			yarnCount: "",
 			gsm: "",
-			useCase: "",
+			width: "",
+			use: "",
 			description: "",
 			phoneNumber: "",
 		},
 		validationSchema: validationSchema,
-		onSubmit: (values) => {},
+		onSubmit: (values) => {
+			let finalString = "";
+			Object.keys(values).forEach((key) => {
+				const s = `${key}: ${values[key]}\n`;
+				finalString += s;
+			});
+
+			// adding tag
+			finalString = `tag: ${props.tag}\n`;
+
+			// submit the request
+			props.onSubmit(finalString, values.phoneNumber);
+
+			// reset
+			formik.resetForm();
+		},
 	});
 
 	return (
@@ -134,53 +149,53 @@ export const CustomProductForm: FunctionComponent<CustomProductFormProps> = (
 						justifyContent: "flex-start",
 					}}
 				>
-					<form>
+					<form onSubmit={formik.handleSubmit}>
 						<TextField
 							fullWidth
-							id="fabricType"
-							label="Fabric Type"
+							id="fabricMaterial"
+							label="Fabric Material"
 							className={classes.formInputField}
-							value={formik.values.fabricType}
+							value={formik.values.fabricMaterial}
 							error={
-								formik.touched.fabricType &&
-								Boolean(formik.errors.fabricType)
+								formik.touched.fabricMaterial &&
+								Boolean(formik.errors.fabricMaterial)
 							}
 							helperText={
-								formik.touched.fabricType &&
-								formik.errors.fabricType
+								formik.touched.fabricMaterial &&
+								formik.errors.fabricMaterial
 							}
 							onChange={formik.handleChange}
 						/>
 
 						<TextField
 							fullWidth
-							id="construction"
-							label="Construction"
+							id="pattern"
+							label="Pattern"
 							className={classes.formInputField}
-							value={formik.values.construction}
+							value={formik.values.pattern}
 							error={
-								formik.touched.construction &&
-								Boolean(formik.errors.construction)
+								formik.touched.pattern &&
+								Boolean(formik.errors.pattern)
 							}
 							helperText={
-								formik.touched.construction &&
-								formik.errors.construction
+								formik.touched.pattern && formik.errors.pattern
 							}
 							onChange={formik.handleChange}
 						/>
 
 						<TextField
 							fullWidth
-							id="count"
-							label="Count"
+							id="yarnCount"
+							label="Yarn count"
 							className={classes.formInputField}
-							value={formik.values.count}
+							value={formik.values.yarnCount}
 							error={
-								formik.touched.count &&
-								Boolean(formik.errors.count)
+								formik.touched.yarnCount &&
+								Boolean(formik.errors.yarnCount)
 							}
 							helperText={
-								formik.touched.count && formik.errors.count
+								formik.touched.yarnCount &&
+								formik.errors.yarnCount
 							}
 							onChange={formik.handleChange}
 						/>
@@ -200,17 +215,30 @@ export const CustomProductForm: FunctionComponent<CustomProductFormProps> = (
 
 						<TextField
 							fullWidth
-							id="useCase"
-							label="Use Case"
+							id="width"
+							label="Width"
 							className={classes.formInputField}
-							value={formik.values.useCase}
+							value={formik.values.width}
 							error={
-								formik.touched.useCase &&
-								Boolean(formik.errors.useCase)
+								formik.touched.width &&
+								Boolean(formik.errors.width)
 							}
 							helperText={
-								formik.touched.useCase && formik.errors.useCase
+								formik.touched.width && formik.errors.width
 							}
+							onChange={formik.handleChange}
+						/>
+
+						<TextField
+							fullWidth
+							id="use"
+							label="Use"
+							className={classes.formInputField}
+							value={formik.values.use}
+							error={
+								formik.touched.use && Boolean(formik.errors.use)
+							}
+							helperText={formik.touched.use && formik.errors.use}
 							onChange={formik.handleChange}
 						/>
 
