@@ -48,6 +48,12 @@ export default createMuiTheme({
 					fontSize: pxToRem(9),
 				},
 			},
+			h6: {
+				fontSize: pxToRem(20),
+				[breakpoints.down("md")]: {
+					fontSize: pxToRem(15),
+				},
+			},
 		},
 
 		MuiInputBase: {

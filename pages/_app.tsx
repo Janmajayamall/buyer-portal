@@ -182,6 +182,8 @@ function MyApp({ Component, pageProps }: AppProps) {
 						// flexDirection: "row",
 						// justifyContent: "space-around",
 						marginTop: 50,
+						paddingTop: 50,
+						paddingBottom: 50,
 						backgroundColor: "#DBDEF7",
 					}}
 				>
@@ -192,10 +194,46 @@ function MyApp({ Component, pageProps }: AppProps) {
 						style={{
 							display: "flex",
 							flexDirection: "column",
-							margin: 50,
+							margin: 20,
 						}}
 					>
-						<Typography variant="h5" style={{ color: "#23106F" }}>
+						<Typography
+							variant="h6"
+							style={{ color: "#23106F", fontWeight: "bold" }}
+						>
+							About Us
+						</Typography>
+						<Typography
+							variant="subtitle1"
+							style={{ color: "#23106F" }}
+						>
+							OneStop is B2B platform for fabric trading. With the
+							help of its network of trusted fabric manufacturers,
+							OneStop enables you to source the right fabric of
+							the right quality directly from factories.
+							Because of having a wide network of manufacturers, OneStop
+							gives you best possible quotation and the shortest
+							lead time for your requirement. OneStop also
+							provides full transparency throughout the process.
+							OneStop aims to make fabric sourcing as hassle free
+							as possible. For any inquiry, please contact us.
+						</Typography>
+					</Grid>
+
+					<Grid
+						item
+						md={3}
+						xs={11}
+						style={{
+							display: "flex",
+							flexDirection: "column",
+							margin: 20,
+						}}
+					>
+						<Typography
+							variant="h6"
+							style={{ color: "#23106F", fontWeight: "bold" }}
+						>
 							Contact Us
 						</Typography>
 						<Typography
@@ -208,21 +246,31 @@ function MyApp({ Component, pageProps }: AppProps) {
 							variant="subtitle1"
 							style={{ color: "#23106F" }}
 						>
-							WhatsApp: +917428039460
+							{"Phone & WhatsApp: +917428039460"}
+						</Typography>
+						<Typography
+							variant="subtitle1"
+							style={{ color: "#23106F" }}
+						>
+							Location: 19/55 Old Rajinder Nagar, 110060, New
+							Delhi
 						</Typography>
 					</Grid>
 
 					<Grid
 						item
-						md={5}
+						md={3}
 						xs={11}
 						style={{
 							display: "flex",
 							flexDirection: "column",
-							margin: 50,
+							margin: 20,
 						}}
 					>
-						<Typography variant="h5" style={{ color: "#23106F" }}>
+						<Typography
+							variant="h6"
+							style={{ color: "#23106F", fontWeight: "bold" }}
+						>
 							Manufacturers
 						</Typography>
 						<Typography

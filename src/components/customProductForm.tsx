@@ -87,7 +87,7 @@ export const CustomProductForm: FunctionComponent<CustomProductFormProps> = (
 		>
 			<Grid item xs={11}>
 				<Typography
-					variant="h5"
+					variant="h6"
 					style={{
 						fontWeight: "bolder",
 					}}

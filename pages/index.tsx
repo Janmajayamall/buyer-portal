@@ -65,7 +65,7 @@ const productFormInfoArr = [
 		tag: "rayon",
 	},
 	{
-		title: "Any other fabric?",
+		title: "Any other fabric material?",
 		subtitle:
 			"Even if you require some other type of fabric, do let us know. Our team will definitely search to fullfil your requirement among our trusted manufacturing partners.",
 		subtitle2: "Feel free to fill up the form!",
