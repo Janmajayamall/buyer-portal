@@ -202,7 +202,7 @@ function MyApp({ Component, pageProps }: AppProps) {
 							variant="subtitle1"
 							style={{ color: "#23106F" }}
 						>
-							Email: janmajaya.choithram@gmail.com
+							Email: theonestop.trade@gmail.com{" "}
 						</Typography>
 						<Typography
 							variant="subtitle1"
