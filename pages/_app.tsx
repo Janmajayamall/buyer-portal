@@ -210,8 +210,8 @@ function MyApp({ Component, pageProps }: AppProps) {
 							OneStop is B2B platform for fabric trading. With the
 							help of its network of trusted fabric manufacturers,
 							OneStop enables you to source the right fabric of
-							the right quality directly from factories.
-							Because of having a wide network of manufacturers, OneStop
+							the right quality directly from factories. Because
+							of having a wide network of manufacturers, OneStop
 							gives you best possible quotation and the shortest
 							lead time for your requirement. OneStop also
 							provides full transparency throughout the process.
@@ -246,7 +246,13 @@ function MyApp({ Component, pageProps }: AppProps) {
 							variant="subtitle1"
 							style={{ color: "#23106F" }}
 						>
-							{"Phone & WhatsApp: +917428039460"}
+							{"Mobile & WhatsApp: +91 7428039460"}
+						</Typography>
+						<Typography
+							variant="subtitle1"
+							style={{ color: "#23106F" }}
+						>
+							{"Telephone: +91 1135570523"}
 						</Typography>
 						<Typography
 							variant="subtitle1"
