@@ -6,6 +6,7 @@ import {
 	CommonPageProps,
 	getAdjustedImageDims,
 	getLowestVariantCost,
+	gaEvent,
 } from "../src/utils";
 import NextImage from "next/image";
 import Button from "@material-ui/core/Button";
@@ -92,6 +93,10 @@ const Page: React.FC<CommonPageProps> = ({ windowDimensions }) => {
 
 	// functions
 	function submitForm(requestDetails, phoneNumber) {
+		gaEvent("formSubmit", {
+			phoneNumber: phoneNumber,
+		});
+
 		addRequest({
 			variables: {
 				requestInput: {
